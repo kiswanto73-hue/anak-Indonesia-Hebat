@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Monitoring Guru</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+    <nav class="bg-indigo-700 text-white p-5 shadow-lg mb-8">
+        <div class="container mx-auto">
+            <h1 class="font-bold text-xl uppercase tracking-wider text-center italic">Monitoring Aktivitas Siswa</h1>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="p-4 text-xs font-bold text-gray-500 uppercase">Nama Siswa</th>
+                            <th class="p-4 text-xs font-bold text-gray-500 uppercase text-center">Total Poin</th>
+                            <th class="p-4 text-xs font-bold text-gray-500 uppercase">Aktivitas Terakhir</th>
+                            <th class="p-4 text-xs font-bold text-gray-500 uppercase text-right">Jam Update</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rekapTableBody" class="divide-y divide-gray-100">
+                        <tr>
+                            <td colspan="4" class="p-10 text-center text-gray-400 italic">Menunggu data siswa masuk...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <p class="text-center text-gray-400 text-[10px] mt-6 italic">Data diperbarui secara real-time dari Firebase</p>
+    </div>
+
+    <script>
+        // Konfigurasi Firebase Bapak
+        const firebaseConfig = {
+            apiKey: "AIzaSyA0_GBPJRz3yQQiEb9a5PkGLgrfBBHPloA",
+            authDomain: "ceklist-anak-indonesia-hebat.firebaseapp.com",
+            databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.firebaseio.com",
+            projectId: "ceklist-anak-indonesia-hebat",
+            storageBucket: "ceklist-anak-indonesia-hebat.firebasestorage.app",
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Mengambil data secara real-time
+        const rekapRef = database.ref('rekap_siswa');
+        rekapRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            const tableBody = document.getElementById('rekapTableBody');
+            tableBody.innerHTML = '';
+
+            if (data) {
+                // Mengubah objek menjadi array agar bisa diurutkan dari poin tertinggi
+                const listSiswa = Object.keys(data).map(key => data[key]);
+                listSiswa.sort((a, b) => b.total_poin - a.total_poin);
+
+                listSiswa.forEach(siswa => {
+                    tableBody.innerHTML += `
+                        <tr class="hover:bg-indigo-50 transition-colors">
+                            <td class="p-4 font-semibold text-gray-700">${siswa.nama}</td>
+                            <td class="p-4 text-center">
+                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-sm">
+                                    💎 ${siswa.total_poin}
+                                </span>
+                            </td>
+                            <td class="p-4 text-sm text-gray-600">${siswa.misi_terakhir}</td>
+                            <td class="p-4 text-right text-[10px] font-mono text-gray-400">${siswa.waktu_update}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                tableBody.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-gray-400 italic">Belum ada siswa yang melakukan checklist hari ini.</td></tr>';
+            }
+        });
+    </script>
+</body>
+</html>
