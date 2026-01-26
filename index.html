@@ -3,34 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anak Indonesia Hebat</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Checklist Anak Indonesia Hebat</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .locked { filter: grayscale(1); opacity: 0.5; pointer-events: none; }
-        .active-now { border-color: #3b82f6 !important; box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-50 min-h-screen pb-10">
-    <div id="mainApp" class="container mx-auto max-w-md p-4">
-        <header class="bg-indigo-600 rounded-[2.5rem] p-6 shadow-xl mb-6 text-white text-center">
-            <h2 class="text-[10px] font-bold uppercase tracking-[0.2em] mb-1 opacity-80">Halo, <span id="displayChildName">Siswa</span>!</h2>
-            <h1 id="liveClock" class="text-4xl font-black mb-1">00:00:00</h1>
-            <p id="liveDate" class="text-xs opacity-70 italic"></p>
-        </header>
-        <div class="flex gap-4 mb-6">
-            <div class="flex-1 bg-white p-4 rounded-3xl shadow-sm border text-center">
-                <p class="text-[9px] font-bold text-gray-400 uppercase">Poin Kamu</p>
-                <p class="text-xl font-black text-indigo-600">💎 <span id="points">0</span></p>
-            </div>
-            <div class="flex-1 bg-white p-4 rounded-3xl shadow-sm border text-center">
-                <p class="text-[9px] font-bold text-gray-400 uppercase">Selesai</p>
-                <p class="text-xl font-black text-green-600">✅ <span id="completedCount">0</span></p>
-            </div>
+<body class="bg-blue-50 p-4">
+    <div id="setup" class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-md mt-10">
+        <h2 class="text-xl font-bold mb-4 text-center text-blue-600">Daftar Nama Siswa</h2>
+        <input type="text" id="namaSiswa" placeholder="Masukkan Nama Lengkap" class="w-full border p-3 rounded-lg mb-4">
+        <button onclick="mulai()" class="w-full bg-blue-600 text-white p-3 rounded-lg font-bold">MULAI</button>
+    </div>
+
+    <div id="mainApp" class="hidden max-w-md mx-auto bg-white p-6 rounded-xl shadow-md">
+        <h2 id="displayNama" class="text-lg font-bold mb-4 text-blue-700 italic"></h2>
+        <div id="misiList" class="space-y-3">
+            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-green-50">
+                <input type="checkbox" class="misi-item w-5 h-5 mr-3" value="Ibadah & Mengaji" data-poin="10">
+                <span>Ibadah & Mengaji (10 Poin)</span>
+            </label>
+            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-green-50">
+                <input type="checkbox" class="misi-item w-5 h-5 mr-3" value="Membantu Orang Tua" data-poin="10">
+                <span>Membantu Orang Tua (10 Poin)</span>
+            </label>
+            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-green-50">
+                <input type="checkbox" class="misi-item w-5 h-5 mr-3" value="Belajar & Tugas" data-poin="10">
+                <span>Belajar & Tugas (10 Poin)</span>
+            </label>
         </div>
-        <div id="missionList" class="space-y-4"></div>
+        <button onclick="kirimData()" class="w-full bg-green-600 text-white p-3 rounded-lg font-bold mt-6 shadow-lg">SIMPAN LAPORAN</button>
     </div>
 
     <script>
@@ -44,71 +45,44 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        const configMisi = [
-            { id: 1, teks: "Bangun & Ibadah Pagi", ikon: "🌅", mulai: "05:00", selesai: "06:00" },
-            { id: 2, teks: "Mandi Pagi & Rapi", ikon: "🚿", mulai: "06:00", selesai: "07:00" },
-            { id: 3, teks: "Belajar di Sekolah", ikon: "📚", mulai: "07:00", selesai: "13:00" },
-            { id: 4, teks: "Makan & Istirahat", ikon: "💤", mulai: "13:00", selesai: "15:30" },
-            { id: 5, teks: "Ibadah & Mengaji", ikon: "📖", mulai: "15:30", selesai: "17:30" },
-            { id: 6, teks: "Mandi & Makan Malam", ikon: "🍱", mulai: "17:30", selesai: "19:30" },
-            { id: 7, teks: "Waktu Belajar", ikon: "📝", mulai: "19:30", selesai: "20:00" },
-            { id: 8, teks: "Waktu Keluarga", ikon: "👨‍👩‍👧‍👦", mulai: "20:00", selesai: "21:00" },
-            { id: 9, teks: "Tidur Tepat Waktu", ikon: "🌙", mulai: "21:00", selesai: "21:30" }
-        ];
+        let namaSiswa = "";
 
-        let childName = localStorage.getItem('childName') || prompt("Siapa namamu?");
-        if(childName) localStorage.setItem('childName', childName);
-        document.getElementById('displayChildName').innerText = childName;
-
-        let points = parseInt(localStorage.getItem('pointsAnak')) || 0;
-        let doneToday = JSON.parse(localStorage.getItem('doneToday')) || [];
-
-        function updateTime() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('id-ID', { hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit'});
-            document.getElementById('liveDate').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
-            document.getElementById('liveClock').innerText = timeStr;
-            render(timeStr.substring(0, 5));
+        function mulai() {
+            namaSiswa = document.getElementById('namaSiswa').value;
+            if (namaSiswa) {
+                document.getElementById('setup').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('displayNama').innerText = "Halo, " + namaSiswa;
+            } else {
+                alert("Masukkan nama dulu ya!");
+            }
         }
 
-        function render(currentH) {
-            const container = document.getElementById('missionList');
-            container.innerHTML = '';
-            configMisi.forEach(m => {
-                const isDone = doneToday.includes(m.id);
-                const isActive = currentH >= m.mulai && currentH <= m.selesai;
-                const isLocked = !isDone && (currentH < m.mulai || currentH > m.selesai);
-                
-                container.innerHTML += `
-                    <div onclick="checkMisi(${m.id}, ${isLocked}, ${isDone})" class="p-5 bg-white rounded-3xl border-2 flex items-center justify-between ${isDone ? 'border-green-400 bg-green-50' : ''} ${isLocked ? 'locked' : ''} ${isActive && !isDone ? 'active-now' : ''} shadow-sm cursor-pointer">
-                        <div class="flex items-center gap-4">
-                            <span class="text-3xl">${m.ikon}</span>
-                            <div><p class="font-bold text-slate-800">${m.teks}</p><p class="text-[9px] text-gray-400 font-bold">${m.mulai} - ${m.selesai}</p></div>
-                        </div>
-                        <div class="w-10 h-10 rounded-2xl flex items-center justify-center ${isDone ? 'bg-green-500 text-white' : 'bg-slate-100 text-transparent border'}"><i class="fas fa-check"></i></div>
-                    </div>`;
+        function kirimData() {
+            const misiDiceklis = document.querySelectorAll('.misi-item:checked');
+            let totalPoin = 0;
+            let daftarMisi = [];
+
+            misiDiceklis.forEach(item => {
+                totalPoin += parseInt(item.getAttribute('data-poin'));
+                daftarMisi.push(item.value);
             });
-            document.getElementById('points').innerText = points;
-            document.getElementById('completedCount').innerText = doneToday.length;
-        }
 
-        function checkMisi(id, isLocked, isDone) {
-            if(isDone || isLocked) return;
-            doneToday.push(id);
-            points += 50;
-            localStorage.setItem('doneToday', JSON.stringify(doneToday));
-            localStorage.setItem('pointsAnak', points);
+            if (daftarMisi.length === 0) {
+                alert("Centang minimal satu kegiatan dulu, Pak!");
+                return;
+            }
 
-            database.ref('rekap_siswa/' + childName.replace(/\s/g, '_')).set({
-                nama: childName,
-                total_poin: points,
-                misi_terakhir: configMisi.find(m => m.id === id).teks,
-                waktu_update: new Date().toLocaleString()
+            database.ref('rekap_siswa/' + namaSiswa.replace(/\s+/g, '_')).set({
+                nama: namaSiswa,
+                total_poin: totalPoin,
+                misi_terakhir: daftarMisi.join(", "),
+                waktu_update: new Date().toLocaleString('id-ID')
+            }).then(() => {
+                alert("Laporan Berhasil Terkirim ke Guru!");
+                location.reload(); // Reset setelah kirim
             });
-            updateTime();
         }
-        setInterval(updateTime, 1000);
-        updateTime();
     </script>
 </body>
 </html>
