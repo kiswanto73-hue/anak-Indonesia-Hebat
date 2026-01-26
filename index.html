@@ -3,53 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anak Indonesia Hebat - Siswa</title>
+    <title>Anak Indonesia Hebat - Beraksi!</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
 </head>
-<body class="bg-indigo-50 min-h-screen p-4">
+<body class="bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen flex items-center justify-center p-4 font-sans">
 
-    <div id="setup" class="max-w-md mx-auto bg-white p-8 rounded-3xl shadow-xl mt-10 border-t-8 border-indigo-600">
-        <h2 class="text-2xl font-bold mb-2 text-center text-indigo-700">Selamat Datang!</h2>
-        <p class="text-center text-gray-500 mb-6 text-sm">Silakan masukkan nama lengkapmu</p>
-        <input type="text" id="namaSiswa" placeholder="Nama Lengkap..." class="w-full border-2 border-indigo-100 p-4 rounded-xl mb-4 focus:outline-none focus:border-indigo-500 transition-all text-center font-semibold uppercase">
-        <button onclick="mulai()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-xl font-bold shadow-lg transition-all active:scale-95">MULAI AKTIVITAS</button>
-    </div>
-
-    <div id="mainApp" class="hidden max-w-md mx-auto bg-white p-6 rounded-3xl shadow-xl">
-        <div class="flex justify-between items-center mb-6">
-            <h2 id="displayNama" class="text-lg font-bold text-indigo-700 italic"></h2>
-            <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold uppercase">Misi Hari Ini</span>
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate__animated animate__fadeIn">
+        
+        <div class="bg-gradient-to-r from-indigo-600 to-blue-500 p-6 text-white text-center">
+            <h1 class="text-2xl font-black tracking-tight">INDONESIA HEBAT 🇮🇩</h1>
+            <p class="text-indigo-100 text-xs mt-1 uppercase font-bold tracking-widest">Monitoring Karakter Siswa</p>
         </div>
 
-        <div id="misiList" class="space-y-3">
-            <label class="flex items-center p-4 border-2 border-gray-50 rounded-2xl cursor-pointer hover:bg-indigo-50 transition-all">
-                <input type="checkbox" class="misi-item w-6 h-6 mr-4 accent-indigo-600" value="Ibadah & Mengaji" data-poin="20">
-                <span class="text-gray-700 font-medium">Ibadah & Mengaji (+20)</span>
-            </label>
-            <label class="flex items-center p-4 border-2 border-gray-50 rounded-2xl cursor-pointer hover:bg-indigo-50 transition-all">
-                <input type="checkbox" class="misi-item w-6 h-6 mr-4 accent-indigo-600" value="Makan & Istirahat" data-poin="10">
-                <span class="text-gray-700 font-medium">Makan & Istirahat (+10)</span>
-            </label>
-            <label class="flex items-center p-4 border-2 border-gray-50 rounded-2xl cursor-pointer hover:bg-indigo-50 transition-all">
-                <input type="checkbox" class="misi-item w-6 h-6 mr-4 accent-indigo-600" value="Belajar Mandiri" data-poin="15">
-                <span class="text-gray-700 font-medium">Belajar Mandiri (+15)</span>
-            </label>
-            <label class="flex items-center p-4 border-2 border-gray-50 rounded-2xl cursor-pointer hover:bg-indigo-50 transition-all">
-                <input type="checkbox" class="misi-item w-6 h-6 mr-4 accent-indigo-600" value="Membantu Orang Tua" data-poin="15">
-                <span class="text-gray-700 font-medium">Membantu Orang Tua (+15)</span>
-            </label>
-            <label class="flex items-center p-4 border-2 border-gray-50 rounded-2xl cursor-pointer hover:bg-indigo-50 transition-all">
-                <input type="checkbox" class="misi-item w-6 h-6 mr-4 accent-indigo-600" value="Olahraga / Gerak Fisik" data-poin="10">
-                <span class="text-gray-700 font-medium">Olahraga / Gerak (+10)</span>
-            </label>
+        <div id="setup" class="p-8">
+            <div class="text-center mb-6">
+                <span class="text-5xl">👋</span>
+                <h2 class="text-xl font-bold text-gray-800 mt-4">Halo, Jagoan!</h2>
+                <p class="text-gray-500 text-sm">Siapa namamu hari ini?</p>
+            </div>
+            <input type="text" id="namaSiswa" placeholder="KETIK NAMA DISINI..." class="w-full border-2 border-gray-100 p-4 rounded-2xl mb-4 focus:outline-none focus:border-indigo-500 transition-all text-center font-bold text-lg text-indigo-600 uppercase shadow-inner">
+            <button onclick="mulai()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-2xl font-bold shadow-lg transform transition active:scale-95">MASUK SEKARANG</button>
         </div>
 
-        <button id="btnSimpan" onclick="kirimData()" class="w-full bg-green-500 hover:bg-green-600 text-white p-5 rounded-2xl font-black mt-8 shadow-xl transition-all active:scale-95 flex justify-center items-center gap-2">
-            🚀 SIMPAN LAPORAN SEKARANG
-        </button>
-        <p class="text-center text-gray-400 text-[10px] mt-4 italic text-xs font-semibold uppercase">Klik tombol di atas untuk mengirim ke Guru</p>
+        <div id="mainApp" class="hidden p-6">
+            <div class="flex items-center justify-between mb-6 bg-indigo-50 p-4 rounded-2xl">
+                <div>
+                    <p class="text-[10px] text-indigo-500 font-black uppercase tracking-tighter">Siswa Aktif</p>
+                    <h2 id="displayNama" class="text-lg font-bold text-indigo-800 leading-tight"></h2>
+                </div>
+                <span class="text-3xl">🚀</span>
+            </div>
+
+            <div class="space-y-3" id="containerMisi">
+                <div onclick="toggleCheck(this)" class="misi-card flex items-center p-4 border-2 border-gray-100 rounded-2xl cursor-pointer transition-all hover:border-indigo-300 group bg-white">
+                    <input type="checkbox" class="misi-item hidden" value="Ibadah & Mengaji" data-poin="20">
+                    <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center mr-4 group-aria-checked:bg-green-500 transition-all">
+                        <span class="text-white hidden check-icon">✓</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-gray-700 text-sm">🕌 Ibadah & Mengaji</p>
+                        <p class="text-[10px] text-gray-400">Dapatkan +20 Poin</p>
+                    </div>
+                </div>
+
+                <div onclick="toggleCheck(this)" class="misi-card flex items-center p-4 border-2 border-gray-100 rounded-2xl cursor-pointer transition-all hover:border-indigo-300 group bg-white">
+                    <input type="checkbox" class="misi-item hidden" value="Membantu Orang Tua" data-poin="15">
+                    <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center mr-4 group-aria-checked:bg-green-500 transition-all">
+                        <span class="text-white hidden check-icon">✓</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-gray-700 text-sm">🏠 Membantu Orang Tua</p>
+                        <p class="text-[10px] text-gray-400">Dapatkan +15 Poin</p>
+                    </div>
+                </div>
+
+                <div onclick="toggleCheck(this)" class="misi-card flex items-center p-4 border-2 border-gray-100 rounded-2xl cursor-pointer transition-all hover:border-indigo-300 group bg-white">
+                    <input type="checkbox" class="misi-item hidden" value="Belajar Mandiri" data-poin="15">
+                    <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center mr-4 group-aria-checked:bg-green-500 transition-all">
+                        <span class="text-white hidden check-icon">✓</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-gray-700 text-sm">📚 Belajar & Tugas</p>
+                        <p class="text-[10px] text-gray-400">Dapatkan +15 Poin</p>
+                    </div>
+                </div>
+
+                <div onclick="toggleCheck(this)" class="misi-card flex items-center p-4 border-2 border-gray-100 rounded-2xl cursor-pointer transition-all hover:border-indigo-300 group bg-white">
+                    <input type="checkbox" class="misi-item hidden" value="Makan & Istirahat" data-poin="10">
+                    <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center mr-4 group-aria-checked:bg-green-500 transition-all">
+                        <span class="text-white hidden check-icon">✓</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-gray-700 text-sm">🍱 Makan & Istirahat</p>
+                        <p class="text-[10px] text-gray-400">Dapatkan +10 Poin</p>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btnSimpan" onclick="kirimData()" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white p-5 rounded-2xl font-black mt-8 shadow-xl transform transition hover:scale-[1.02] active:scale-95 flex justify-center items-center gap-2">
+                <span>SIMPAN LAPORAN</span>
+            </button>
+        </div>
     </div>
 
     <script>
@@ -69,48 +106,76 @@
             const input = document.getElementById('namaSiswa');
             namaSiswa = input.value.trim();
             if (namaSiswa.length > 2) {
-                document.getElementById('setup').classList.add('hidden');
-                document.getElementById('mainApp').classList.remove('hidden');
-                document.getElementById('displayNama').innerText = "Hi, " + namaSiswa;
+                document.getElementById('setup').classList.add('animate__animated', 'animate__fadeOut');
+                setTimeout(() => {
+                    document.getElementById('setup').classList.add('hidden');
+                    document.getElementById('mainApp').classList.remove('hidden');
+                    document.getElementById('mainApp').classList.add('animate__animated', 'animate__fadeInUp');
+                    document.getElementById('displayNama').innerText = namaSiswa;
+                }, 500);
             } else {
-                alert("Mohon masukkan nama lengkapmu ya!");
+                alert("Masukkan namamu yang lengkap ya!");
+            }
+        }
+
+        function toggleCheck(el) {
+            const checkbox = el.querySelector('input');
+            const icon = el.querySelector('.check-icon');
+            const box = el.querySelector('.w-8');
+            
+            checkbox.checked = !checkbox.checked;
+            
+            if(checkbox.checked) {
+                el.classList.add('border-green-500', 'bg-green-50');
+                box.classList.replace('bg-gray-100', 'bg-green-500');
+                icon.classList.remove('hidden');
+                el.setAttribute('aria-checked', 'true');
+            } else {
+                el.classList.remove('border-green-500', 'bg-green-50');
+                box.classList.replace('bg-green-500', 'bg-gray-100');
+                icon.classList.add('hidden');
+                el.setAttribute('aria-checked', 'false');
             }
         }
 
         function kirimData() {
             const btn = document.getElementById('btnSimpan');
-            const misiDiceklis = document.querySelectorAll('.misi-item:checked');
-            let totalPoin = 0;
-            let daftarMisi = [];
+            const checks = document.querySelectorAll('.misi-item:checked');
+            let total = 0;
+            let list = [];
 
-            misiDiceklis.forEach(item => {
-                totalPoin += parseInt(item.getAttribute('data-poin'));
-                daftarMisi.push(item.value);
-            });
-
-            if (daftarMisi.length === 0) {
-                alert("Centang dulu aktivitas yang sudah kamu lakukan!");
+            if (checks.length === 0) {
+                alert("Pilih minimal satu kegiatan, Jagoan!");
                 return;
             }
 
-            // Ganti teks tombol saat mengirim
-            btn.innerText = "SEDANG MENGIRIM...";
             btn.disabled = true;
+            btn.innerHTML = "⌛ MENGIRIM...";
+            btn.classList.replace('from-green-500', 'from-gray-400');
 
-            const slugNama = namaSiswa.replace(/\s+/g, '_');
+            checks.forEach(c => {
+                total += parseInt(c.dataset.poin);
+                list.push(c.value);
+            });
+
+            const slug = namaSiswa.replace(/\s+/g, '_').toUpperCase();
             
-            database.ref('rekap_siswa/' + slugNama).set({
-                nama: namaSiswa,
-                total_poin: totalPoin,
-                misi_terakhir: daftarMisi.join(", "),
-                waktu_update: new Date().toLocaleTimeString('id-ID') + " WIB"
+            database.ref('rekap_siswa/' + slug).set({
+                nama: namaSiswa.toUpperCase(),
+                total_poin: total,
+                misi_terakhir: list.join(", "),
+                waktu_update: new Date().toLocaleTimeString('id-ID')
             }).then(() => {
-                alert("Hebat! Laporan " + namaSiswa + " sudah terkirim!");
-                location.reload(); 
-            }).catch((error) => {
-                alert("Gagal kirim: " + error.message);
-                btn.innerText = "🚀 SIMPAN LAPORAN SEKARANG";
+                btn.innerHTML = "✅ BERHASIL!";
+                btn.classList.replace('from-gray-400', 'from-blue-500');
+                setTimeout(() => {
+                    alert("Laporanmu sudah diterima Guru! Hebat!");
+                    location.reload();
+                }, 1000);
+            }).catch(e => {
+                alert("Waduh, gagal kirim: " + e.message);
                 btn.disabled = false;
+                btn.innerHTML = "SIMPAN LAPORAN";
             });
         }
     </script>
