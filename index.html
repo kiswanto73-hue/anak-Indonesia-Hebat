@@ -9,20 +9,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
-<body class="bg-indigo-900 min-h-screen flex items-center justify-center p-4 font-sans">
+<body class="bg-indigo-900 min-h-screen flex items-center justify-center p-4 font-sans text-slate-800">
 
     <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border-b-[12px] border-yellow-400">
         
         <div class="bg-indigo-700 p-6 text-center text-white">
-            <h1 class="text-2xl font-black italic">MISI HERO HARIAN</h1>
+            <h1 class="text-2xl font-black italic">PETUALANGAN HERO</h1>
             <div id="userInfo" class="hidden mt-2 bg-indigo-800 rounded-full py-1 px-4 inline-block border border-indigo-500">
                 <span id="displayNama" class="text-xs font-bold uppercase tracking-wider"></span>
             </div>
         </div>
 
         <div id="progressPanel" class="hidden px-6 pt-4">
-            <div class="flex justify-between text-[10px] font-black text-indigo-900 mb-1">
-                <span>PROGRESS PIAGAM</span>
+            <div class="flex justify-between text-[10px] font-black text-indigo-900 mb-1 uppercase">
+                <span>Target Piagam Hero</span>
                 <span id="valPoin">0 / 2000 XP</span>
             </div>
             <div class="w-full bg-slate-200 h-4 rounded-full overflow-hidden border-2 border-white shadow-sm">
@@ -31,49 +31,74 @@
         </div>
 
         <div id="formNama" class="p-8">
-            <input type="text" id="inputNama" placeholder="NAMA HERO-MU..." class="w-full bg-slate-100 p-5 rounded-2xl text-center font-black text-indigo-700 border-2 border-transparent focus:border-yellow-400 outline-none mb-4 uppercase shadow-inner">
-            <button onclick="mulai()" class="w-full bg-yellow-400 text-indigo-900 font-black p-5 rounded-2xl shadow-[0_6px_0_0_#ca8a04] active:shadow-none active:translate-y-1 transition-all uppercase tracking-widest">Mulai Misi 🚀</button>
+            <p class="text-center font-bold text-slate-400 text-xs mb-4 uppercase tracking-widest">Siap untuk misi hari ini?</p>
+            <input type="text" id="inputNama" placeholder="NAMA LENGKAPMU..." class="w-full bg-slate-100 p-5 rounded-2xl text-center font-black text-indigo-700 border-2 border-transparent focus:border-yellow-400 outline-none mb-4 uppercase">
+            <button onclick="mulai()" class="w-full bg-yellow-400 text-indigo-900 font-black p-5 rounded-2xl shadow-[0_6px_0_0_#ca8a04] active:shadow-none active:translate-y-1 transition-all uppercase tracking-widest">MULAI AKSI 🚀</button>
         </div>
 
         <div id="formMisi" class="hidden p-6">
             <div class="space-y-3" id="listMisi">
-                <div class="misi-box bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between group transition-all" data-limit="07:00">
+                
+                <div class="misi-box bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="05:30">
                     <div class="flex items-center">
                         <input type="checkbox" class="misi-check w-6 h-6 mr-3 accent-indigo-600" data-poin="50">
                         <div>
-                            <p class="font-black text-slate-700 text-sm">🕌 IBADAH SUBUH</p>
-                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 07.00 WIB</p>
+                            <p class="font-black text-slate-700 text-xs">🌞 BANGUN & IBADAH</p>
+                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 05.30 WIB</p>
                         </div>
                     </div>
-                    <span class="text-[10px] font-black text-green-600">+50 XP</span>
+                    <span class="text-[10px] font-black text-indigo-500">+50 XP</span>
                 </div>
 
-                <div class="misi-box bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between group transition-all" data-limit="08:00">
-                    <div class="flex items-center">
-                        <input type="checkbox" class="misi-check w-6 h-6 mr-3 accent-indigo-600" data-poin="30">
-                        <div>
-                            <p class="font-black text-slate-700 text-sm">🧹 BERSIH KAMAR</p>
-                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 08.00 WIB</p>
-                        </div>
-                    </div>
-                    <span class="text-[10px] font-black text-green-600">+30 XP</span>
-                </div>
-
-                <div class="misi-box bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between group transition-all" data-limit="15:00">
+                <div class="misi-box bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="06:30">
                     <div class="flex items-center">
                         <input type="checkbox" class="misi-check w-6 h-6 mr-3 accent-indigo-600" data-poin="40">
                         <div>
-                            <p class="font-black text-slate-700 text-sm">📚 BELAJAR MANDIRI</p>
-                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 15.00 WIB</p>
+                            <p class="font-black text-slate-700 text-xs">🧹 BERSIH KASUR & BANTU ORTU</p>
+                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 06.30 WIB</p>
                         </div>
                     </div>
-                    <span class="text-[10px] font-black text-green-600">+40 XP</span>
+                    <span class="text-[10px] font-black text-indigo-500">+40 XP</span>
                 </div>
+
+                <div class="misi-box bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="07:00">
+                    <div class="flex items-center">
+                        <input type="checkbox" class="misi-check w-6 h-6 mr-3 accent-indigo-600" data-poin="30">
+                        <div>
+                            <p class="font-black text-slate-700 text-xs">🎒 SIAP BERANGKAT SEKOLAH</p>
+                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 07.00 WIB</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-black text-indigo-500">+30 XP</span>
+                </div>
+
+                <div class="misi-box bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="20:30">
+                    <div class="flex items-center">
+                        <input type="checkbox" class="misi-check w-6 h-6 mr-3 accent-indigo-600" data-poin="50">
+                        <div>
+                            <p class="font-black text-slate-700 text-xs">📖 BELAJAR DI RUMAH</p>
+                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 20.30 WIB</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-black text-indigo-500">+50 XP</span>
+                </div>
+
+                <div class="misi-box bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="21:00">
+                    <div class="flex items-center">
+                        <input type="checkbox" class="misi-check w-6 h-6 mr-3 accent-indigo-600" data-poin="30">
+                        <div>
+                            <p class="font-black text-slate-700 text-xs">💤 TIDUR CEPAT</p>
+                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 21.00 WIB</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-black text-indigo-500">+30 XP</span>
+                </div>
+
             </div>
 
-            <button id="btnKirim" onclick="prosesLaporan()" class="w-full bg-green-500 hover:bg-green-600 text-white font-black p-5 rounded-2xl mt-8 shadow-[0_6px_0_0_#16a34a] active:shadow-none active:translate-y-1 transition-all uppercase italic">KIRIM LAPORAN 📡</button>
+            <button id="btnKirim" onclick="prosesLaporan()" class="w-full bg-green-500 text-white font-black p-5 rounded-2xl mt-8 shadow-[0_6px_0_0_#16a34a] active:shadow-none active:translate-y-1 transition-all uppercase italic">KIRIM LAPORAN 📡</button>
             
-            <button id="btnPiagam" onclick="cetakPiagam()" class="hidden w-full bg-indigo-600 text-white font-black p-4 rounded-2xl mt-4 animate-bounce border-4 border-yellow-400 shadow-xl italic">📜 CETAK PIAGAM HERO</button>
+            <button id="btnPiagam" onclick="cetakPiagam()" class="hidden w-full bg-indigo-600 text-white font-black p-4 rounded-2xl mt-4 border-4 border-yellow-400 shadow-xl italic animate-bounce">📜 CETAK PIAGAM HERO</button>
         </div>
     </div>
 
@@ -83,7 +108,7 @@
         const db = firebase.database();
 
         let heroNama = "";
-        let tabunganPoin = parseInt(localStorage.getItem('tabunganPoin')) || 0;
+        let tabunganPoin = parseInt(localStorage.getItem('heroXP')) || 0;
 
         function updateUIProgress() {
             document.getElementById('valPoin').innerText = `${tabunganPoin} / 2000 XP`;
@@ -106,39 +131,41 @@
 
         function prosesLaporan() {
             const now = new Date();
-            const currentTime = now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes();
-            let perolehanHariIni = 0;
-            let detailMisi = [];
+            const jam = now.getHours().toString().padStart(2, '0');
+            const menit = now.getMinutes().toString().padStart(2, '0');
+            const currentTime = `${jam}:${menit}`;
+            
+            let poinHariIni = 0;
+            let logMisi = [];
 
             document.querySelectorAll('.misi-box').forEach(box => {
                 const check = box.querySelector('.misi-check');
                 const limit = box.getAttribute('data-limit');
                 const poinMisi = parseInt(check.getAttribute('data-poin'));
-                const labelMisi = box.querySelector('p').innerText;
+                const label = box.querySelector('p').innerText;
 
-                // LOGIKA: Jika Terlewat Jam Batas ATAU Tidak Dicentang = MINUS
+                // LOGIKA: Jika Terlewat Jam ATAU Tidak Dicentang = MINUS POIN
                 if (currentTime > limit || !check.checked) {
-                    perolehanHariIni -= poinMisi; // Otomatis Poin Berkurang
-                    detailMisi.push(labelMisi + " (GAGAL/TELAT)");
+                    poinHariIni -= poinMisi;
+                    logMisi.push(label + " (GAGAL/TELAT)");
                 } else {
-                    perolehanHariIni += poinMisi;
-                    detailMisi.push(labelMisi + " (SUKSES)");
+                    poinHariIni += poinMisi;
+                    logMisi.push(label + " (SUKSES)");
                 }
             });
 
-            tabunganPoin += perolehanHariIni;
-            if(tabunganPoin < 0) tabunganPoin = 0; // Poin tidak boleh minus di tabungan
-            localStorage.setItem('tabunganPoin', tabunganPoin);
+            tabunganPoin += poinHariIni;
+            if(tabunganPoin < 0) tabunganPoin = 0;
+            localStorage.setItem('heroXP', tabunganPoin);
 
-            // Kirim ke Guru
             db.ref('rekap_siswa/' + heroNama.replace(/\s+/g, '_')).set({
                 nama: heroNama,
-                misi: detailMisi.join(", "),
-                poin_harian: perolehanHariIni,
+                misi: logMisi.join(", "),
+                poin_harian: poinHariIni,
                 total_xp: tabunganPoin,
                 waktu: now.toLocaleString('id-ID')
             }).then(() => {
-                alert(`Laporan Terkirim!\nPerolehan Hari Ini: ${perolehanHariIni} XP\nTotal XP Sekarang: ${tabunganPoin}`);
+                alert(`Laporan Hero Terkirim!\nSkor Hari Ini: ${poinHariIni} XP\nTotal XP: ${tabunganPoin}`);
                 location.reload();
             });
         }
@@ -146,31 +173,22 @@
         function cetakPiagam() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('landscape');
-            
-            doc.setFillColor(63, 81, 181);
+            doc.setFillColor(30, 27, 75); // Indigo Tua
             doc.rect(0, 0, 297, 210, 'F');
-            doc.setDrawColor(255, 215, 0);
-            doc.setLineWidth(5);
+            doc.setDrawColor(250, 204, 21); // Kuning
+            doc.setLineWidth(10);
             doc.rect(10, 10, 277, 190);
-            
-            doc.setTextColor(255, 215, 0);
-            doc.setFontSize(40);
-            doc.text("PIAGAM PENGHARGAAN", 148, 60, {align: "center"});
-            
+            doc.setTextColor(250, 204, 21);
+            doc.setFontSize(45);
+            doc.text("PIAGAM HERO HEBAT", 148, 60, {align: "center"});
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(20);
-            doc.text("Diberikan Kepada Hero Terbaik:", 148, 90, {align: "center"});
-            
-            doc.setFontSize(35);
-            doc.setFont("helvetica", "bold");
+            doc.setFontSize(22);
+            doc.text("Diberikan Kepada Pejuang Karakter:", 148, 90, {align: "center"});
+            doc.setFontSize(40);
             doc.text(heroNama, 148, 120, {align: "center"});
-            
             doc.setFontSize(18);
-            doc.setFont("helvetica", "normal");
-            doc.text("Atas Keberhasilan Mengumpulkan 2000 XP dalam", 148, 150, {align: "center"});
-            doc.text("PETUALANGAN ANAK INDONESIA HEBAT", 148, 160, {align: "center"});
-            
-            doc.save(`Piagam_${heroNama}.pdf`);
+            doc.text("Telah Berhasil Menyelesaikan Misi Harian & Mengumpulkan 2000 XP", 148, 150, {align: "center"});
+            doc.save(`Piagam_Hero_${heroNama}.pdf`);
         }
     </script>
 </body>
