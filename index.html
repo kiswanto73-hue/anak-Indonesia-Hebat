@@ -8,92 +8,101 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-blue-600 min-h-screen p-4 flex items-center justify-center font-sans">
+<body class="bg-indigo-600 min-h-screen p-4 flex flex-col items-center justify-center font-sans text-slate-800">
+
+    <div id="statusKoneksi" class="mb-4 px-6 py-2 rounded-full text-xs font-bold bg-white text-indigo-600 shadow-lg">
+        ⏳ MENGHUBUNGKAN...
+    </div>
 
     <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 border-b-8 border-yellow-400">
         <div id="formNama">
-            <h1 class="text-3xl font-black text-blue-700 text-center mb-2 italic">CEKLIST SISWA</h1>
-            <p class="text-center text-gray-400 text-xs mb-6 uppercase tracking-widest font-bold">Anak Indonesia Hebat</p>
-            <input type="text" id="inputNama" placeholder="KETIK NAMA LENGKAPMU..." class="w-full bg-gray-100 p-4 rounded-2xl text-center font-black text-blue-600 border-2 border-transparent focus:border-blue-500 outline-none mb-4 uppercase shadow-inner">
-            <button onclick="lanjut()" class="w-full bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-black p-4 rounded-2xl shadow-lg transform active:scale-95 transition-all">MASUK KE DAFTAR MISI 🚀</button>
+            <div class="text-center mb-6">
+                <h1 class="text-3xl font-black text-indigo-700 italic">CEKLIST HARIAN</h1>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Anak Indonesia Hebat</p>
+            </div>
+            <input type="text" id="inputNama" placeholder="NAMA LENGKAPMU..." class="w-full bg-slate-50 p-4 rounded-2xl text-center font-black text-indigo-600 border-2 border-slate-100 focus:border-indigo-500 outline-none mb-4 uppercase">
+            <button onclick="lanjut()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black p-4 rounded-2xl shadow-lg transition-all active:scale-95">MASUK KE MISI 🚀</button>
         </div>
 
         <div id="formMisi" class="hidden">
-            <div class="flex items-center justify-between mb-4 bg-blue-50 p-3 rounded-2xl">
-                <p id="namaTampil" class="font-black text-blue-700 uppercase italic"></p>
-                <span class="text-2xl">🌟</span>
-            </div>
-
+            <p id="namaTampil" class="font-black text-indigo-700 uppercase italic mb-6 text-center border-b pb-2"></p>
             <div class="space-y-3">
-                <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
-                    <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Ibadah & Mengaji">
-                    <span class="font-bold text-gray-700">🕌 Ibadah & Mengaji</span>
+                <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-indigo-50">
+                    <input type="checkbox" class="misi w-6 h-6 mr-4 accent-indigo-600" value="Ibadah">
+                    <span class="font-bold text-slate-700">🕌 Ibadah & Mengaji</span>
                 </label>
-                <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
-                    <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Membantu Orang Tua">
-                    <span class="font-bold text-gray-700">🏠 Membantu Orang Tua</span>
+                <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-indigo-50">
+                    <input type="checkbox" class="misi w-6 h-6 mr-4 accent-indigo-600" value="Membantu">
+                    <span class="font-bold text-slate-700">🏠 Membantu Orang Tua</span>
                 </label>
-                <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
-                    <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Belajar Mandiri">
-                    <span class="font-bold text-gray-700">📚 Belajar Mandiri</span>
+                <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-indigo-50">
+                    <input type="checkbox" class="misi w-6 h-6 mr-4 accent-indigo-600" value="Belajar">
+                    <span class="font-bold text-slate-700">📚 Belajar & Tugas</span>
                 </label>
             </div>
-
-            <button id="btnKirim" onclick="kirimData()" class="w-full bg-green-500 hover:bg-green-600 text-white font-black p-5 rounded-2xl mt-8 shadow-xl transform active:scale-95 transition-all flex justify-center items-center gap-2">
-                SIMPAN LAPORAN SEKARANG
-            </button>
+            <button id="btnKirim" onclick="kirimData()" class="w-full bg-green-500 hover:bg-green-600 text-white font-black p-5 rounded-2xl mt-8 shadow-xl transition-all">SIMPAN LAPORAN</button>
         </div>
     </div>
 
     <script>
-        // ALAMAT DATABASE YANG SUDAH SAYA MASUKKAN
-        const config = { 
-            databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.firebaseio.com" 
+        // ALAMAT SUDAH DISESUAIKAN DENGAN SERVER ASIA BAPAK
+        const firebaseConfig = {
+            databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
-        firebase.initializeApp(config);
+
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let namaSiswa = "";
+        // Cek Koneksi Realtime
+        const statusDiv = document.getElementById('statusKoneksi');
+        db.ref(".info/connected").on("value", (snap) => {
+            if (snap.val() === true) {
+                statusDiv.innerText = "🟢 SERVER AKTIF (SINGAPURA)";
+                statusDiv.className = "mb-4 px-6 py-2 rounded-full text-xs font-bold bg-green-100 text-green-700 shadow-lg";
+            } else {
+                statusDiv.innerText = "🔴 TERPUTUS / RULES SALAH";
+                statusDiv.className = "mb-4 px-6 py-2 rounded-full text-xs font-bold bg-red-100 text-red-700 shadow-lg";
+            }
+        });
 
+        let namaSiswa = "";
         function lanjut() {
             const input = document.getElementById('inputNama');
-            if(input.value.trim().length < 3) return alert("Isi namamu dulu ya!");
+            if(input.value.trim().length < 3) return alert("Masukkan nama lengkap!");
             namaSiswa = input.value.trim().toUpperCase();
             document.getElementById('formNama').classList.add('hidden');
             document.getElementById('formMisi').classList.remove('hidden');
-            document.getElementById('namaTampil').innerText = namaSiswa;
+            document.getElementById('namaTampil').innerText = "SISWA: " + namaSiswa;
         }
 
         function kirimData() {
             const btn = document.getElementById('btnKirim');
             const checks = document.querySelectorAll('.misi:checked');
-            
-            if(checks.length === 0) return alert("Pilih minimal satu kegiatan!");
+            if(checks.length === 0) return alert("Centang minimal satu kegiatan!");
 
             btn.disabled = true;
-            btn.innerText = "⏳ SEDANG MENGIRIM...";
-            
-            let hasilMisi = [];
-            checks.forEach(c => hasilMisi.push(c.value));
+            btn.innerText = "⌛ MENGIRIM...";
 
-            // Simpan ke Firebase
+            let dataMisi = [];
+            checks.forEach(c => dataMisi.push(c.value));
+
             const slug = namaSiswa.replace(/\s+/g, '_');
             db.ref('rekap_siswa/' + slug).set({
                 nama: namaSiswa,
-                aktivitas: hasilMisi.join(", "),
+                aktivitas: dataMisi.join(", "),
                 waktu: new Date().toLocaleString('id-ID')
             }, (error) => {
                 if (error) {
-                    alert("❌ GAGAL: " + error.message);
+                    alert("GAGAL: " + error.message);
                     btn.disabled = false;
                     btn.innerText = "SIMPAN LAPORAN";
                 } else {
                     btn.innerText = "✅ BERHASIL!";
-                    btn.style.backgroundColor = "#3b82f6";
-                    setTimeout(() => {
-                        alert("Alhamdulillah! Laporan sudah diterima Guru.");
-                        location.reload();
-                    }, 1000);
+                    btn.className = "w-full bg-blue-500 text-white font-black p-5 rounded-2xl mt-8 shadow-xl";
+                    setTimeout(() => { 
+                        alert("Laporan Berhasil Masuk!"); 
+                        location.reload(); 
+                    }, 800);
                 }
             });
         }
