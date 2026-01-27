@@ -1,31 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anak Indonesia Hebat</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>TES DARURAT</h1>
-    <button onclick="kirim()">KLIK INI</button>
-    <p id="hasil">Status: Siap</p>
+<body class="bg-blue-600 min-h-screen p-4 flex items-center justify-center font-sans">
+
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 border-b-8 border-yellow-400">
+        <div id="formNama">
+            <h1 class="text-3xl font-black text-blue-700 text-center mb-2 italic">CEKLIST SISWA</h1>
+            <p class="text-center text-gray-400 text-xs mb-6 uppercase tracking-widest font-bold">Anak Indonesia Hebat</p>
+            <input type="text" id="inputNama" placeholder="KETIK NAMA LENGKAPMU..." class="w-full bg-gray-100 p-4 rounded-2xl text-center font-black text-blue-600 border-2 border-transparent focus:border-blue-500 outline-none mb-4 uppercase shadow-inner">
+            <button onclick="lanjut()" class="w-full bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-black p-4 rounded-2xl shadow-lg transform active:scale-95 transition-all">MASUK KE DAFTAR MISI 🚀</button>
+        </div>
+
+        <div id="formMisi" class="hidden">
+            <div class="flex items-center justify-between mb-4 bg-blue-50 p-3 rounded-2xl">
+                <p id="namaTampil" class="font-black text-blue-700 uppercase italic"></p>
+                <span class="text-2xl">🌟</span>
+            </div>
+
+            <div class="space-y-3">
+                <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
+                    <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Ibadah & Mengaji">
+                    <span class="font-bold text-gray-700">🕌 Ibadah & Mengaji</span>
+                </label>
+                <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
+                    <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Membantu Orang Tua">
+                    <span class="font-bold text-gray-700">🏠 Membantu Orang Tua</span>
+                </label>
+                <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
+                    <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Belajar Mandiri">
+                    <span class="font-bold text-gray-700">📚 Belajar Mandiri</span>
+                </label>
+            </div>
+
+            <button id="btnKirim" onclick="kirimData()" class="w-full bg-green-500 hover:bg-green-600 text-white font-black p-5 rounded-2xl mt-8 shadow-xl transform active:scale-95 transition-all flex justify-center items-center gap-2">
+                SIMPAN LAPORAN SEKARANG
+            </button>
+        </div>
+    </div>
 
     <script>
-        // Gunakan alamat database langsung tanpa konfigurasi ribet
-        var config = { databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.firebaseio.com" };
+        // ALAMAT DATABASE YANG SUDAH SAYA MASUKKAN
+        const config = { 
+            databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.firebaseio.com" 
+        };
         firebase.initializeApp(config);
-        
-        function kirim() {
-            document.getElementById('hasil').innerText = "⏳ SEDANG MEMAKSA MASUK...";
+        const db = firebase.database();
+
+        let namaSiswa = "";
+
+        function lanjut() {
+            const input = document.getElementById('inputNama');
+            if(input.value.trim().length < 3) return alert("Isi namamu dulu ya!");
+            namaSiswa = input.value.trim().toUpperCase();
+            document.getElementById('formNama').classList.add('hidden');
+            document.getElementById('formMisi').classList.remove('hidden');
+            document.getElementById('namaTampil').innerText = namaSiswa;
+        }
+
+        function kirimData() {
+            const btn = document.getElementById('btnKirim');
+            const checks = document.querySelectorAll('.misi:checked');
             
-            // Mencoba menulis ke folder 'TES'
-            firebase.database().ref('TES').set({
-                pesan: "Bismillah Berhasil",
-                waktu: new Date().toLocaleTimeString()
-            }, function(error) {
+            if(checks.length === 0) return alert("Pilih minimal satu kegiatan!");
+
+            btn.disabled = true;
+            btn.innerText = "⏳ SEDANG MENGIRIM...";
+            
+            let hasilMisi = [];
+            checks.forEach(c => hasilMisi.push(c.value));
+
+            // Simpan ke Firebase
+            const slug = namaSiswa.replace(/\s+/g, '_');
+            db.ref('rekap_siswa/' + slug).set({
+                nama: namaSiswa,
+                aktivitas: hasilMisi.join(", "),
+                waktu: new Date().toLocaleString('id-ID')
+            }, (error) => {
                 if (error) {
-                    document.getElementById('hasil').innerText = "❌ GAGAL: " + error.message;
+                    alert("❌ GAGAL: " + error.message);
+                    btn.disabled = false;
+                    btn.innerText = "SIMPAN LAPORAN";
                 } else {
-                    document.getElementById('hasil').innerText = "✅ BERHASIL! CEK FIREBASE!";
+                    btn.innerText = "✅ BERHASIL!";
+                    btn.style.backgroundColor = "#3b82f6";
+                    setTimeout(() => {
+                        alert("Alhamdulillah! Laporan sudah diterima Guru.");
+                        location.reload();
+                    }, 1000);
                 }
             });
         }
