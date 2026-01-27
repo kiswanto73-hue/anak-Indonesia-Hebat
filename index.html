@@ -1,111 +1,44 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anak Indonesia Hebat</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-indigo-600 min-h-screen p-4 flex flex-col items-center justify-center font-sans text-slate-800">
-
-    <div id="statusKoneksi" class="mb-4 px-6 py-2 rounded-full text-xs font-bold bg-white text-indigo-600 shadow-lg">
-        ⏳ MENGHUBUNGKAN...
-    </div>
-
-    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 border-b-8 border-yellow-400">
-        <div id="formNama">
-            <div class="text-center mb-6">
-                <h1 class="text-3xl font-black text-indigo-700 italic">CEKLIST HARIAN</h1>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Anak Indonesia Hebat</p>
-            </div>
-            <input type="text" id="inputNama" placeholder="NAMA LENGKAPMU..." class="w-full bg-slate-50 p-4 rounded-2xl text-center font-black text-indigo-600 border-2 border-slate-100 focus:border-indigo-500 outline-none mb-4 uppercase">
-            <button onclick="lanjut()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black p-4 rounded-2xl shadow-lg transition-all active:scale-95">MASUK KE MISI 🚀</button>
+<div class="space-y-3">
+    <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
+        <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Ibadah & Mengaji" data-poin="25">
+        <div class="flex-1">
+            <p class="font-bold text-gray-700">🕌 Ibadah & Mengaji</p>
+            <p class="text-[10px] text-blue-500 font-bold">+25 POIN</p>
         </div>
-
-        <div id="formMisi" class="hidden">
-            <p id="namaTampil" class="font-black text-indigo-700 uppercase italic mb-6 text-center border-b pb-2"></p>
-            <div class="space-y-3">
-                <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-indigo-50">
-                    <input type="checkbox" class="misi w-6 h-6 mr-4 accent-indigo-600" value="Ibadah">
-                    <span class="font-bold text-slate-700">🕌 Ibadah & Mengaji</span>
-                </label>
-                <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-indigo-50">
-                    <input type="checkbox" class="misi w-6 h-6 mr-4 accent-indigo-600" value="Membantu">
-                    <span class="font-bold text-slate-700">🏠 Membantu Orang Tua</span>
-                </label>
-                <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:bg-indigo-50">
-                    <input type="checkbox" class="misi w-6 h-6 mr-4 accent-indigo-600" value="Belajar">
-                    <span class="font-bold text-slate-700">📚 Belajar & Tugas</span>
-                </label>
-            </div>
-            <button id="btnKirim" onclick="kirimData()" class="w-full bg-green-500 hover:bg-green-600 text-white font-black p-5 rounded-2xl mt-8 shadow-xl transition-all">SIMPAN LAPORAN</button>
+    </label>
+    <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
+        <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Membantu Orang Tua" data-poin="20">
+        <div class="flex-1">
+            <p class="font-bold text-gray-700">🏠 Membantu Orang Tua</p>
+            <p class="text-[10px] text-blue-500 font-bold">+20 POIN</p>
         </div>
-    </div>
-
-    <script>
-        // ALAMAT SUDAH DISESUAIKAN DENGAN SERVER ASIA BAPAK
-        const firebaseConfig = {
-            databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.asia-southeast1.firebasedatabase.app"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        // Cek Koneksi Realtime
-        const statusDiv = document.getElementById('statusKoneksi');
-        db.ref(".info/connected").on("value", (snap) => {
-            if (snap.val() === true) {
-                statusDiv.innerText = "🟢 SERVER AKTIF (SINGAPURA)";
-                statusDiv.className = "mb-4 px-6 py-2 rounded-full text-xs font-bold bg-green-100 text-green-700 shadow-lg";
-            } else {
-                statusDiv.innerText = "🔴 TERPUTUS / RULES SALAH";
-                statusDiv.className = "mb-4 px-6 py-2 rounded-full text-xs font-bold bg-red-100 text-red-700 shadow-lg";
-            }
-        });
-
-        let namaSiswa = "";
-        function lanjut() {
-            const input = document.getElementById('inputNama');
-            if(input.value.trim().length < 3) return alert("Masukkan nama lengkap!");
-            namaSiswa = input.value.trim().toUpperCase();
-            document.getElementById('formNama').classList.add('hidden');
-            document.getElementById('formMisi').classList.remove('hidden');
-            document.getElementById('namaTampil').innerText = "SISWA: " + namaSiswa;
-        }
-
-        function kirimData() {
-            const btn = document.getElementById('btnKirim');
-            const checks = document.querySelectorAll('.misi:checked');
-            if(checks.length === 0) return alert("Centang minimal satu kegiatan!");
-
-            btn.disabled = true;
-            btn.innerText = "⌛ MENGIRIM...";
-
-            let dataMisi = [];
-            checks.forEach(c => dataMisi.push(c.value));
-
-            const slug = namaSiswa.replace(/\s+/g, '_');
-            db.ref('rekap_siswa/' + slug).set({
-                nama: namaSiswa,
-                aktivitas: dataMisi.join(", "),
-                waktu: new Date().toLocaleString('id-ID')
-            }, (error) => {
-                if (error) {
-                    alert("GAGAL: " + error.message);
-                    btn.disabled = false;
-                    btn.innerText = "SIMPAN LAPORAN";
-                } else {
-                    btn.innerText = "✅ BERHASIL!";
-                    btn.className = "w-full bg-blue-500 text-white font-black p-5 rounded-2xl mt-8 shadow-xl";
-                    setTimeout(() => { 
-                        alert("Laporan Berhasil Masuk!"); 
-                        location.reload(); 
-                    }, 800);
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+    </label>
+    <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
+        <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Belajar & Tugas" data-poin="20">
+        <div class="flex-1">
+            <p class="font-bold text-gray-700">📚 Belajar & Tugas</p>
+            <p class="text-[10px] text-blue-500 font-bold">+20 POIN</p>
+        </div>
+    </label>
+    <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
+        <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Makan Sehat & Teratur" data-poin="15">
+        <div class="flex-1">
+            <p class="font-bold text-gray-700">🍱 Makan Sehat & Teratur</p>
+            <p class="text-[10px] text-blue-500 font-bold">+15 POIN</p>
+        </div>
+    </label>
+    <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
+        <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Olahraga/Gerak Fisik" data-poin="10">
+        <div class="flex-1">
+            <p class="font-bold text-gray-700">🏃 Olahraga/Gerak Fisik</p>
+            <p class="text-[10px] text-blue-500 font-bold">+10 POIN</p>
+        </div>
+    </label>
+    <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
+        <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Menjaga Kebersihan" data-poin="10">
+        <div class="flex-1">
+            <p class="font-bold text-gray-700">🧹 Menjaga Kebersihan</p>
+            <p class="text-[10px] text-blue-500 font-bold">+10 POIN</p>
+        </div>
+    </label>
+</div>
