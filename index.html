@@ -1,44 +1,129 @@
-<div class="space-y-3">
-    <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
-        <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Ibadah & Mengaji" data-poin="25">
-        <div class="flex-1">
-            <p class="font-bold text-gray-700">🕌 Ibadah & Mengaji</p>
-            <p class="text-[10px] text-blue-500 font-bold">+25 POIN</p>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Hebat - Misi Harian</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+</head>
+<body class="bg-indigo-900 min-h-screen flex items-center justify-center p-4 font-sans text-slate-800">
+
+    <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border-b-[12px] border-yellow-400 animate__animated animate__fadeInUp">
+        
+        <div class="bg-indigo-700 p-8 text-center text-white relative">
+            <div class="absolute top-4 left-4 bg-green-400 w-3 h-3 rounded-full animate-ping"></div>
+            <h1 class="text-3xl font-black italic tracking-tighter">PETUALANGAN HEBAT</h1>
+            <p class="text-xs font-bold opacity-80 uppercase tracking-[0.2em]">Misi Harian Anak Indonesia</p>
         </div>
-    </label>
-    <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
-        <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Membantu Orang Tua" data-poin="20">
-        <div class="flex-1">
-            <p class="font-bold text-gray-700">🏠 Membantu Orang Tua</p>
-            <p class="text-[10px] text-blue-500 font-bold">+20 POIN</p>
+
+        <div id="formNama" class="p-8">
+            <div class="mb-6 text-center">
+                <span class="text-5xl">🛡️</span>
+                <p class="mt-4 font-bold text-slate-500 uppercase text-sm">Siap untuk beraksi?</p>
+            </div>
+            <input type="text" id="inputNama" placeholder="MASUKKAN NAMA HERO-MU..." class="w-full bg-slate-100 p-5 rounded-2xl text-center font-black text-indigo-700 border-2 border-transparent focus:border-yellow-400 outline-none mb-6 uppercase shadow-inner transition-all">
+            <button onclick="lanjut()" class="w-full bg-yellow-400 hover:bg-yellow-500 text-indigo-900 font-black p-5 rounded-2xl shadow-[0_6px_0_0_#ca8a04] active:shadow-none active:translate-y-1 transition-all uppercase italic tracking-widest text-lg">Mulai Petualangan 🚀</button>
         </div>
-    </label>
-    <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
-        <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Belajar & Tugas" data-poin="20">
-        <div class="flex-1">
-            <p class="font-bold text-gray-700">📚 Belajar & Tugas</p>
-            <p class="text-[10px] text-blue-500 font-bold">+20 POIN</p>
+
+        <div id="formMisi" class="hidden p-6">
+            <div class="bg-indigo-50 rounded-2xl p-4 mb-6 flex justify-between items-center border-2 border-indigo-100">
+                <div>
+                    <p id="namaTampil" class="font-black text-indigo-700 uppercase italic"></p>
+                    <p class="text-[10px] font-bold text-indigo-400">RANK: PEJUANG HEBAT</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] font-bold text-slate-400">TOTAL POIN</p>
+                    <p id="totalPoinDisplay" class="text-2xl font-black text-yellow-500">0</p>
+                </div>
+            </div>
+
+            <div class="space-y-3" id="misiContainer">
+                <label class="flex items-center p-4 bg-white border-2 border-slate-100 rounded-2xl cursor-pointer hover:border-indigo-300 transition-all group">
+                    <input type="checkbox" class="misi-item w-6 h-6 mr-4 accent-indigo-600" value="Ibadah & Mengaji" data-poin="25" onchange="hitungPoin()">
+                    <div class="flex-1">
+                        <p class="font-bold text-slate-700 group-hover:text-indigo-600">🕌 Ibadah & Mengaji</p>
+                        <p class="text-[10px] font-black text-green-500">+25 XP</p>
+                    </div>
+                </label>
+                <label class="flex items-center p-4 bg-white border-2 border-slate-100 rounded-2xl cursor-pointer hover:border-indigo-300 transition-all group">
+                    <input type="checkbox" class="misi-item w-6 h-6 mr-4 accent-indigo-600" value="Membantu Orang Tua" data-poin="20" onchange="hitungPoin()">
+                    <div class="flex-1">
+                        <p class="font-bold text-slate-700 group-hover:text-indigo-600">🏠 Membantu Orang Tua</p>
+                        <p class="text-[10px] font-black text-green-500">+20 XP</p>
+                    </div>
+                </label>
+                <label class="flex items-center p-4 bg-white border-2 border-slate-100 rounded-2xl cursor-pointer hover:border-indigo-300 transition-all group">
+                    <input type="checkbox" class="misi-item w-6 h-6 mr-4 accent-indigo-600" value="Belajar & Tugas" data-poin="20" onchange="hitungPoin()">
+                    <div class="flex-1">
+                        <p class="font-bold text-slate-700 group-hover:text-indigo-600">📚 Belajar & Tugas</p>
+                        <p class="text-[10px] font-black text-green-500">+20 XP</p>
+                    </div>
+                </label>
+                <label class="flex items-center p-4 bg-white border-2 border-slate-100 rounded-2xl cursor-pointer hover:border-indigo-300 transition-all group">
+                    <input type="checkbox" class="misi-item w-6 h-6 mr-4 accent-indigo-600" value="Makan Sehat" data-poin="15" onchange="hitungPoin()">
+                    <div class="flex-1">
+                        <p class="font-bold text-slate-700 group-hover:text-indigo-600">🍱 Makan Sehat</p>
+                        <p class="text-[10px] font-black text-green-500">+15 XP</p>
+                    </div>
+                </label>
+            </div>
+
+            <button id="btnKirim" onclick="kirimData()" class="w-full bg-green-500 hover:bg-green-600 text-white font-black p-5 rounded-2xl mt-8 shadow-[0_6px_0_0_#16a34a] active:shadow-none active:translate-y-1 transition-all uppercase italic">Simpan Laporan ✅</button>
         </div>
-    </label>
-    <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
-        <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Makan Sehat & Teratur" data-poin="15">
-        <div class="flex-1">
-            <p class="font-bold text-gray-700">🍱 Makan Sehat & Teratur</p>
-            <p class="text-[10px] text-blue-500 font-bold">+15 POIN</p>
-        </div>
-    </label>
-    <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
-        <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Olahraga/Gerak Fisik" data-poin="10">
-        <div class="flex-1">
-            <p class="font-bold text-gray-700">🏃 Olahraga/Gerak Fisik</p>
-            <p class="text-[10px] text-blue-500 font-bold">+10 POIN</p>
-        </div>
-    </label>
-    <label class="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
-        <input type="checkbox" class="misi w-6 h-6 mr-4 accent-blue-600" value="Menjaga Kebersihan" data-poin="10">
-        <div class="flex-1">
-            <p class="font-bold text-gray-700">🧹 Menjaga Kebersihan</p>
-            <p class="text-[10px] text-blue-500 font-bold">+10 POIN</p>
-        </div>
-    </label>
-</div>
+    </div>
+
+    <script>
+        const config = { databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.asia-southeast1.firebasedatabase.app" };
+        firebase.initializeApp(config);
+        const db = firebase.database();
+
+        let namaSiswa = "";
+
+        function hitungPoin() {
+            let total = 0;
+            document.querySelectorAll('.misi-item:checked').forEach(item => {
+                total += parseInt(item.dataset.poin);
+            });
+            document.getElementById('totalPoinDisplay').innerText = total;
+        }
+
+        function lanjut() {
+            const input = document.getElementById('inputNama');
+            if(input.value.trim().length < 3) return alert("Masukkan Nama Hero!");
+            namaSiswa = input.value.trim().toUpperCase();
+            document.getElementById('formNama').classList.add('hidden');
+            document.getElementById('formMisi').classList.remove('hidden');
+            document.getElementById('namaTampil').innerText = namaSiswa;
+        }
+
+        function kirimData() {
+            const btn = document.getElementById('btnKirim');
+            const checks = document.querySelectorAll('.misi-item:checked');
+            if(checks.length === 0) return alert("Pilih minimal satu misi!");
+
+            btn.disabled = true;
+            btn.innerText = "⌛ MENGIRIM ENERGI...";
+
+            let listMisi = [];
+            checks.forEach(c => listMisi.push(c.value));
+            let totalPoin = document.getElementById('totalPoinDisplay').innerText;
+
+            db.ref('rekap_siswa/' + namaSiswa.replace(/\s+/g, '_')).set({
+                nama: namaSiswa,
+                misi: listMisi.join(", "),
+                poin: totalPoin,
+                waktu: new Date().toLocaleString('id-ID')
+            }, (err) => {
+                if(err) { alert("Gagal!"); btn.disabled = false; }
+                else { 
+                    alert("POIN BERHASIL DIKUMPULKAN!"); 
+                    location.reload(); 
+                }
+            });
+        }
+    </script>
+</body>
+</html>
