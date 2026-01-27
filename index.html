@@ -1,61 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>FINAL TEST KONEKSI</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 </head>
-<body style="font-family:sans-serif; text-align:center; padding-top:50px; background:#f0f0f0;">
-
-    <div style="background:white; padding:20px; display:inline-block; border-radius:10px; shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <h2>TES KONEKSI DATABASE</h2>
-        <input type="text" id="nama" placeholder="Ketik Nama Pak Guru" style="padding:10px; width:200px;"><br><br>
-        <button id="btn" onclick="kirimSekarang()" style="padding:10px 20px; background:blue; color:white; border:none; border-radius:5px; cursor:pointer;">
-            KLIK: KIRIM KE FIREBASE
-        </button>
-        <p id="pesan" style="font-weight:bold; color:orange;">Siap mengetes...</p>
-    </div>
+<body>
+    <h1>TES DARURAT</h1>
+    <button onclick="kirim()">KLIK INI</button>
+    <p id="hasil">Status: Siap</p>
 
     <script>
-        // Konfigurasi Minimalis
-        const config = {
-            databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.firebaseio.com"
-        };
-        
-        // Inisialisasi
+        // Gunakan alamat database langsung tanpa konfigurasi ribet
+        var config = { databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.firebaseio.com" };
         firebase.initializeApp(config);
-        const db = firebase.database();
-
-        function kirimSekarang() {
-            const nama = document.getElementById('nama').value;
-            const pesan = document.getElementById('pesan');
-            const btn = document.getElementById('btn');
-
-            if(!nama) return alert("Isi nama dulu, Pak!");
-
-            // Tandai tombol sedang bekerja
-            pesan.innerText = "⏳ Sedang Menghubungi Firebase...";
-            pesan.style.color = "orange";
-            btn.disabled = true;
-
-            // KIRIM DATA KE TABEL 'CEK_SINYAL'
-            db.ref('CEK_SINYAL').set({
-                nama_guru: nama,
-                status: "Koneksi Berhasil!",
+        
+        function kirim() {
+            document.getElementById('hasil').innerText = "⏳ SEDANG MEMAKSA MASUK...";
+            
+            // Mencoba menulis ke folder 'TES'
+            firebase.database().ref('TES').set({
+                pesan: "Bismillah Berhasil",
                 waktu: new Date().toLocaleTimeString()
-            })
-            .then(() => {
-                pesan.innerText = "✅ BERHASIL! DATA MASUK!";
-                pesan.style.color = "green";
-                btn.disabled = false;
-                alert("Alhamdulillah! Cek layar Firebase Bapak sekarang, pasti ada tulisan CEK_SINYAL");
-            })
-            .catch((err) => {
-                pesan.innerText = "❌ GAGAL: " + err.message;
-                pesan.style.color = "red";
-                btn.disabled = false;
-                console.error(err);
+            }, function(error) {
+                if (error) {
+                    document.getElementById('hasil').innerText = "❌ GAGAL: " + error.message;
+                } else {
+                    document.getElementById('hasil').innerText = "✅ BERHASIL! CEK FIREBASE!";
+                }
             });
         }
     </script>
