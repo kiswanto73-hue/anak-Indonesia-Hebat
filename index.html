@@ -16,11 +16,11 @@
         
         <div class="bg-indigo-700 p-6 text-center text-white">
             <h1 class="text-2xl font-black italic tracking-tighter uppercase">Petualangan Hero</h1>
-            <div id="statusHero" class="mt-2 bg-indigo-800 rounded-full py-1 px-4 inline-block border border-indigo-500 text-[10px] font-bold uppercase">🔴 Belum Masuk</div>
+            <div id="statusHero" class="mt-2 bg-indigo-800 rounded-full py-1 px-4 inline-block border border-indigo-500 text-[10px] font-bold">🟢 HERO AKTIF</div>
         </div>
 
         <div id="progressPanel" class="hidden px-6 pt-4">
-            <div class="flex justify-between text-[10px] font-black text-indigo-900 mb-1 uppercase tracking-tighter">
+            <div class="flex justify-between text-[10px] font-black text-indigo-900 mb-1 uppercase">
                 <span id="labelWelcome">Target Piagam</span>
                 <span id="valPoin">0 / 2000 XP</span>
             </div>
@@ -31,17 +31,18 @@
 
         <div id="formNama" class="p-8">
             <input type="text" id="inputNama" placeholder="NAMA HERO-MU..." class="w-full bg-slate-100 p-5 rounded-2xl text-center font-black text-indigo-700 border-2 border-transparent focus:border-yellow-400 outline-none mb-4 uppercase">
-            <button onclick="simpanProfil()" class="w-full bg-yellow-400 text-indigo-900 font-black p-5 rounded-2xl shadow-[0_6px_0_0_#ca8a04] active:shadow-none active:translate-y-1 transition-all uppercase italic tracking-widest">Mulai Aksi 🚀</button>
+            <button onclick="simpanProfil()" class="w-full bg-yellow-400 text-indigo-900 font-black p-5 rounded-2xl shadow-[0_6px_0_0_#ca8a04] active:shadow-none active:translate-y-1 transition-all uppercase italic">Mulai Aksi 🚀</button>
         </div>
 
         <div id="formMisi" class="hidden p-6">
+            <p class="text-[9px] text-center mb-4 text-indigo-500 font-bold uppercase italic">* Sukses jika lapor maksimal 1 jam sebelum batas waktu</p>
             <div class="space-y-3">
                 <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="05:30" data-poin="50" data-label="BANGUN & IBADAH">
                     <div class="flex items-center">
                         <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
                             <p class="font-black text-slate-700 text-xs">🌞 BANGUN & IBADAH</p>
-                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 05.30 WIB</p>
+                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 05.30 (Rentang: 04.30-05.30)</p>
                         </div>
                     </div>
                 </div>
@@ -50,7 +51,7 @@
                         <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
                             <p class="font-black text-slate-700 text-xs uppercase">🧹 BERSIH KASUR & ORTU</p>
-                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 06.30 WIB</p>
+                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 06.30 (Rentang: 05.30-06.30)</p>
                         </div>
                     </div>
                 </div>
@@ -59,7 +60,7 @@
                         <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
                             <p class="font-black text-slate-700 text-xs uppercase">🎒 SIAP SEKOLAH</p>
-                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 07.00 WIB</p>
+                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 07.00 (Rentang: 06.00-07.00)</p>
                         </div>
                     </div>
                 </div>
@@ -68,7 +69,7 @@
                         <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
                             <p class="font-black text-slate-700 text-xs uppercase">📖 BELAJAR DI RUMAH</p>
-                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 20.30 WIB</p>
+                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 20.30 (Rentang: 19.30-20.30)</p>
                         </div>
                     </div>
                 </div>
@@ -77,7 +78,7 @@
                         <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
                             <p class="font-black text-slate-700 text-xs uppercase">💤 TIDUR CEPAT</p>
-                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 21.00 WIB</p>
+                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 21.00 (Rentang: 20.00-21.00)</p>
                         </div>
                     </div>
                 </div>
@@ -96,10 +97,7 @@
         let tabunganPoin = parseInt(localStorage.getItem('heroXP')) || 0;
 
         window.onload = function() {
-            if(heroNama) {
-                tampilkanMisi();
-                document.getElementById('labelWelcome').innerText = "Hero: " + heroNama;
-            }
+            if(heroNama) tampilkanMisi();
         };
 
         function simpanProfil() {
@@ -122,33 +120,45 @@
             document.getElementById('valPoin').innerText = `${tabunganPoin} / 2000 XP`;
             let persen = (tabunganPoin / 2000) * 100;
             document.getElementById('barPoin').style.width = Math.min(persen, 100) + "%";
-            if(tabunganPoin >= 2000) {
-                document.getElementById('btnPiagam').classList.remove('hidden');
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            }
+            if(tabunganPoin >= 2000) document.getElementById('btnPiagam').classList.remove('hidden');
         }
 
         function kirimOtomatis(el) {
             const box = el.closest('.misi-item');
-            const limit = box.dataset.limit;
+            const limitStr = box.dataset.limit;
             const poinMisi = parseInt(box.dataset.poin);
             const label = box.dataset.label;
 
             const now = new Date();
-            const jamMenitSekarang = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+            const jamSekarang = now.getHours();
+            const menitSekarang = now.getMinutes();
+            const totalMenitSekarang = (jamSekarang * 60) + menitSekarang;
+
+            // Pecah limit (misal 05:30)
+            const [limJam, limMen] = limitStr.split(':').map(Number);
+            const totalMenitLimit = (limJam * 60) + limMen;
+            const totalMenitBatasAwal = totalMenitLimit - 60; // Rentang 1 jam
 
             let poinDidapat = 0;
             let statusLog = "";
 
             if (el.checked) {
-                if (jamMenitSekarang <= limit) {
+                if (totalMenitSekarang > totalMenitLimit) {
+                    poinDidapat = -poinMisi;
+                    statusLog = "TERLAMBAT";
+                    alert("Aduh! Kamu terlambat mengerjakan misi ini. Poin berkurang!");
+                } 
+                else if (totalMenitSekarang >= totalMenitBatasAwal && totalMenitSekarang <= totalMenitLimit) {
                     poinDidapat = poinMisi;
                     statusLog = "SUKSES";
                     el.disabled = true;
-                } else {
-                    poinDidapat = -poinMisi;
-                    statusLog = "TERLAMBAT";
-                    alert("Jam sudah lewat! Poin berkurang.");
+                    confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
+                } 
+                else {
+                    // Jika terlalu awal
+                    alert("Terlalu awal! Misi ini hanya bisa dikerjakan 1 jam sebelum batas waktu.");
+                    el.checked = false;
+                    return;
                 }
 
                 tabunganPoin += poinDidapat;
@@ -156,7 +166,6 @@
                 localStorage.setItem('heroXP', tabunganPoin);
                 updateUIProgress();
 
-                // PENTING: Mengirim dengan field "misi" (sama dengan rekap.html)
                 db.ref('rekap_siswa/' + heroNama.replace(/\s+/g, '_')).set({
                     nama: heroNama,
                     misi: label + " (" + statusLog + ")",
@@ -174,7 +183,6 @@
             doc.setDrawColor(250, 204, 21); doc.setLineWidth(10); doc.rect(10, 10, 277, 190);
             doc.setTextColor(250, 204, 21); doc.setFontSize(40); doc.text("PIAGAM HERO INDONESIA", 148, 60, {align: "center"});
             doc.setTextColor(255, 255, 255); doc.setFontSize(30); doc.text(heroNama, 148, 110, {align: "center"});
-            doc.setFontSize(16); doc.text("Berhasil mengumpulkan 2000 XP!", 148, 150, {align: "center"});
             doc.save(`Piagam_${heroNama}.pdf`);
         }
     </script>
