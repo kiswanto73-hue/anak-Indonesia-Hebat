@@ -18,25 +18,25 @@
                 <p class="text-yellow-400 font-bold text-xs uppercase tracking-widest">Sistem Kedisiplinan Anak Indonesia</p>
             </div>
             <div class="flex gap-3">
-                <button onclick="downloadExcel()" class="bg-green-500 hover:bg-green-600 text-white font-black px-6 py-3 rounded-2xl shadow-lg transition-all text-xs">📊 UNDUH EXCEL</button>
-                <button onclick="resetData()" class="bg-red-500 hover:bg-red-600 text-white font-black px-6 py-3 rounded-2xl shadow-lg transition-all text-xs">🗑️ RESET DATA</button>
+                <button onclick="downloadExcel()" class="bg-green-500 hover:bg-green-600 text-white font-black px-6 py-3 rounded-2xl shadow-lg transition-all text-xs">📊 EXCEL</button>
+                <button onclick="resetData()" class="bg-red-500 hover:bg-red-600 text-white font-black px-6 py-3 rounded-2xl shadow-lg transition-all text-xs">🗑️ RESET</button>
             </div>
         </div>
 
         <div class="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border-2 border-slate-100">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-100 text-indigo-900 uppercase text-[10px] font-black tracking-widest border-b">
-                            <th class="p-6">Hero / Siswa</th>
-                            <th class="p-6">Status Misi (Tepat Waktu/Telat)</th>
-                            <th class="p-6 text-center">Poin Hari Ini</th>
-                            <th class="p-6 text-center">Tabungan XP (Target 2000)</th>
-                            <th class="p-6">Jam Lapor</th>
+                <table class="w-full text-left">
+                    <thead class="bg-slate-100 text-indigo-900 uppercase text-[10px] font-black tracking-widest border-b">
+                        <tr>
+                            <th class="p-6">Nama Hero</th>
+                            <th class="p-6">Aktivitas Terakhir</th>
+                            <th class="p-6 text-center">Poin</th>
+                            <th class="p-6 text-center">Total XP</th>
+                            <th class="p-6">Waktu Lapor</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelRekap" class="divide-y divide-slate-100">
-                        <tr><td colspan="5" class="p-20 text-center text-slate-300 font-bold italic">Menghubungkan ke server Singapura...</td></tr>
+                    <tbody id="tabelRekap" class="divide-y divide-slate-100 italic">
+                        <tr><td colspan="5" class="p-20 text-center text-slate-300 font-bold">Menunggu data Hero...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -60,27 +60,21 @@
                     const d = child.val();
                     dataGlobal.push({
                         "Nama Hero": d.nama,
-                        "Status Misi": d.misi,
-                        "Poin Hari Ini": d.poin_harian,
-                        "Total XP": d.total_xp,
+                        "Misi": d.misi,
+                        "Poin": d.poin_harian,
+                        "Total": d.total_xp,
                         "Waktu": d.waktu
                     });
 
-                    // Warna untuk poin harian (Merah jika minus)
                     const badgeColor = d.poin_harian < 0 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600';
-                    const sign = d.poin_harian > 0 ? '+' : '';
 
                     tbody.innerHTML += `
                         <tr class="hover:bg-slate-50 transition-all">
-                            <td class="p-6">
-                                <p class="font-black text-indigo-700 uppercase italic text-sm">${d.nama}</p>
-                            </td>
-                            <td class="p-6">
-                                <p class="text-[10px] text-slate-500 font-medium max-w-xs leading-relaxed">${d.misi}</p>
-                            </td>
+                            <td class="p-6 font-black text-indigo-700 uppercase italic text-sm">${d.nama}</td>
+                            <td class="p-6 text-[10px] font-bold text-slate-500">${d.misi || "-"}</td>
                             <td class="p-6 text-center">
-                                <span class="${badgeColor} px-3 py-1 rounded-full font-black text-xs">
-                                    ${sign}${d.poin_harian} XP
+                                <span class="${badgeColor} px-3 py-1 rounded-full font-black text-[10px]">
+                                    ${d.poin_harian > 0 ? '+' : ''}${d.poin_harian}
                                 </span>
                             </td>
                             <td class="p-6 text-center">
@@ -89,17 +83,14 @@
                                     <div class="w-24 bg-slate-100 h-2 rounded-full overflow-hidden border">
                                         <div style="width:${(d.total_xp/2000)*100}%" class="bg-yellow-400 h-full"></div>
                                     </div>
-                                    ${d.total_xp >= 2000 ? '<p class="text-[8px] font-bold text-green-500 mt-1">🏆 SIAP PIAGAM</p>' : ''}
                                 </div>
                             </td>
-                            <td class="p-6">
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">${d.waktu}</p>
-                            </td>
+                            <td class="p-6 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">${d.waktu}</td>
                         </tr>
                     `;
                 });
             } else {
-                tbody.innerHTML = '<tr><td colspan="5" class="p-20 text-center text-slate-300 font-black tracking-widest">DATABASE KOSONG</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="p-20 text-center text-slate-300 font-black">BELUM ADA DATA</td></tr>';
             }
         });
 
@@ -108,15 +99,13 @@
             const ws = XLSX.utils.json_to_sheet(dataGlobal);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "RekapHero");
-            XLSX.writeFile(wb, `Laporan_Guru_Hero_${new Date().toLocaleDateString()}.xlsx`);
+            XLSX.writeFile(wb, `REKAP_HERO_${new Date().toLocaleDateString()}.xlsx`);
         }
 
         function resetData() {
-            if (confirm("HAPUS SEMUA DATA?\nPastikan Bapak sudah mengunduh file Excel.")) {
-                const kode = prompt("Ketik 'HAPUS' untuk konfirmasi:");
-                if (kode === "HAPUS") {
-                    db.ref('rekap_siswa').remove().then(() => alert("Data berhasil direset!"));
-                }
+            if (confirm("Hapus semua data?")) {
+                const k = prompt("Ketik 'HAPUS':");
+                if (k === "HAPUS") db.ref('rekap_siswa').remove();
             }
         }
     </script>
