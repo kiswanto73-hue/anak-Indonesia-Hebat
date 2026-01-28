@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hero Tracker - Anak Indonesia Hebat</title>
+    <title>Hero Tracker - Indonesia Hebat</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -32,40 +32,42 @@
         </div>
 
         <div id="formNama" class="p-8">
-            <p class="text-center font-bold text-slate-400 text-xs mb-4 uppercase">Siapa Nama Hero-mu?</p>
             <input type="text" id="inputNama" placeholder="KETIK NAMA DISINI..." class="w-full bg-slate-100 p-5 rounded-2xl text-center font-black text-indigo-700 border-2 border-transparent focus:border-yellow-400 outline-none mb-4 uppercase">
-            <button onclick="simpanProfil()" class="w-full bg-yellow-400 text-indigo-900 font-black p-5 rounded-2xl shadow-[0_6px_0_0_#ca8a04] active:shadow-none active:translate-y-1 transition-all uppercase italic">Masuk Petualangan 🚀</button>
+            <button onclick="simpanProfil()" class="w-full bg-yellow-400 text-indigo-900 font-black p-5 rounded-2xl shadow-[0_6px_0_0_#ca8a04] active:shadow-none active:translate-y-1 transition-all uppercase italic">Masuk 🚀</button>
         </div>
 
         <div id="formMisi" class="hidden p-6">
             <div class="bg-green-100 p-3 rounded-xl mb-4 text-center">
-                <p class="text-[10px] font-bold text-green-700 uppercase">⚡ Mode Realtime Aktif: Centang Langsung Terkirim!</p>
+                <p class="text-[10px] font-bold text-green-700 uppercase">⚡ Mode Realtime Aktif</p>
             </div>
             
-            <div class="space-y-3" id="listMisi">
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="05:30" data-poin="50" data-label="BANGUN & IBADAH">
+            <div class="space-y-3">
+                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" 
+                     data-limit="05:30" data-poin="50" data-label="IBADAH SUBUH">
                     <div class="flex items-center">
-                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600 cursor-pointer">
+                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
-                            <p class="font-black text-slate-700 text-xs uppercase">🌞 BANGUN & IBADAH</p>
+                            <p class="font-black text-slate-700 text-xs uppercase">🌞 IBADAH SUBUH</p>
                             <p class="text-[9px] font-bold text-red-500 italic">BATAS: 05.30</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="06:30" data-poin="40" data-label="BERSIH KASUR & BANTU ORTU">
+                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" 
+                     data-limit="06:30" data-poin="40" data-label="BERSIH KASUR & ORTU">
                     <div class="flex items-center">
-                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600 cursor-pointer">
+                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
-                            <p class="font-black text-slate-700 text-xs uppercase">🧹 BERSIH KASUR & BANTU ORTU</p>
+                            <p class="font-black text-slate-700 text-xs uppercase">🧹 BERSIH KASUR & ORTU</p>
                             <p class="text-[9px] font-bold text-red-500 italic">BATAS: 06.30</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="07:00" data-poin="30" data-label="SIAP SEKOLAH">
+                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" 
+                     data-limit="07:00" data-poin="30" data-label="SIAP SEKOLAH">
                     <div class="flex items-center">
-                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600 cursor-pointer">
+                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
                             <p class="font-black text-slate-700 text-xs uppercase">🎒 SIAP SEKOLAH</p>
                             <p class="text-[9px] font-bold text-red-500 italic">BATAS: 07.00</p>
@@ -73,19 +75,21 @@
                     </div>
                 </div>
 
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="20:30" data-poin="50" data-label="BELAJAR DI RUMAH">
+                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" 
+                     data-limit="20:30" data-poin="50" data-label="BELAJAR DIRUMAH">
                     <div class="flex items-center">
-                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600 cursor-pointer">
+                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
-                            <p class="font-black text-slate-700 text-xs uppercase">📖 BELAJAR DI RUMAH</p>
+                            <p class="font-black text-slate-700 text-xs uppercase">📖 BELAJAR DIRUMAH</p>
                             <p class="text-[9px] font-bold text-red-500 italic">BATAS: 20.30</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="21:00" data-poin="30" data-label="TIDUR CEPAT">
+                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" 
+                     data-limit="21:00" data-poin="30" data-label="TIDUR CEPAT">
                     <div class="flex items-center">
-                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600 cursor-pointer">
+                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
                             <p class="font-black text-slate-700 text-xs uppercase">💤 TIDUR CEPAT</p>
                             <p class="text-[9px] font-bold text-red-500 italic">BATAS: 21.00</p>
@@ -95,7 +99,6 @@
             </div>
 
             <button id="btnPiagam" onclick="cetakPiagam()" class="hidden w-full bg-indigo-600 text-white font-black p-4 rounded-2xl mt-8 border-4 border-yellow-400 shadow-xl italic animate-bounce">📜 CETAK PIAGAM HERO</button>
-            <p class="text-[9px] text-center mt-4 text-slate-400 font-bold uppercase">Misi akan otomatis dilaporkan saat dicentang</p>
         </div>
     </div>
 
@@ -107,11 +110,10 @@
         let heroNama = localStorage.getItem('heroNama') || "";
         let tabunganPoin = parseInt(localStorage.getItem('heroXP')) || 0;
 
-        // CEK JIKA SUDAH ADA NAMA (WELCOME BACK)
         window.onload = function() {
             if(heroNama) {
                 tampilkanMisi();
-                document.getElementById('labelWelcome').innerText = "SELAMAT DATANG KEMBALI, " + heroNama;
+                document.getElementById('labelWelcome').innerText = "WELCOME BACK, " + heroNama;
             }
         };
 
@@ -127,7 +129,7 @@
             document.getElementById('formNama').classList.add('hidden');
             document.getElementById('formMisi').classList.remove('hidden');
             document.getElementById('progressPanel').classList.remove('hidden');
-            document.getElementById('statusHero').innerText = "🟢 Hero: " + heroNama;
+            document.getElementById('statusHero').innerText = "🟢 HERO: " + heroNama;
             updateUIProgress();
         }
 
@@ -135,7 +137,6 @@
             document.getElementById('valPoin').innerText = `${tabunganPoin} / 2000 XP`;
             let persen = (tabunganPoin / 2000) * 100;
             document.getElementById('barPoin').style.width = Math.min(persen, 100) + "%";
-            
             if(tabunganPoin >= 2000) {
                 document.getElementById('btnPiagam').classList.remove('hidden');
                 sebarKembangApi();
@@ -143,59 +144,48 @@
         }
 
         function kirimOtomatis(el) {
-            const parent = el.closest('.misi-item');
-            const limit = parent.getAttribute('data-limit');
-            const poinMisi = parseInt(parent.getAttribute('data-poin'));
-            const label = parent.getAttribute('data-label');
+            const box = el.closest('.misi-item');
+            const limit = box.dataset.limit;
+            const poinMisi = parseInt(box.dataset.poin);
+            const label = box.dataset.label;
 
             const now = new Date();
-            const jamMenitSekarang = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+            const jam = now.getHours().toString().padStart(2, '0');
+            const menit = now.getMinutes().toString().padStart(2, '0');
+            const waktuSekarang = `${jam}:${menit}`;
 
             let poinDidapat = 0;
-            let status = "";
+            let statusLog = "";
 
-            // PERBAIKAN LOGIKA: Jika jam sekarang <= limit DAN dicentang, maka SUKSES
             if (el.checked) {
-                if (jamMenitSekarang <= limit) {
+                if (waktuSekarang <= limit) {
                     poinDidapat = poinMisi;
-                    status = "SUKSES (Tepat Waktu)";
-                    el.disabled = true; // Kunci jika sudah sukses
+                    statusLog = "SUKSES";
+                    el.disabled = true;
                 } else {
                     poinDidapat = -poinMisi;
-                    status = "GAGAL (Terlambat)";
-                    alert("Aduh! Kamu terlambat mengerjakan misi ini. Poin berkurang!");
+                    statusLog = "TERLAMBAT";
+                    alert("Waduh, jam sudah lewat! Poin berkurang.");
                 }
+
+                tabunganPoin += poinDidapat;
+                if(tabunganPoin < 0) tabunganPoin = 0;
+                localStorage.setItem('heroXP', tabunganPoin);
+                updateUIProgress();
+
+                // PENGIRIMAN DATA (Sesuai Struktur Guru)
+                db.ref('rekap_siswa/' + heroNama.replace(/\s+/g, '_')).set({
+                    nama: heroNama,
+                    misi: label + " -> " + statusLog,
+                    poin_harian: poinDidapat,
+                    total_xp: tabunganPoin,
+                    waktu: now.toLocaleString('id-ID')
+                });
             }
-
-            tabunganPoin += poinDidapat;
-            if(tabunganPoin < 0) tabunganPoin = 0;
-            localStorage.setItem('heroXP', tabunganPoin);
-            updateUIProgress();
-
-            // KIRIM REALTIME KE FIREBASE GURU
-            db.ref('rekap_siswa/' + heroNama.replace(/\s+/g, '_')).update({
-                nama: heroNama,
-                misi_terakhir: label + " -> " + status,
-                poin_update: poinDidapat,
-                total_xp: tabunganPoin,
-                waktu: now.toLocaleString('id-ID')
-            });
         }
 
         function sebarKembangApi() {
-            var duration = 5 * 1000;
-            var animationEnd = Date.now() + duration;
-            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-            function randomInRange(min, max) { return Math.random() * (max - min) + min; }
-
-            var interval = setInterval(function() {
-                var timeLeft = animationEnd - Date.now();
-                if (timeLeft <= 0) return clearInterval(interval);
-                var particleCount = 50 * (timeLeft / duration);
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-            }, 250);
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
         }
 
         function cetakPiagam() {
@@ -205,7 +195,7 @@
             doc.setDrawColor(250, 204, 21); doc.setLineWidth(10); doc.rect(10, 10, 277, 190);
             doc.setTextColor(250, 204, 21); doc.setFontSize(40); doc.text("PIAGAM HERO INDONESIA", 148, 60, {align: "center"});
             doc.setTextColor(255, 255, 255); doc.setFontSize(30); doc.text(heroNama, 148, 110, {align: "center"});
-            doc.setFontSize(16); doc.text("Berhasil mengumpulkan 2000 XP dalam Petualangan Karakter", 148, 150, {align: "center"});
+            doc.setFontSize(16); doc.text("Berhasil mengumpulkan 2000 XP!", 148, 150, {align: "center"});
             doc.save(`Piagam_${heroNama}.pdf`);
         }
     </script>
