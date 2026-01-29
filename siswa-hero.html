@@ -15,8 +15,8 @@
     <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border-b-[12px] border-yellow-400">
         
         <div class="bg-indigo-700 p-6 text-center text-white">
-            <h1 class="text-2xl font-black italic tracking-tighter uppercase">Petualangan Hero</h1>
-            <div id="statusHero" class="mt-2 bg-indigo-800 rounded-full py-1 px-4 inline-block border border-indigo-500 text-[10px] font-bold">🟢 HERO AKTIF</div>
+            <h1 class="text-2xl font-black italic tracking-tighter uppercase leading-none">Petualangan Hero</h1>
+            <div id="statusHero" class="mt-2 bg-indigo-800 rounded-full py-1 px-4 inline-block border border-indigo-500 text-[10px] font-bold uppercase">🟢 HERO AKTIF</div>
         </div>
 
         <div id="progressPanel" class="hidden px-6 pt-4">
@@ -29,15 +29,32 @@
             </div>
         </div>
 
-        <div id="formNama" class="p-8">
-            <input type="text" id="inputNama" placeholder="NAMA HERO-MU..." class="w-full bg-slate-100 p-5 rounded-2xl text-center font-black text-indigo-700 border-2 border-transparent focus:border-yellow-400 outline-none mb-4 uppercase">
+        <div id="formNama" class="p-8 space-y-4">
+            <div>
+                <label class="text-[10px] font-black text-indigo-400 uppercase ml-2">Siapa Namamu?</label>
+                <input type="text" id="inputNama" placeholder="NAMA LENGKAP..." class="w-full bg-slate-100 p-5 rounded-2xl text-center font-black text-indigo-700 border-2 border-transparent focus:border-yellow-400 outline-none uppercase">
+            </div>
+
+            <div>
+                <label class="text-[10px] font-black text-indigo-400 uppercase ml-2">Kamu Kelas Berapa?</label>
+                <select id="inputKelas" class="w-full bg-slate-100 p-5 rounded-2xl font-black text-indigo-700 border-2 border-transparent focus:border-yellow-400 outline-none uppercase appearance-none text-center">
+                    <option value="">-- PILIH KELAS --</option>
+                    <option value="Kelas 1">KELAS 1</option>
+                    <option value="Kelas 2">KELAS 2</option>
+                    <option value="Kelas 3">KELAS 3</option>
+                    <option value="Kelas 4">KELAS 4</option>
+                    <option value="Kelas 5">KELAS 5</option>
+                    <option value="Kelas 6">KELAS 6</option>
+                </select>
+            </div>
+
             <button onclick="simpanProfil()" class="w-full bg-yellow-400 text-indigo-900 font-black p-5 rounded-2xl shadow-[0_6px_0_0_#ca8a04] active:shadow-none active:translate-y-1 transition-all uppercase italic">Mulai Aksi 🚀</button>
         </div>
 
         <div id="formMisi" class="hidden p-6">
-            <p class="text-[9px] text-center mb-4 text-indigo-500 font-bold uppercase italic">* Sukses jika lapor maksimal 1 jam sebelum batas waktu</p>
+            <p class="text-[9px] text-center mb-4 text-indigo-500 font-bold uppercase italic">* Laporkan aksimu tepat waktu!</p>
             <div class="space-y-3">
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="05:30" data-poin="50" data-label="BANGUN & IBADAH">
+                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="05:30" data-poin="50" data-label="BANGUN & IBADAH">
                     <div class="flex items-center">
                         <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
@@ -46,7 +63,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="06:30" data-poin="40" data-label="BERSIH KASUR & ORTU">
+                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="06:30" data-poin="40" data-label="BERSIH KASUR & ORTU">
                     <div class="flex items-center">
                         <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
@@ -55,7 +72,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="07:00" data-poin="30" data-label="SIAP SEKOLAH">
+                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="07:00" data-poin="30" data-label="SIAP SEKOLAH">
                     <div class="flex items-center">
                         <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
@@ -64,7 +81,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="20:30" data-poin="50" data-label="BELAJAR DI RUMAH">
+                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="20:30" data-poin="50" data-label="BELAJAR DI RUMAH">
                     <div class="flex items-center">
                         <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
@@ -73,7 +90,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex items-center justify-between" data-limit="21:00" data-poin="30" data-label="TIDUR CEPAT">
+                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="21:00" data-poin="30" data-label="TIDUR CEPAT">
                     <div class="flex items-center">
                         <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
                         <div>
@@ -94,17 +111,25 @@
         const db = firebase.database();
 
         let heroNama = localStorage.getItem('heroNama') || "";
+        let heroKelas = localStorage.getItem('heroKelas') || "";
         let tabunganPoin = parseInt(localStorage.getItem('heroXP')) || 0;
 
         window.onload = function() {
-            if(heroNama) tampilkanMisi();
+            if(heroNama && heroKelas) tampilkanMisi();
         };
 
         function simpanProfil() {
-            const val = document.getElementById('inputNama').value.trim();
-            if(val.length < 3) return alert("Masukkan Nama!");
-            heroNama = val.toUpperCase();
+            const nama = document.getElementById('inputNama').value.trim();
+            const kelas = document.getElementById('inputKelas').value;
+            
+            if(nama.length < 3) return alert("Masukkan Nama Lengkap!");
+            if(!kelas) return alert("Pilih Kelasmu!");
+
+            heroNama = nama.toUpperCase();
+            heroKelas = kelas;
+            
             localStorage.setItem('heroNama', heroNama);
+            localStorage.setItem('heroKelas', heroKelas);
             tampilkanMisi();
         }
 
@@ -112,7 +137,7 @@
             document.getElementById('formNama').classList.add('hidden');
             document.getElementById('formMisi').classList.remove('hidden');
             document.getElementById('progressPanel').classList.remove('hidden');
-            document.getElementById('statusHero').innerText = "🟢 " + heroNama;
+            document.getElementById('statusHero').innerText = heroNama + " (" + heroKelas + ")";
             updateUIProgress();
         }
 
@@ -130,14 +155,11 @@
             const label = box.dataset.label;
 
             const now = new Date();
-            const jamSekarang = now.getHours();
-            const menitSekarang = now.getMinutes();
-            const totalMenitSekarang = (jamSekarang * 60) + menitSekarang;
+            const totalMenitSekarang = (now.getHours() * 60) + now.getMinutes();
 
-            // Pecah limit (misal 05:30)
             const [limJam, limMen] = limitStr.split(':').map(Number);
             const totalMenitLimit = (limJam * 60) + limMen;
-            const totalMenitBatasAwal = totalMenitLimit - 60; // Rentang 1 jam
+            const totalMenitBatasAwal = totalMenitLimit - 60;
 
             let poinDidapat = 0;
             let statusLog = "";
@@ -146,7 +168,7 @@
                 if (totalMenitSekarang > totalMenitLimit) {
                     poinDidapat = -poinMisi;
                     statusLog = "TERLAMBAT";
-                    alert("Aduh! Kamu terlambat mengerjakan misi ini. Poin berkurang!");
+                    alert("Aduh! Kamu terlambat mengerjakan misi. Poin berkurang!");
                 } 
                 else if (totalMenitSekarang >= totalMenitBatasAwal && totalMenitSekarang <= totalMenitLimit) {
                     poinDidapat = poinMisi;
@@ -155,8 +177,7 @@
                     confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
                 } 
                 else {
-                    // Jika terlalu awal
-                    alert("Terlalu awal! Misi ini hanya bisa dikerjakan 1 jam sebelum batas waktu.");
+                    alert("Belum Waktunya! Misi ini hanya bisa dikerjakan 1 jam sebelum batas waktu.");
                     el.checked = false;
                     return;
                 }
@@ -166,8 +187,10 @@
                 localStorage.setItem('heroXP', tabunganPoin);
                 updateUIProgress();
 
+                // KIRIM DATA KE DATABASE DENGAN KELAS
                 db.ref('rekap_siswa/' + heroNama.replace(/\s+/g, '_')).set({
                     nama: heroNama,
+                    kelas: heroKelas,
                     misi: label + " (" + statusLog + ")",
                     poin_harian: poinDidapat,
                     total_xp: tabunganPoin,
@@ -182,8 +205,9 @@
             doc.setFillColor(30, 27, 75); doc.rect(0, 0, 297, 210, 'F');
             doc.setDrawColor(250, 204, 21); doc.setLineWidth(10); doc.rect(10, 10, 277, 190);
             doc.setTextColor(250, 204, 21); doc.setFontSize(40); doc.text("PIAGAM HERO INDONESIA", 148, 60, {align: "center"});
-            doc.setTextColor(255, 255, 255); doc.setFontSize(30); doc.text(heroNama, 148, 110, {align: "center"});
-            doc.save(`Piagam_${heroNama}.pdf`);
+            doc.setTextColor(255, 255, 255); doc.setFontSize(30); doc.text(heroNama, 148, 100, {align: "center"});
+            doc.setFontSize(15); doc.text("KELAS: " + heroKelas, 148, 120, {align: "center"});
+            doc.save(`Piagam_${heroNama}_${heroKelas}.pdf`);
         }
     </script>
 </body>
