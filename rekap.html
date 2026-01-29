@@ -15,11 +15,25 @@
         <div class="bg-indigo-900 p-8 rounded-[2.5rem] shadow-2xl border-b-8 border-yellow-400 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
                 <h1 class="text-3xl font-black text-white italic">DASHBOARD PANTAUAN HERO 🛡️</h1>
-                <p class="text-yellow-400 font-bold text-xs uppercase tracking-widest">Sistem Kedisiplinan Real-Time</p>
+                <p class="text-yellow-400 font-bold text-xs uppercase tracking-widest text-center md:text-left">Sistem Kedisiplinan Real-Time</p>
             </div>
-            <div class="flex gap-3">
-                <button onclick="downloadExcel()" class="bg-green-500 hover:bg-green-600 text-white font-black px-6 py-3 rounded-2xl shadow-lg transition-all text-xs">📊 EXCEL</button>
-                <button onclick="resetData()" class="bg-red-500 hover:bg-red-600 text-white font-black px-6 py-3 rounded-2xl shadow-lg transition-all text-xs">🗑️ RESET</button>
+            
+            <div class="flex flex-col sm:flex-row gap-3 items-center">
+                <span class="text-white text-[10px] font-black uppercase">Pilih Kelas:</span>
+                <select id="filterKelas" onchange="loadData()" class="bg-white/10 text-white border border-white/20 p-3 rounded-2xl text-xs font-bold outline-none focus:ring-2 ring-yellow-400">
+                    <option value="SEMUA" class="text-slate-800">SEMUA KELAS</option>
+                    <option value="Kelas 1" class="text-slate-800">KELAS 1</option>
+                    <option value="Kelas 2" class="text-slate-800">KELAS 2</option>
+                    <option value="Kelas 3" class="text-slate-800">KELAS 3</option>
+                    <option value="Kelas 4" class="text-slate-800">KELAS 4</option>
+                    <option value="Kelas 5" class="text-slate-800">KELAS 5</option>
+                    <option value="Kelas 6" class="text-slate-800">KELAS 6</option>
+                </select>
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="downloadExcel()" class="bg-green-500 hover:bg-green-600 text-white font-black px-5 py-3 rounded-2xl shadow-lg transition-all text-[10px] uppercase">📊 EXCEL</button>
+                <button onclick="resetData()" class="bg-red-500 hover:bg-red-600 text-white font-black px-5 py-3 rounded-2xl shadow-lg transition-all text-[10px] uppercase">🗑️ RESET</button>
             </div>
         </div>
 
@@ -29,14 +43,15 @@
                     <thead class="bg-slate-100 text-indigo-900 uppercase text-[10px] font-black tracking-widest border-b">
                         <tr>
                             <th class="p-6">Nama Hero</th>
-                            <th class="p-6">Aksi Terakhir</th>
+                            <th class="p-6 text-center">Kelas</th>
+                            <th class="p-6">Misi / Pelanggaran</th>
                             <th class="p-6 text-center">Poin</th>
                             <th class="p-6 text-center">Progress XP</th>
                             <th class="p-6">Waktu Lapor</th>
                         </tr>
                     </thead>
                     <tbody id="tabelRekap" class="divide-y divide-slate-100">
-                        <tr><td colspan="5" class="p-20 text-center text-slate-300 font-bold italic text-sm">Menghubungkan ke database...</td></tr>
+                        <tr><td colspan="6" class="p-20 text-center text-slate-300 font-bold italic text-sm">Menghubungkan ke database...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -50,66 +65,76 @@
 
         let dataGlobal = [];
 
-        // AMBIL DATA REALTIME
-        db.ref('rekap_siswa').on('value', (snapshot) => {
-            const tbody = document.getElementById('tabelRekap');
-            tbody.innerHTML = "";
-            dataGlobal = [];
+        function loadData() {
+            const filterKls = document.getElementById('filterKelas').value;
+            
+            db.ref('rekap_siswa').on('value', (snapshot) => {
+                const tbody = document.getElementById('tabelRekap');
+                tbody.innerHTML = "";
+                dataGlobal = [];
 
-            if (snapshot.exists()) {
-                snapshot.forEach((child) => {
-                    const d = child.val();
-                    dataGlobal.push({
-                        "Nama Hero": d.nama,
-                        "Misi": d.misi,
-                        "Poin": d.poin_harian,
-                        "Total XP": d.total_xp,
-                        "Waktu": d.waktu
+                if (snapshot.exists()) {
+                    snapshot.forEach((child) => {
+                        const d = child.val();
+                        
+                        // LOGIKA FILTER KELAS
+                        if (filterKls === "SEMUA" || d.kelas === filterKls) {
+                            
+                            dataGlobal.push({
+                                "Nama Hero": d.nama,
+                                "Kelas": d.kelas || "-",
+                                "Misi": d.misi,
+                                "Poin": d.poin_harian,
+                                "Total XP": d.total_xp,
+                                "Waktu": d.waktu
+                            });
+
+                            const badgeClass = d.poin_harian < 0 
+                                ? 'bg-red-100 text-red-600 border border-red-200' 
+                                : 'bg-green-100 text-green-600 border border-green-200';
+                            
+                            const statusIcon = d.misi.includes("SUKSES") ? "✅" : "⚠️";
+
+                            tbody.innerHTML += `
+                                <tr class="hover:bg-indigo-50/30 transition-all border-b">
+                                    <td class="p-6">
+                                        <p class="font-black text-indigo-700 uppercase italic text-sm leading-none">${d.nama}</p>
+                                    </td>
+                                    <td class="p-6 text-center">
+                                        <span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-lg font-black text-[9px] uppercase border">${d.kelas || '-'}</span>
+                                    </td>
+                                    <td class="p-6">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs">${statusIcon}</span>
+                                            <p class="text-[10px] font-bold text-slate-600 uppercase leading-tight">${d.misi || "-"}</p>
+                                        </div>
+                                    </td>
+                                    <td class="p-6 text-center">
+                                        <span class="${badgeClass} px-3 py-1 rounded-full font-black text-[10px]">
+                                            ${d.poin_harian > 0 ? '+' : ''}${d.poin_harian} XP
+                                        </span>
+                                    </td>
+                                    <td class="p-6 text-center">
+                                        <div class="flex flex-col items-center">
+                                            <p class="text-[10px] font-black text-indigo-900 mb-1 italic">${d.total_xp} / 2000</p>
+                                            <div class="w-24 bg-slate-100 h-2 rounded-full overflow-hidden border">
+                                                <div style="width:${(d.total_xp/2000)*100}%" class="bg-yellow-400 h-full transition-all duration-700"></div>
+                                            </div>
+                                            ${d.total_xp >= 2000 ? '<span class="text-[8px] font-black text-green-500 mt-1 animate-pulse">🏆 MASTER HERO</span>' : ''}
+                                        </div>
+                                    </td>
+                                    <td class="p-6">
+                                        <p class="text-[9px] font-bold text-slate-400 uppercase">${d.waktu}</p>
+                                    </td>
+                                </tr>
+                            `;
+                        }
                     });
-
-                    // Indikator Warna Poin
-                    const badgeClass = d.poin_harian < 0 
-                        ? 'bg-red-100 text-red-600 border border-red-200' 
-                        : 'bg-green-100 text-green-600 border border-green-200';
-                    
-                    // Indikator Status Misi
-                    const statusIcon = d.misi.includes("SUKSES") ? "✅" : "⚠️";
-
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-indigo-50/30 transition-all">
-                            <td class="p-6">
-                                <p class="font-black text-indigo-700 uppercase italic text-sm">${d.nama}</p>
-                            </td>
-                            <td class="p-6">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs">${statusIcon}</span>
-                                    <p class="text-[10px] font-bold text-slate-600 uppercase">${d.misi || "-"}</p>
-                                </div>
-                            </td>
-                            <td class="p-6 text-center">
-                                <span class="${badgeClass} px-3 py-1 rounded-full font-black text-[10px]">
-                                    ${d.poin_harian > 0 ? '+' : ''}${d.poin_harian} XP
-                                </span>
-                            </td>
-                            <td class="p-6 text-center">
-                                <div class="flex flex-col items-center">
-                                    <p class="text-[10px] font-black text-indigo-900 mb-1 italic">${d.total_xp} / 2000</p>
-                                    <div class="w-24 bg-slate-100 h-2 rounded-full overflow-hidden border">
-                                        <div style="width:${(d.total_xp/2000)*100}%" class="bg-yellow-400 h-full transition-all duration-700"></div>
-                                    </div>
-                                    ${d.total_xp >= 2000 ? '<span class="text-[8px] font-black text-green-500 mt-1 animate-pulse">🏆 SIAP PIAGAM</span>' : ''}
-                                </div>
-                            </td>
-                            <td class="p-6">
-                                <p class="text-[9px] font-bold text-slate-400 uppercase">${d.waktu}</p>
-                            </td>
-                        </tr>
-                    `;
-                });
-            } else {
-                tbody.innerHTML = '<tr><td colspan="5" class="p-20 text-center text-slate-300 font-black">BELUM ADA LAPORAN MASUK</td></tr>';
-            }
-        });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" class="p-20 text-center text-slate-300 font-black uppercase">Belum ada laporan masuk</td></tr>';
+                }
+            });
+        }
 
         function downloadExcel() {
             if (dataGlobal.length === 0) return alert("Data kosong!");
@@ -120,11 +145,14 @@
         }
 
         function resetData() {
-            if (confirm("Hapus seluruh database?")) {
+            if (confirm("Hapus seluruh database? Tindakan ini tidak bisa dibatalkan.")) {
                 const k = prompt("Ketik 'HAPUS' untuk konfirmasi:");
                 if (k === "HAPUS") db.ref('rekap_siswa').remove().then(() => alert("Data dibersihkan!"));
             }
         }
+
+        // Inisialisasi awal
+        loadData();
     </script>
 </body>
 </html>
