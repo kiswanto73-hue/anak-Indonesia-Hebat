@@ -7,6 +7,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 </head>
 <body class="bg-indigo-900 min-h-screen flex items-center justify-center p-4">
@@ -14,17 +15,26 @@
     <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border-b-[12px] border-yellow-400">
         
         <div class="bg-indigo-700 p-6 text-center text-white cursor-pointer" onclick="cekModeGuru()">
+            <img id="logoSekolah" src="https://raw.githubusercontent.com/kiswanto73-hue/anak-Indonesia-Hebat/main/logo.png" class="h-12 mx-auto mb-2 hidden" alt="Logo">
             <h1 class="text-2xl font-black italic tracking-tighter uppercase leading-none">Petualangan Hero</h1>
-            <div id="statusHero" class="mt-2 bg-indigo-800 rounded-full py-1 px-4 inline-block border border-indigo-500 text-[10px] font-bold uppercase text-emerald-400 tracking-widest">SINKRONISASI...</div>
+            <div id="statusHero" class="mt-2 bg-indigo-800 rounded-full py-1 px-4 inline-block border border-indigo-500 text-[10px] font-bold uppercase text-emerald-400">SINKRONISASI...</div>
         </div>
 
-        <div id="progressPanel" class="hidden px-6 pt-4">
+        <div id="progressPanel" class="hidden px-6 pt-4 text-center">
             <div class="flex justify-between text-[10px] font-black text-indigo-900 mb-1 uppercase">
                 <span>Poin Saya</span>
                 <span id="valPoin">0 / 2000 XP</span>
             </div>
             <div class="w-full bg-slate-200 h-4 rounded-full overflow-hidden border-2 border-white shadow-sm">
                 <div id="barPoin" class="bg-yellow-400 h-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div id="panelGuru" class="hidden bg-red-50 p-6 border-y-2 border-red-200">
+            <p class="text-[10px] font-black text-red-600 mb-2 uppercase text-center tracking-widest">🔐 ADMIN KISWANTO: EDIT XP</p>
+            <div class="flex gap-2">
+                <input type="number" id="newXP" class="flex-1 p-3 rounded-xl border-2 border-red-300 font-black text-center" placeholder="XP BARU">
+                <button onclick="updateXPManual()" class="bg-red-600 text-white px-4 rounded-xl font-black text-xs">SET</button>
             </div>
         </div>
 
@@ -36,50 +46,19 @@
                 <option value="Kelas 3">Kelas 3</option><option value="Kelas 4">Kelas 4</option>
                 <option value="Kelas 5">Kelas 5</option><option value="Kelas 6">Kelas 6</option>
             </select>
-            <button onclick="simpanProfil()" class="w-full bg-yellow-400 text-indigo-900 font-black p-5 rounded-2xl shadow-[0_6px_0_0_#ca8a04] active:shadow-none active:translate-y-1 transition-all uppercase italic">Mulai Aksi 🚀</button>
-        </div>
-
-        <div id="panelGuru" class="hidden bg-red-50 p-6 border-y-2 border-red-200">
-            <p class="text-[10px] font-black text-red-600 mb-2 uppercase text-center">🔐 MODE GURU: EDIT POIN</p>
-            <div class="flex gap-2">
-                <input type="number" id="newXP" class="flex-1 p-3 rounded-xl border-2 border-red-300 font-black text-center" placeholder="XP BARU">
-                <button onclick="updateXPManual()" class="bg-red-600 text-white px-4 rounded-xl font-black text-xs">SIMPAN</button>
-            </div>
+            <button onclick="simpanProfil()" class="w-full bg-yellow-400 text-indigo-900 font-black p-5 rounded-2xl shadow-[0_6px_0_0_#ca8a04] active:shadow-none active:translate-y-1 transition-all uppercase italic">Masuk Petualangan 🚀</button>
         </div>
 
         <div id="formMisi" class="hidden p-6 space-y-3">
-            <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="05:30" data-poin="50">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center"><input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600"><p class="font-black text-slate-700 text-xs uppercase">🌞 BANGUN & IBADAH</p></div>
-                    <p class="text-[8px] font-bold text-red-500 italic uppercase">05:30</p>
+            <div id="itemMisi" class="space-y-3">
                 </div>
-            </div>
-            <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="06:30" data-poin="40">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center"><input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600"><p class="font-black text-slate-700 text-xs uppercase">🧹 BANTU ORANG TUA</p></div>
-                    <p class="text-[8px] font-bold text-red-500 italic uppercase">06:30</p>
-                </div>
-            </div>
-            <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="07:00" data-poin="30">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center"><input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600"><p class="font-black text-slate-700 text-xs uppercase">🎒 SIAP SEKOLAH</p></div>
-                    <p class="text-[8px] font-bold text-red-500 italic uppercase">07:00</p>
-                </div>
-            </div>
-            <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="20:00" data-poin="40">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center"><input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600"><p class="font-black text-slate-700 text-xs uppercase">📖 BELAJAR MALAM</p></div>
-                    <p class="text-[8px] font-bold text-red-500 italic uppercase">20:00</p>
-                </div>
-            </div>
-            <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="21:30" data-poin="50">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center"><input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600"><p class="font-black text-slate-700 text-xs uppercase">💤 TIDUR CEPAT</p></div>
-                    <p class="text-[8px] font-bold text-red-500 italic uppercase">21:30</p>
-                </div>
+
+            <div id="boxSertifikat" class="hidden mt-6 p-4 bg-yellow-400 rounded-3xl text-center border-4 border-white shadow-xl animate-bounce">
+                <p class="font-black text-indigo-900 text-[10px] uppercase mb-2">Target Tercapai! 🏆</p>
+                <button onclick="cetakSertifikat()" class="w-full bg-indigo-700 text-white font-black py-4 rounded-2xl uppercase italic text-[11px]">📜 Klaim Sertifikat</button>
             </div>
 
-            <button onclick="logout()" class="w-full mt-6 text-[9px] font-black text-slate-300 uppercase tracking-tighter">Logout / Ganti Identitas</button>
+            <button onclick="logout()" class="w-full mt-6 text-[9px] font-black text-slate-300 uppercase tracking-tighter">Ganti Akun Pahlawan</button>
         </div>
     </div>
 
@@ -88,14 +67,38 @@
         firebase.initializeApp(config);
         const db = firebase.database();
 
+        const daftarMisi = [
+            { label: "🌞 Bangun & Ibadah", limit: "05:30", poin: 50 },
+            { label: "🧹 Bantu Orang Tua", limit: "06:30", poin: 40 },
+            { label: "🎒 Siap Sekolah", limit: "07:00", poin: 30 },
+            { label: "📖 Belajar Malam", limit: "20:00", poin: 40 },
+            { label: "💤 Tidur Cepat", limit: "21:30", poin: 50 }
+        ];
+
         let clickHeader = 0;
         let hNama = localStorage.getItem('heroNama');
         let hKelas = localStorage.getItem('heroKelas');
 
         window.onload = () => {
+            renderMisi();
             if (hNama && hKelas) sinkronData();
-            else { document.getElementById('formNama').classList.remove('hidden'); }
+            else document.getElementById('formNama').classList.remove('hidden');
         };
+
+        function renderMisi() {
+            const container = document.getElementById('itemMisi');
+            container.innerHTML = daftarMisi.map(m => `
+                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input type="checkbox" onchange="kirimOtomatis(this, '${m.label}', ${m.poin}, '${m.limit}')" class="w-6 h-6 mr-3 accent-indigo-600">
+                            <p class="font-black text-slate-700 text-xs uppercase">${m.label}</p>
+                        </div>
+                        <p class="text-[8px] font-bold text-red-500 italic uppercase">${m.limit}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
 
         function sinkronData() {
             const path = hNama.replace(/\s+/g, '_');
@@ -109,10 +112,9 @@
         function simpanProfil() {
             const n = document.getElementById('inputNama').value.trim().toUpperCase();
             const k = document.getElementById('inputKelas').value;
-            if (n.length < 3 || !k) return alert("Lengkapi Nama & Kelas!");
+            if (n.length < 3 || !k) return alert("Isi Nama & Kelas!");
             localStorage.setItem('heroNama', n); localStorage.setItem('heroKelas', k);
-            hNama = n; hKelas = k;
-            sinkronData();
+            hNama = n; hKelas = k; sinkronData();
         }
 
         function updateTampilan(xp) {
@@ -124,14 +126,14 @@
             document.getElementById('valPoin').innerText = xp + " XP";
             let p = (xp / 2000) * 100;
             document.getElementById('barPoin').style.width = Math.min(p, 100) + "%";
+            if(xp >= 2000) document.getElementById('boxSertifikat').classList.remove('hidden');
         }
 
-        function kirimOtomatis(el) {
+        function kirimOtomatis(el, label, poin, limitStr) {
             if(!el.checked) return;
-            const box = el.closest('.misi-item');
-            const [h, m] = box.dataset.limit.split(':').map(Number);
+            const [h, m] = limitStr.split(':').map(Number);
             const now = new Date(); const limit = new Date(); limit.setHours(h, m, 0);
-            let pDapat = (now <= limit) ? parseInt(box.dataset.poin) : -parseInt(box.dataset.poin);
+            let pDapat = (now <= limit) ? poin : -poin;
             if(now > limit) alert("Terlambat! Poin berkurang.");
             else { confetti({ particleCount: 50 }); el.disabled = true; }
             simpanKeFirebase((window.currentXP || 0) + pDapat);
@@ -140,27 +142,26 @@
         function simpanKeFirebase(xpBaru) {
             if(xpBaru < 0) xpBaru = 0;
             const path = hNama.replace(/\s+/g, '_');
-            db.ref('rekap_siswa/' + path).update({ nama: hNama, kelas: hKelas, xp: xpBaru, waktu: new Date().toLocaleString() });
+            db.ref('rekap_siswa/' + path).update({ nama: hNama, kelas: hKelas, xp: xpBaru, waktu: new Date().toLocaleString('id-ID') });
         }
 
-        // FITUR GURU
-        function cekModeGuru() {
-            clickHeader++;
-            if(clickHeader >= 5) {
-                document.getElementById('panelGuru').classList.toggle('hidden');
-                clickHeader = 0;
-            }
+        function cetakSertifikat() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+            doc.setFillColor(30, 27, 75); doc.rect(0, 0, 297, 210, 'F');
+            doc.setDrawColor(250, 204, 21); doc.setLineWidth(5); doc.rect(10, 10, 277, 190);
+            doc.setTextColor(250, 204, 21); doc.setFontSize(40); doc.text("SERTIFIKAT PAHLAWAN", 148, 60, {align:"center"});
+            doc.setTextColor(255, 255, 255); doc.setFontSize(30); doc.text(hNama, 148, 100, {align:"center"});
+            doc.setFontSize(14); doc.text(`Telah mencapai target ${window.currentXP} XP Program Karakter`, 148, 120, {align:"center"});
+            doc.text("Indonesia, " + new Date().toLocaleDateString('id-ID'), 220, 150, {align:"center"});
+            doc.text("Pembimbing,", 220, 157, {align:"center"});
+            doc.setFontSize(18); doc.setFont("helvetica", "bold"); doc.text("KISWANTO", 220, 185, {align:"center"});
+            doc.save(`Sertifikat_${hNama}.pdf`);
         }
 
-        function updateXPManual() {
-            const val = document.getElementById('newXP').value;
-            if(val === "") return alert("Isi angka!");
-            simpanKeFirebase(parseInt(val));
-            alert("XP berhasil diperbarui!");
-            document.getElementById('panelGuru').classList.add('hidden');
-        }
-
-        function logout() { if(confirm("Ganti Akun?")) { localStorage.clear(); location.reload(); } }
+        function cekModeGuru() { clickHeader++; if(clickHeader >= 5) { document.getElementById('panelGuru').classList.toggle('hidden'); clickHeader = 0; } }
+        function updateXPManual() { const v = document.getElementById('newXP').value; if(v!=="") { simpanKeFirebase(parseInt(v)); alert("XP Diperbarui!"); } }
+        function logout() { if(confirm("Keluar?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
