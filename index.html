@@ -3,52 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Papan Peringkat - Indonesia Hebat</title>
+    <title>Dashboard Hero - Indonesia Hebat</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; }
-        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-    </style>
 </head>
-<body class="text-white min-h-screen p-4 md:p-8">
+<body class="bg-slate-950 text-white min-h-screen font-sans p-4">
 
-    <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-10">
-            <h1 class="text-4xl font-black italic text-yellow-400 tracking-tighter uppercase">Papan Peringkat Hero 🏆</h1>
-            <p class="text-slate-400 text-[10px] font-bold tracking-[0.2em] mt-2">DATA REAL-TIME DARI FOLDER: REKAP_SISWA</p>
+    <div class="max-w-2xl mx-auto">
+        <div class="text-center py-8">
+            <h1 class="text-3xl font-black italic text-yellow-400 uppercase tracking-tighter">Peringkat Pahlawan 🏆</h1>
+            <p class="text-slate-400 text-[10px] font-bold uppercase mt-2 tracking-[0.3em]">Data Real-time: Rekap Siswa</p>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 mb-8">
-            <div class="glass-card p-6 rounded-[2rem] text-center">
-                <p id="totalSiswa" class="text-3xl font-black text-white">0</p>
-                <p class="text-[9px] font-bold uppercase opacity-50 tracking-widest">Pahlawan Terdaftar</p>
-            </div>
-            <div class="glass-card p-6 rounded-[2rem] text-center">
-                <p id="totalXP" class="text-3xl font-black text-emerald-400">0</p>
-                <p class="text-[9px] font-bold uppercase opacity-50 tracking-widest">Total XP Terkumpul</p>
-            </div>
-        </div>
-
-        <div class="glass-card rounded-[2.5rem] overflow-hidden">
-            <div class="bg-white/5 p-5 border-b border-white/10 flex justify-between items-center">
-                <h2 class="font-black italic uppercase text-sm">Top 10 Pahlawan Teraktif</h2>
-                <div class="flex gap-2">
-                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span class="text-[8px] font-black opacity-50 uppercase">Live Update</span>
-                </div>
+        <div class="bg-slate-900/50 rounded-[2.5rem] border border-white/10 overflow-hidden shadow-2xl">
+            <div class="p-5 border-b border-white/10 flex justify-between items-center bg-white/5">
+                <span class="text-[10px] font-black uppercase opacity-50">Nama Pahlawan</span>
+                <span class="text-[10px] font-black uppercase opacity-50">Total Skor</span>
             </div>
 
-            <div id="listPeringkat" class="p-4 space-y-3">
-                <div class="text-center py-10 opacity-50 italic text-xs">Menghubungkan ke folder rekap_siswa...</div>
+            <div id="papanPeringkat" class="p-4 space-y-3">
+                <p class="text-center py-10 text-xs opacity-50 animate-pulse italic">Mencari data pahlawan di folder rekap_siswa...</p>
             </div>
         </div>
 
-        <div class="mt-8 text-center">
-            <a href="rekap-petualangan.html" class="inline-block bg-yellow-400 text-slate-900 px-8 py-3 rounded-2xl font-black uppercase italic text-xs hover:scale-105 transition-transform">
-                Masuk ke Halaman Petualangan 🦸‍♂️
+        <div class="mt-8 grid grid-cols-2 gap-4">
+            <a href="rekap-petualangan.html" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-center hover:bg-white/10 transition-all">
+                <p class="text-[10px] font-black uppercase text-yellow-400">Input Misi</p>
+                <p class="text-[8px] opacity-50 uppercase">Klik di sini 🦸‍♂️</p>
+            </a>
+            <a href="menu-perpus.html" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-center hover:bg-white/10 transition-all">
+                <p class="text-[10px] font-black uppercase text-indigo-400">Perpustakaan</p>
+                <p class="text-[8px] opacity-50 uppercase">Klik di sini 📚</p>
             </a>
         </div>
     </div>
@@ -62,57 +48,45 @@
         const db = firebase.database();
 
         // MENGAMBIL DATA DARI FOLDER 'rekap_siswa'
-        db.ref('rekap_siswa').orderByChild('total_xp').on('value', snap => {
-            const container = document.getElementById('listPeringkat');
-            const totalSiswaEl = document.getElementById('totalSiswa');
-            const totalXPEl = document.getElementById('totalXP');
-            
+        db.ref('rekap_siswa').on('value', snap => {
+            const container = document.getElementById('papanPeringkat');
             container.innerHTML = "";
-            let dataHero = [];
-            let akumulasiXP = 0;
-            let jumlahSiswa = 0;
-
+            
+            let heroes = [];
+            
             snap.forEach(child => {
                 const data = child.val();
-                dataHero.push(data);
-                akumulasiXP += (parseInt(data.total_xp) || 0);
-                jumlahSiswa++;
+                // Menangkap 'xp' huruf kecil sesuai info Bapak
+                const poin = parseInt(data.xp) || 0;
+                const nama = data.nama || data.namaSiswa || "Tanpa Nama";
+                const kls = data.kelas || "-";
+
+                heroes.push({ nama: nama, kelas: kls, xp: poin });
             });
 
-            // Urutkan dari XP Terbesar
-            dataHero.sort((a, b) => (b.total_xp || 0) - (a.total_xp || 0));
+            // Urutkan XP dari yang terbesar
+            heroes.sort((a, b) => b.xp - a.xp);
 
-            // Ambil Top 10 saja
-            const top10 = dataHero.slice(0, 10);
-
-            top10.forEach((hero, index) => {
-                const rank = index + 1;
-                const isTop = rank <= 3;
-                
-                container.innerHTML += `
-                    <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
-                        <div class="flex items-center gap-4">
-                            <span class="w-8 h-8 flex items-center justify-center rounded-full ${isTop ? 'bg-yellow-400 text-slate-900' : 'bg-white/10 text-white'} font-black text-xs">
-                                ${rank}
-                            </span>
-                            <div>
-                                <p class="text-xs font-black uppercase tracking-tight">${hero.nama || 'Tanpa Nama'}</p>
-                                <p class="text-[8px] font-bold text-yellow-400/60 uppercase">${hero.kelas || '-'}</p>
+            // Tampilkan data
+            if (heroes.length > 0) {
+                heroes.forEach((h, i) => {
+                    const isTop = i < 3;
+                    container.innerHTML += `
+                        <div class="flex items-center justify-between p-4 rounded-2xl ${isTop ? 'bg-yellow-400/10 border border-yellow-400/20' : 'bg-white/5'}">
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs font-black ${isTop ? 'text-yellow-400' : 'text-slate-500'}">#${i + 1}</span>
+                                <div>
+                                    <p class="text-xs font-black uppercase tracking-tight text-white">${h.nama}</p>
+                                    <p class="text-[8px] font-bold opacity-50 uppercase text-white/70">${h.kelas}</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-black text-emerald-400">${hero.total_xp || 0} <span class="text-[8px] opacity-50">XP</span></p>
-                            <p class="text-[7px] opacity-30 uppercase">${hero.waktu || ''}</p>
-                        </div>
-                    </div>
-                `;
-            });
-
-            totalSiswaEl.innerText = jumlahSiswa;
-            totalXPEl.innerText = akumulasiXP.toLocaleString();
-
-            if(jumlahSiswa === 0) {
-                container.innerHTML = "<div class='text-center py-10 opacity-50 text-xs'>Folder rekap_siswa kosong atau tidak ditemukan.</div>";
+                            <div class="text-right">
+                                <p class="text-sm font-black text-emerald-400">${h.xp} <span class="text-[8px] opacity-50">XP</span></p>
+                            </div>
+                        </div>`;
+                });
+            } else {
+                container.innerHTML = "<p class='text-center py-10 text-xs opacity-50 uppercase'>Belum ada data di folder rekap_siswa.</p>";
             }
         });
     </script>
