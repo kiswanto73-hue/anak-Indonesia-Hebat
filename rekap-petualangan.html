@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REKAP PETUALANGAN HERO</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 min-h-screen text-white pb-10">
+
+    <nav class="p-4 border-b border-white/10 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <a href="menu-perpus.html" class="font-black italic text-yellow-400">⚡ HERO SYSTEM</a>
+            <a href="index.html" class="text-[10px] font-bold uppercase bg-white/10 px-3 py-2 rounded-lg">Kembali</a>
+        </div>
+    </nav>
+
+    <div class="max-w-md mx-auto px-4 pt-6">
+        <div class="bg-gradient-to-br from-yellow-500 to-orange-600 p-6 rounded-[2rem] shadow-2xl mb-8 text-center border-b-4 border-orange-800">
+            <h1 class="text-2xl font-black uppercase italic leading-none text-slate-900 text-center">REKAP PETUALANGAN 🦸‍♂️</h1>
+            <p class="text-[10px] font-black text-orange-900 uppercase mt-2 tracking-widest text-center">Log Aktivitas Pahlawan Literasi</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="bg-slate-800 p-4 rounded-3xl border border-white/5 text-center">
+                <p id="totalAktivitas" class="text-2xl font-black text-yellow-400">0</p>
+                <p class="text-[8px] font-bold uppercase opacity-50">Total Misi</p>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-3xl border border-white/5 text-center">
+                <p id="totalHero" class="text-2xl font-black text-emerald-400">0</p>
+                <p class="text-[8px] font-bold uppercase opacity-50">Hero Aktif</p>
+            </div>
+        </div>
+
+        <div class="space-y-4" id="logHero">
+            <p class="text-center text-xs opacity-50 animate-pulse">Menghubungkan ke markas pusat...</p>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            databaseURL: "https://e-perpus-a652c-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        db.ref('perpus_laporan').on('value', snap => {
+            const container = document.getElementById('logHero');
+            const data = snap.val();
+            if(!data) {
+                container.innerHTML = "<p class='text-center text-xs opacity-50'>Belum ada petualangan.</p>";
+                return;
+            }
+            const logs = Object.values(data).reverse(); 
+            document.getElementById('totalAktivitas').innerText = logs.length;
+            const heroes = [...new Set(logs.map(l => l.namaSiswa))];
+            document.getElementById('totalHero').innerText = heroes.length;
+
+            container.innerHTML = logs.map(l => `
+                <div class="bg-slate-800/50 p-5 rounded-[2rem] border border-white/5 flex items-start gap-4 mb-4">
+                    <div class="text-2xl">${l.status === 'DIPINJAM' ? '⚔️' : '🛡️'}</div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-xs font-black text-yellow-400 uppercase">${l.namaSiswa}</h3>
+                        </div>
+                        <p class="text-[10px] font-medium text-white/80 mt-1">
+                            Misi: <span class="text-emerald-400 font-bold">"${l.judulBuku}"</span>
+                        </p>
+                        <div class="mt-2 flex items-center gap-2">
+                            <span class="text-[7px] font-black uppercase px-2 py-1 rounded bg-white/5 text-white/50 border border-white/10">
+                                ${l.tglPinjam}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        });
+    </script>
+</body>
+</html>
