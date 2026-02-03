@@ -3,212 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hero Tracker - Indonesia Hebat</title>
+    <title>Indonesia Hebat - Digital Signage</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); }
+    </style>
 </head>
-<body class="bg-indigo-900 min-h-screen flex items-center justify-center p-4 font-sans text-slate-800">
+<body class="bg-slate-950 text-white min-h-screen overflow-hidden">
 
-    <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border-b-[12px] border-yellow-400">
+    <div class="fixed inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop" 
+             class="w-full h-full object-cover opacity-40">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950"></div>
+    </div>
+
+    <div class="relative z-10 grid grid-cols-12 gap-6 p-8 h-screen">
         
-        <div class="bg-indigo-700 p-6 text-center text-white">
-            <h1 class="text-2xl font-black italic tracking-tighter uppercase leading-none">Petualangan Hero</h1>
-            <div id="statusHero" class="mt-2 bg-indigo-800 rounded-full py-1 px-4 inline-block border border-indigo-500 text-[10px] font-bold uppercase">🟢 HERO AKTIF</div>
+        <div class="col-span-12 lg:col-span-7 flex flex-col justify-end pb-12">
+            <h2 class="text-yellow-400 font-black tracking-widest uppercase text-sm mb-4">SD NEGERI INDONESIA HEBAT</h2>
+            <h1 class="text-6xl lg:text-8xl font-black italic leading-none uppercase mb-6 tracking-tighter">
+                PETUALANGAN <br> <span class="text-transparent border-t-4 border-b-4 border-white py-2">PARA HERO</span>
+            </h1>
+            <p class="text-slate-400 max-w-lg font-medium leading-relaxed">
+                Menciptakan generasi pahlawan yang disiplin, religius, dan gemar membaca. 
+                Selesaikan misi harianmu dan jadilah <span class="text-yellow-400 font-bold italic">The Ultimate Hero!</span>
+            </p>
+            
+            <div class="mt-10 flex gap-4">
+                <a href="menu-perpus.html" class="bg-yellow-400 text-slate-950 px-8 py-4 rounded-2xl font-black uppercase italic hover:scale-105 transition-transform">
+                    Portal Petugas 🔑
+                </a>
+                <a href="rekap-petualangan.html" class="bg-white/10 border border-white/20 px-8 py-4 rounded-2xl font-black uppercase italic hover:bg-white/20 transition-all">
+                    Mulai Misi 🦸‍♂️
+                </a>
+            </div>
         </div>
 
-        <div id="progressPanel" class="hidden px-6 pt-4">
-            <div class="flex justify-between text-[10px] font-black text-indigo-900 mb-1 uppercase">
-                <span id="labelWelcome">Target Piagam</span>
-                <span id="valPoin">0 / 2000 XP</span>
-            </div>
-            <div class="w-full bg-slate-200 h-4 rounded-full overflow-hidden border-2 border-white shadow-sm">
-                <div id="barPoin" class="bg-yellow-400 h-full transition-all duration-1000" style="width: 0%"></div>
-            </div>
-        </div>
-
-        <div id="formNama" class="p-8 space-y-4">
-            <div>
-                <label class="text-[10px] font-black text-indigo-400 uppercase ml-2">Siapa Namamu?</label>
-                <input type="text" id="inputNama" placeholder="NAMA LENGKAP..." class="w-full bg-slate-100 p-5 rounded-2xl text-center font-black text-indigo-700 border-2 border-transparent focus:border-yellow-400 outline-none uppercase">
-            </div>
-
-            <div>
-                <label class="text-[10px] font-black text-indigo-400 uppercase ml-2">Kamu Kelas Berapa?</label>
-                <select id="inputKelas" class="w-full bg-slate-100 p-5 rounded-2xl font-black text-indigo-700 border-2 border-transparent focus:border-yellow-400 outline-none uppercase appearance-none text-center">
-                    <option value="">-- PILIH KELAS --</option>
-                    <option value="Kelas 1">KELAS 1</option>
-                    <option value="Kelas 2">KELAS 2</option>
-                    <option value="Kelas 3">KELAS 3</option>
-                    <option value="Kelas 4">KELAS 4</option>
-                    <option value="Kelas 5">KELAS 5</option>
-                    <option value="Kelas 6">KELAS 6</option>
-                </select>
-            </div>
-
-            <button onclick="simpanProfil()" class="w-full bg-yellow-400 text-indigo-900 font-black p-5 rounded-2xl shadow-[0_6px_0_0_#ca8a04] active:shadow-none active:translate-y-1 transition-all uppercase italic">Mulai Aksi 🚀</button>
-        </div>
-
-        <div id="formMisi" class="hidden p-6">
-            <p class="text-[9px] text-center mb-4 text-indigo-500 font-bold uppercase italic">* Laporkan aksimu tepat waktu!</p>
-            <div class="space-y-3">
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="05:30" data-poin="50" data-label="BANGUN & IBADAH">
-                    <div class="flex items-center">
-                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
-                        <div>
-                            <p class="font-black text-slate-700 text-xs">🌞 BANGUN & IBADAH</p>
-                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 05.30 (Rentang: 04.30-05.30)</p>
-                        </div>
-                    </div>
+        <div class="col-span-12 lg:col-span-5 flex flex-col gap-6">
+            
+            <div class="glass rounded-[3rem] p-8 border border-white/10 flex-1 overflow-hidden flex flex-col">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-black italic text-xl uppercase tracking-tighter">Top 5 Pahlawan 🏆</h3>
+                    <span class="bg-emerald-500/20 text-emerald-400 text-[10px] font-black px-3 py-1 rounded-full uppercase">Update Real-time</span>
                 </div>
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="06:30" data-poin="40" data-label="BERSIH KASUR & ORTU">
-                    <div class="flex items-center">
-                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
-                        <div>
-                            <p class="font-black text-slate-700 text-xs uppercase">🧹 BERSIH KASUR & ORTU</p>
-                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 06.30 (Rentang: 05.30-06.30)</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="07:00" data-poin="30" data-label="SIAP SEKOLAH">
-                    <div class="flex items-center">
-                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
-                        <div>
-                            <p class="font-black text-slate-700 text-xs uppercase">🎒 SIAP SEKOLAH</p>
-                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 07.00 (Rentang: 06.00-07.00)</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="20:30" data-poin="50" data-label="BELAJAR DI RUMAH">
-                    <div class="flex items-center">
-                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
-                        <div>
-                            <p class="font-black text-slate-700 text-xs uppercase">📖 BELAJAR DI RUMAH</p>
-                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 20.30 (Rentang: 19.30-20.30)</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="misi-item bg-slate-50 border-2 border-slate-100 rounded-2xl p-4" data-limit="21:00" data-poin="30" data-label="TIDUR CEPAT">
-                    <div class="flex items-center">
-                        <input type="checkbox" onchange="kirimOtomatis(this)" class="w-6 h-6 mr-3 accent-indigo-600">
-                        <div>
-                            <p class="font-black text-slate-700 text-xs uppercase">💤 TIDUR CEPAT</p>
-                            <p class="text-[9px] font-bold text-red-500 italic">BATAS: 21.00 (Rentang: 20.00-21.00)</p>
-                        </div>
+
+                <div id="papanSkor" class="space-y-4 flex-1">
+                    <div class="animate-pulse flex flex-col gap-4">
+                        <div class="h-16 bg-white/5 rounded-2xl"></div>
+                        <div class="h-16 bg-white/5 rounded-2xl"></div>
+                        <div class="h-16 bg-white/5 rounded-2xl"></div>
                     </div>
                 </div>
             </div>
 
-            <button id="btnPiagam" onclick="cetakPiagam()" class="hidden w-full bg-indigo-600 text-white font-black p-4 rounded-2xl mt-8 border-4 border-yellow-400 shadow-xl italic animate-bounce">📜 CETAK PIAGAM HERO</button>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass p-6 rounded-[2.5rem] border border-white/10 text-center">
+                    <p id="totalSiswa" class="text-3xl font-black text-yellow-400 leading-none">0</p>
+                    <p class="text-[10px] font-bold uppercase opacity-50 mt-2 tracking-widest">Hero Terdaftar</p>
+                </div>
+                <div class="glass p-6 rounded-[2.5rem] border border-white/10 text-center">
+                    <p id="totalXP" class="text-3xl font-black text-emerald-400 leading-none">0</p>
+                    <p class="text-[10px] font-bold uppercase opacity-50 mt-2 tracking-widest">Total XP Terkumpul</p>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script>
-        const config = { databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.asia-southeast1.firebasedatabase.app" };
-        firebase.initializeApp(config);
+        // Konfigurasi Firebase
+        const config = { 
+            databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.asia-southeast1.firebasedatabase.app" 
+        };
+        if (!firebase.apps.length) firebase.initializeApp(config);
         const db = firebase.database();
 
-        let heroNama = localStorage.getItem('heroNama') || "";
-        let heroKelas = localStorage.getItem('heroKelas') || "";
-        let tabunganPoin = parseInt(localStorage.getItem('heroXP')) || 0;
+        // Ambil Data Leaderboard
+        db.ref('hero_leaderboard').orderByChild('total_xp').limitToLast(5).on('value', snap => {
+            const container = document.getElementById('papanSkor');
+            container.innerHTML = "";
+            let dataArr = [];
+            let totalXP = 0;
+            let countSiswa = 0;
 
-        window.onload = function() {
-            if(heroNama && heroKelas) tampilkanMisi();
-        };
+            snap.forEach(s => {
+                const h = s.val();
+                dataArr.push(h);
+                totalXP += (h.total_xp || 0);
+                countSiswa++;
+            });
 
-        function simpanProfil() {
-            const nama = document.getElementById('inputNama').value.trim();
-            const kelas = document.getElementById('inputKelas').value;
-            
-            if(nama.length < 3) return alert("Masukkan Nama Lengkap!");
-            if(!kelas) return alert("Pilih Kelasmu!");
+            // Urutkan dari yang terbesar
+            dataArr.reverse().forEach((hero, index) => {
+                const colorClass = index === 0 ? 'text-yellow-400 border-yellow-400/30 bg-yellow-400/5' : 'text-white border-white/5';
+                const medal = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : '✨'));
 
-            heroNama = nama.toUpperCase();
-            heroKelas = kelas;
-            
-            localStorage.setItem('heroNama', heroNama);
-            localStorage.setItem('heroKelas', heroKelas);
-            tampilkanMisi();
-        }
+                container.innerHTML += `
+                    <div class="flex items-center justify-between p-4 rounded-2xl border ${colorClass} transition-all hover:translate-x-2">
+                        <div class="flex items-center gap-4">
+                            <span class="text-xl font-black">${medal}</span>
+                            <div>
+                                <p class="text-xs font-black uppercase tracking-tight">${hero.nama}</p>
+                                <p class="text-[8px] font-bold opacity-50 uppercase">${hero.kelas}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-black text-emerald-400">${hero.total_xp} XP</p>
+                        </div>
+                    </div>
+                `;
+            });
 
-        function tampilkanMisi() {
-            document.getElementById('formNama').classList.add('hidden');
-            document.getElementById('formMisi').classList.remove('hidden');
-            document.getElementById('progressPanel').classList.remove('hidden');
-            document.getElementById('statusHero').innerText = heroNama + " (" + heroKelas + ")";
-            updateUIProgress();
-        }
-
-        function updateUIProgress() {
-            document.getElementById('valPoin').innerText = `${tabunganPoin} / 2000 XP`;
-            let persen = (tabunganPoin / 2000) * 100;
-            document.getElementById('barPoin').style.width = Math.min(persen, 100) + "%";
-            if(tabunganPoin >= 2000) document.getElementById('btnPiagam').classList.remove('hidden');
-        }
-
-        function kirimOtomatis(el) {
-            const box = el.closest('.misi-item');
-            const limitStr = box.dataset.limit;
-            const poinMisi = parseInt(box.dataset.poin);
-            const label = box.dataset.label;
-
-            const now = new Date();
-            const totalMenitSekarang = (now.getHours() * 60) + now.getMinutes();
-
-            const [limJam, limMen] = limitStr.split(':').map(Number);
-            const totalMenitLimit = (limJam * 60) + limMen;
-            const totalMenitBatasAwal = totalMenitLimit - 60;
-
-            let poinDidapat = 0;
-            let statusLog = "";
-
-            if (el.checked) {
-                if (totalMenitSekarang > totalMenitLimit) {
-                    poinDidapat = -poinMisi;
-                    statusLog = "TERLAMBAT";
-                    alert("Aduh! Kamu terlambat mengerjakan misi. Poin berkurang!");
-                } 
-                else if (totalMenitSekarang >= totalMenitBatasAwal && totalMenitSekarang <= totalMenitLimit) {
-                    poinDidapat = poinMisi;
-                    statusLog = "SUKSES";
-                    el.disabled = true;
-                    confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
-                } 
-                else {
-                    alert("Belum Waktunya! Misi ini hanya bisa dikerjakan 1 jam sebelum batas waktu.");
-                    el.checked = false;
-                    return;
-                }
-
-                tabunganPoin += poinDidapat;
-                if(tabunganPoin < 0) tabunganPoin = 0;
-                localStorage.setItem('heroXP', tabunganPoin);
-                updateUIProgress();
-
-                // KIRIM DATA KE DATABASE DENGAN KELAS
-                db.ref('rekap_siswa/' + heroNama.replace(/\s+/g, '_')).set({
-                    nama: heroNama,
-                    kelas: heroKelas,
-                    misi: label + " (" + statusLog + ")",
-                    poin_harian: poinDidapat,
-                    total_xp: tabunganPoin,
-                    waktu: now.toLocaleString('id-ID')
-                });
-            }
-        }
-
-        function cetakPiagam() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape');
-            doc.setFillColor(30, 27, 75); doc.rect(0, 0, 297, 210, 'F');
-            doc.setDrawColor(250, 204, 21); doc.setLineWidth(10); doc.rect(10, 10, 277, 190);
-            doc.setTextColor(250, 204, 21); doc.setFontSize(40); doc.text("PIAGAM HERO INDONESIA", 148, 60, {align: "center"});
-            doc.setTextColor(255, 255, 255); doc.setFontSize(30); doc.text(heroNama, 148, 100, {align: "center"});
-            doc.setFontSize(15); doc.text("KELAS: " + heroKelas, 148, 120, {align: "center"});
-            doc.save(`Piagam_${heroNama}_${heroKelas}.pdf`);
-        }
+            // Update Statistik
+            document.getElementById('totalSiswa').innerText = countSiswa;
+            document.getElementById('totalXP').innerText = totalXP.toLocaleString();
+        });
     </script>
 </body>
 </html>
