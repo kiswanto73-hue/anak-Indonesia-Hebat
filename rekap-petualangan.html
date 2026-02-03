@@ -30,23 +30,45 @@
             </div>
         </div>
 
-        <div id="panelGuru" class="hidden bg-red-50 p-6 border-y-2 border-red-200">
-            <p class="text-[10px] font-black text-red-600 mb-2 uppercase text-center">🔐 ADMIN KISWANTO: EDIT XP</p>
+        <div id="panelGuru" class="hidden bg-red-50 p-6 border-y-2 border-red-200 space-y-3">
+            <p class="text-[10px] font-black text-red-600 uppercase text-center tracking-widest">🔐 ADMIN KISWANTO</p>
+            
             <div class="flex gap-2">
-                <input type="number" id="newXP" class="flex-1 p-3 rounded-xl border-2 border-red-300 font-black text-center" placeholder="XP">
-                <button onclick="updateXPManual()" class="bg-red-600 text-white px-6 rounded-xl font-black text-xs uppercase">Simpan</button>
+                <input type="number" id="newXP" class="flex-1 p-3 rounded-xl border-2 border-red-300 font-black text-center text-sm" placeholder="SET XP BARU">
+                <button onclick="updateXPManual()" class="bg-red-600 text-white px-4 rounded-xl font-black text-[10px] uppercase">Simpan</button>
+            </div>
+
+            <div class="pt-2 border-t border-red-200">
+                <p class="text-[9px] font-bold text-slate-500 mb-1 uppercase">Filter Pantauan Kelas:</p>
+                <select onchange="filterDataKelas(this.value)" class="w-full p-2 rounded-lg border border-red-200 text-xs font-bold uppercase outline-none">
+                    <option value="">Semua Kelas</option>
+                    <option value="Kelas 1">Kelas 1</option>
+                    <option value="Kelas 2">Kelas 2</option>
+                    <option value="Kelas 3">Kelas 3</option>
+                    <option value="Kelas 4">Kelas 4</option>
+                    <option value="Kelas 5">Kelas 5</option>
+                    <option value="Kelas 6">Kelas 6</option>
+                </select>
             </div>
         </div>
 
         <div id="formNama" class="hidden p-8 space-y-4">
+            <div class="text-center mb-2">
+                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Identitas Pahlawan</p>
+            </div>
             <input type="text" id="inputNama" placeholder="NAMA LENGKAP..." class="w-full bg-slate-100 p-5 rounded-2xl text-center font-black text-indigo-700 border-2 border-transparent focus:border-indigo-500 outline-none uppercase shadow-inner">
-            <select id="inputKelas" class="w-full bg-slate-100 p-5 rounded-2xl font-black text-indigo-700 border-2 border-transparent focus:border-indigo-500 outline-none uppercase text-center appearance-none">
+            
+            <select id="inputKelas" class="w-full bg-slate-100 p-5 rounded-2xl font-black text-indigo-700 border-2 border-transparent focus:border-indigo-500 outline-none uppercase text-center appearance-none cursor-pointer">
                 <option value="">-- PILIH KELAS --</option>
-                <option value="Kelas 1">Kelas 1</option><option value="Kelas 2">Kelas 2</option>
-                <option value="Kelas 3">Kelas 3</option><option value="Kelas 4">Kelas 4</option>
-                <option value="Kelas 5">Kelas 5</option><option value="Kelas 6">Kelas 6</option>
+                <option value="Kelas 1">KELAS 1</option>
+                <option value="Kelas 2">KELAS 2</option>
+                <option value="Kelas 3">KELAS 3</option>
+                <option value="Kelas 4">KELAS 4</option>
+                <option value="Kelas 5">KELAS 5</option>
+                <option value="Kelas 6">KELAS 6</option>
             </select>
-            <button onclick="simpanProfil()" class="w-full bg-indigo-600 text-white font-black p-5 rounded-2xl shadow-xl uppercase italic tracking-tighter">Mulai Petualangan 🚀</button>
+
+            <button onclick="simpanProfil()" class="w-full bg-indigo-600 text-white font-black p-5 rounded-2xl shadow-xl uppercase italic tracking-tighter hover:bg-indigo-700 transition-all">Mulai Petualangan 🚀</button>
         </div>
 
         <div id="formMisi" class="hidden p-6 space-y-3">
@@ -57,7 +79,7 @@
                 <button onclick="cetakSertifikat()" class="w-full bg-indigo-700 text-white font-black py-4 rounded-2xl uppercase italic text-[11px] shadow-lg">📜 Ambil Sertifikat Level</button>
             </div>
 
-            <button onclick="logout()" class="w-full mt-6 text-[9px] font-black text-slate-300 hover:text-red-400 uppercase tracking-tighter transition-colors">Ganti Akun Pahlawan</button>
+            <button onclick="logout()" class="w-full mt-6 text-[9px] font-black text-slate-300 hover:text-red-400 uppercase tracking-tighter transition-colors italic underline">Ganti Identitas Hero</button>
         </div>
     </div>
 
@@ -86,9 +108,9 @@
 
         function renderMisi() {
             document.getElementById('listMisi').innerHTML = daftarMisi.map(m => `
-                <div class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex justify-between items-center transition-all">
+                <div class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex justify-between items-center hover:border-indigo-200 transition-all">
                     <div class="flex items-center">
-                        <input type="checkbox" onchange="prosesMisi(this, ${m.poin}, '${m.limit}')" class="w-7 h-7 mr-3 accent-indigo-600">
+                        <input type="checkbox" onchange="prosesMisi(this, ${m.poin}, '${m.limit}')" class="w-7 h-7 mr-3 accent-indigo-600 cursor-pointer">
                         <div>
                             <p class="font-black text-slate-700 text-[11px] uppercase">${m.label}</p>
                             <p class="text-[8px] font-bold text-red-500 opacity-70 uppercase italic">Batas: ${m.limit}</p>
@@ -118,7 +140,7 @@
             const gelarArr = ["Calon Pahlawan", "Pahlawan Muda", "Pahlawan Sejati", "Pahlawan Agung", "Legenda Hebat"];
             
             document.getElementById('displayNama').innerText = hNama;
-            document.getElementById('gelarHero').innerText = gelarArr[Math.min(level-1, 4)];
+            document.getElementById('gelarHero').innerText = gelarArr[Math.min(level-1, 4)] + " (" + hKelas + ")";
             document.getElementById('lvlBadge').innerText = "Level " + level;
             document.getElementById('valPoin').innerText = xpSisa + " / 2000 XP";
             document.getElementById('barPoin').style.width = (xpSisa / 2000 * 100) + "%";
@@ -139,7 +161,18 @@
             let baru = (window.currentXP || 0) + pDapat;
             if(baru < 0) baru = 0;
             const path = hNama.replace(/\s+/g, '_');
-            db.ref('rekap_siswa/' + path).update({ nama: hNama, kelas: hKelas, xp: baru, waktu: now.toLocaleString('id-ID') });
+            db.ref('rekap_siswa/' + path).update({ 
+                nama: hNama, 
+                kelas: hKelas, 
+                xp: baru, 
+                waktu: now.toLocaleString('id-ID') 
+            });
+        }
+
+        function filterDataKelas(kls) {
+            // Logika filter kelas untuk admin jika diperlukan pengembangan dashboard
+            console.log("Memantau kelas:", kls);
+            alert("Mode Pantau: Menampilkan data " + (kls || "Semua Kelas"));
         }
 
         function cetakSertifikat() {
@@ -159,15 +192,11 @@
 
             doc.setFillColor(20, 20, 40); doc.rect(0, 0, 297, 210, 'F');
             doc.setDrawColor(d.c[0], d.c[1], d.c[2]); doc.setLineWidth(5); doc.rect(10, 10, 277, 190);
-            
-            doc.setFontSize(100); doc.text(d.i, 240, 110, {align: "center"}); // Karakter Figur
-            
+            doc.setFontSize(100); doc.text(d.i, 240, 110, {align: "center"});
             doc.setTextColor(d.c[0], d.c[1], d.c[2]); doc.setFontSize(40); doc.setFont("helvetica", "bold");
             doc.text(d.g, 130, 55, {align: "center"});
-            
             doc.setTextColor(255, 255, 255); doc.setFontSize(35); doc.text(hNama, 130, 95, {align: "center"});
-            doc.setFontSize(16); doc.text(`Berhasil Menguasai Karakter Level ${lvl} dengan ${xp} XP`, 130, 115, {align: "center"});
-            
+            doc.setFontSize(16); doc.text(`Berhasil Menguasai Karakter Level ${lvl} (${hKelas})`, 130, 115, {align: "center"});
             doc.setFontSize(14); doc.text("INDONESIA, " + new Date().toLocaleDateString('id-ID'), 220, 155, {align: "center"});
             doc.setFontSize(18); doc.text("KISWANTO", 220, 185, {align: "center"});
             doc.save(`Sertifikat_Lvl${lvl}_${hNama}.pdf`);
@@ -176,17 +205,18 @@
         function simpanProfil() {
             const n = document.getElementById('inputNama').value.trim().toUpperCase();
             const k = document.getElementById('inputKelas').value;
-            if(n.length < 3 || !k) return alert("Lengkapi Data!");
-            localStorage.setItem('heroNama', n); localStorage.setItem('heroKelas', k);
+            if(n.length < 3 || !k) return alert("Pilih Nama & Kelas Pahlawan!");
+            localStorage.setItem('heroNama', n); 
+            localStorage.setItem('heroKelas', k);
             hNama = n; hKelas = k; sinkronData();
         }
 
         function cekModeGuru() { clickHeader++; if(clickHeader >= 5) { document.getElementById('panelGuru').classList.toggle('hidden'); clickHeader = 0; } }
         function updateXPManual() { 
             const v = document.getElementById('newXP').value; 
-            if(v!=="") { db.ref('rekap_siswa/' + hNama.replace(/\s+/g, '_')).update({ xp: parseInt(v) }); alert("XP Diset!"); }
+            if(v!=="") { db.ref('rekap_siswa/' + hNama.replace(/\s+/g, '_')).update({ xp: parseInt(v) }); alert("XP Berhasil Diperbarui!"); }
         }
-        function logout() { if(confirm("Keluar?")) { localStorage.clear(); location.reload(); } }
+        function logout() { if(confirm("Ganti Akun? Data progres tetap tersimpan di server.")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
