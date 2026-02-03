@@ -3,91 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Hero - Indonesia Hebat</title>
+    <title>Papan Peringkat Hero - Indonesia Hebat</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-950 text-white min-h-screen font-sans p-4">
-
-    <div class="max-w-2xl mx-auto">
-        <div class="text-center py-8">
-            <h1 class="text-3xl font-black italic text-yellow-400 uppercase tracking-tighter">Peringkat Pahlawan 🏆</h1>
-            <p class="text-slate-400 text-[10px] font-bold uppercase mt-2 tracking-[0.3em]">Data Real-time: Rekap Siswa</p>
-        </div>
-
-        <div class="bg-slate-900/50 rounded-[2.5rem] border border-white/10 overflow-hidden shadow-2xl">
-            <div class="p-5 border-b border-white/10 flex justify-between items-center bg-white/5">
-                <span class="text-[10px] font-black uppercase opacity-50">Nama Pahlawan</span>
-                <span class="text-[10px] font-black uppercase opacity-50">Total Skor</span>
-            </div>
-
-            <div id="papanPeringkat" class="p-4 space-y-3">
-                <p class="text-center py-10 text-xs opacity-50 animate-pulse italic">Mencari data pahlawan di folder rekap_siswa...</p>
+<body class="bg-slate-950 text-white p-4 font-sans">
+    <div class="max-w-xl mx-auto py-10">
+        <h1 class="text-center text-4xl font-black italic text-yellow-400 uppercase tracking-tighter mb-10">Ranking Pahlawan 🏆</h1>
+        
+        <div class="bg-slate-900/80 rounded-[2.5rem] border border-white/10 overflow-hidden shadow-2xl">
+            <div id="papanSkor" class="p-6 space-y-4">
+                <p class="text-center text-xs opacity-50 animate-pulse uppercase">Menghubungkan ke folder rekap_siswa...</p>
             </div>
         </div>
 
         <div class="mt-8 grid grid-cols-2 gap-4">
-            <a href="rekap-petualangan.html" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-center hover:bg-white/10 transition-all">
-                <p class="text-[10px] font-black uppercase text-yellow-400">Input Misi</p>
-                <p class="text-[8px] opacity-50 uppercase">Klik di sini 🦸‍♂️</p>
-            </a>
-            <a href="menu-perpus.html" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-center hover:bg-white/10 transition-all">
-                <p class="text-[10px] font-black uppercase text-indigo-400">Perpustakaan</p>
-                <p class="text-[8px] opacity-50 uppercase">Klik di sini 📚</p>
-            </a>
+            <a href="rekap-petualangan.html" class="bg-yellow-400 text-slate-900 p-4 rounded-2xl text-center font-black uppercase text-xs italic">Hero Tracker 🦸‍♂️</a>
+            <a href="menu-perpus.html" class="bg-indigo-600 p-4 rounded-2xl text-center font-black uppercase text-xs italic">Perpustakaan 📚</a>
         </div>
     </div>
 
     <script>
-        // Konfigurasi Database Bapak
-        const firebaseConfig = {
-            databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.asia-southeast1.firebasedatabase.app"
-        };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const config = { databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.asia-southeast1.firebasedatabase.app" };
+        if (!firebase.apps.length) firebase.initializeApp(config);
         const db = firebase.database();
 
-        // MENGAMBIL DATA DARI FOLDER 'rekap_siswa'
         db.ref('rekap_siswa').on('value', snap => {
-            const container = document.getElementById('papanPeringkat');
+            const container = document.getElementById('papanSkor');
             container.innerHTML = "";
+            let list = [];
             
-            let heroes = [];
-            
-            snap.forEach(child => {
-                const data = child.val();
-                // Menangkap 'xp' huruf kecil sesuai info Bapak
-                const poin = parseInt(data.xp) || 0;
-                const nama = data.nama || data.namaSiswa || "Tanpa Nama";
-                const kls = data.kelas || "-";
-
-                heroes.push({ nama: nama, kelas: kls, xp: poin });
+            snap.forEach(s => { 
+                const d = s.val();
+                list.push({ nama: d.nama, kls: d.kelas, xp: parseInt(d.xp) || 0 });
             });
 
-            // Urutkan XP dari yang terbesar
-            heroes.sort((a, b) => b.xp - a.xp);
+            list.sort((a, b) => b.xp - a.xp);
 
-            // Tampilkan data
-            if (heroes.length > 0) {
-                heroes.forEach((h, i) => {
-                    const isTop = i < 3;
-                    container.innerHTML += `
-                        <div class="flex items-center justify-between p-4 rounded-2xl ${isTop ? 'bg-yellow-400/10 border border-yellow-400/20' : 'bg-white/5'}">
-                            <div class="flex items-center gap-4">
-                                <span class="text-xs font-black ${isTop ? 'text-yellow-400' : 'text-slate-500'}">#${i + 1}</span>
-                                <div>
-                                    <p class="text-xs font-black uppercase tracking-tight text-white">${h.nama}</p>
-                                    <p class="text-[8px] font-bold opacity-50 uppercase text-white/70">${h.kelas}</p>
-                                </div>
+            list.forEach((h, i) => {
+                const color = i < 3 ? 'text-yellow-400' : 'text-slate-400';
+                container.innerHTML += `
+                    <div class="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <div class="flex items-center gap-4">
+                            <span class="font-black ${color}">#${i+1}</span>
+                            <div>
+                                <p class="text-xs font-black uppercase tracking-tight">${h.nama}</p>
+                                <p class="text-[8px] font-bold opacity-40 uppercase">${h.kls}</p>
                             </div>
-                            <div class="text-right">
-                                <p class="text-sm font-black text-emerald-400">${h.xp} <span class="text-[8px] opacity-50">XP</span></p>
-                            </div>
-                        </div>`;
-                });
-            } else {
-                container.innerHTML = "<p class='text-center py-10 text-xs opacity-50 uppercase'>Belum ada data di folder rekap_siswa.</p>";
-            }
+                        </div>
+                        <span class="text-sm font-black text-emerald-400">${h.xp} XP</span>
+                    </div>`;
+            });
         });
     </script>
 </body>
