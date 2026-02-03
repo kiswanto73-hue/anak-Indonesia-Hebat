@@ -3,124 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indonesia Hebat - Digital Signage</title>
+    <title>Dashboard Indonesia Hebat</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); }
-    </style>
 </head>
-<body class="bg-slate-950 text-white min-h-screen overflow-hidden">
+<body class="bg-slate-950 text-white min-h-screen">
 
-    <div class="fixed inset-0 z-0">
-        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop" 
-             class="w-full h-full object-cover opacity-40">
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950"></div>
-    </div>
+    <div class="max-w-4xl mx-auto p-6">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-black text-yellow-400 italic">PAPAN PERINGKAT HERO</h1>
+            <p class="text-slate-400 text-sm uppercase tracking-widest mt-2">Update Real-time dari Database</p>
+        </header>
 
-    <div class="relative z-10 grid grid-cols-12 gap-6 p-8 h-screen">
-        
-        <div class="col-span-12 lg:col-span-7 flex flex-col justify-end pb-12">
-            <h2 class="text-yellow-400 font-black tracking-widest uppercase text-sm mb-4">SD NEGERI INDONESIA HEBAT</h2>
-            <h1 class="text-6xl lg:text-8xl font-black italic leading-none uppercase mb-6 tracking-tighter">
-                PETUALANGAN <br> <span class="text-transparent border-t-4 border-b-4 border-white py-2">PARA HERO</span>
-            </h1>
-            <p class="text-slate-400 max-w-lg font-medium leading-relaxed">
-                Menciptakan generasi pahlawan yang disiplin, religius, dan gemar membaca. 
-                Selesaikan misi harianmu dan jadilah <span class="text-yellow-400 font-bold italic">The Ultimate Hero!</span>
-            </p>
-            
-            <div class="mt-10 flex gap-4">
-                <a href="menu-perpus.html" class="bg-yellow-400 text-slate-950 px-8 py-4 rounded-2xl font-black uppercase italic hover:scale-105 transition-transform">
-                    Portal Petugas 🔑
-                </a>
-                <a href="rekap-petualangan.html" class="bg-white/10 border border-white/20 px-8 py-4 rounded-2xl font-black uppercase italic hover:bg-white/20 transition-all">
-                    Mulai Misi 🦸‍♂️
-                </a>
-            </div>
-        </div>
-
-        <div class="col-span-12 lg:col-span-5 flex flex-col gap-6">
-            
-            <div class="glass rounded-[3rem] p-8 border border-white/10 flex-1 overflow-hidden flex flex-col">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-black italic text-xl uppercase tracking-tighter">Top 5 Pahlawan 🏆</h3>
-                    <span class="bg-emerald-500/20 text-emerald-400 text-[10px] font-black px-3 py-1 rounded-full uppercase">Update Real-time</span>
-                </div>
-
-                <div id="papanSkor" class="space-y-4 flex-1">
-                    <div class="animate-pulse flex flex-col gap-4">
-                        <div class="h-16 bg-white/5 rounded-2xl"></div>
-                        <div class="h-16 bg-white/5 rounded-2xl"></div>
-                        <div class="h-16 bg-white/5 rounded-2xl"></div>
-                    </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-slate-900 rounded-[2rem] p-6 border border-white/10">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-emerald-400">🏆 Top XP Hero</h2>
+                <div id="papanXP" class="space-y-3">
+                    <p class="text-xs opacity-50">Memuat data petualangan...</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div class="glass p-6 rounded-[2.5rem] border border-white/10 text-center">
-                    <p id="totalSiswa" class="text-3xl font-black text-yellow-400 leading-none">0</p>
-                    <p class="text-[10px] font-bold uppercase opacity-50 mt-2 tracking-widest">Hero Terdaftar</p>
-                </div>
-                <div class="glass p-6 rounded-[2.5rem] border border-white/10 text-center">
-                    <p id="totalXP" class="text-3xl font-black text-emerald-400 leading-none">0</p>
-                    <p class="text-[10px] font-bold uppercase opacity-50 mt-2 tracking-widest">Total XP Terkumpul</p>
+            <div class="bg-slate-900 rounded-[2rem] p-6 border border-white/10">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-indigo-400">📚 Aktivitas Terakhir</h2>
+                <div id="papanLama" class="space-y-3">
+                    <p class="text-xs opacity-50">Memuat data sirkulasi lama...</p>
                 </div>
             </div>
-
         </div>
     </div>
 
     <script>
-        // Konfigurasi Firebase
-        const config = { 
-            databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.asia-southeast1.firebasedatabase.app" 
-        };
-        if (!firebase.apps.length) firebase.initializeApp(config);
+        const config = { databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.asia-southeast1.firebasedatabase.app" };
+        firebase.initializeApp(config);
         const db = firebase.database();
 
-        // Ambil Data Leaderboard
-        db.ref('hero_leaderboard').orderByChild('total_xp').limitToLast(5).on('value', snap => {
-            const container = document.getElementById('papanSkor');
+        // 1. MENGAMBIL DATA BARU (Dari folder hero_leaderboard)
+        db.ref('hero_leaderboard').orderByChild('total_xp').limitToLast(10).on('value', snap => {
+            const container = document.getElementById('papanXP');
             container.innerHTML = "";
-            let dataArr = [];
-            let totalXP = 0;
-            let countSiswa = 0;
-
-            snap.forEach(s => {
-                const h = s.val();
-                dataArr.push(h);
-                totalXP += (h.total_xp || 0);
-                countSiswa++;
-            });
-
-            // Urutkan dari yang terbesar
-            dataArr.reverse().forEach((hero, index) => {
-                const colorClass = index === 0 ? 'text-yellow-400 border-yellow-400/30 bg-yellow-400/5' : 'text-white border-white/5';
-                const medal = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : '✨'));
-
+            let list = [];
+            snap.forEach(s => { list.push(s.val()); });
+            list.reverse().forEach((h, i) => {
                 container.innerHTML += `
-                    <div class="flex items-center justify-between p-4 rounded-2xl border ${colorClass} transition-all hover:translate-x-2">
-                        <div class="flex items-center gap-4">
-                            <span class="text-xl font-black">${medal}</span>
-                            <div>
-                                <p class="text-xs font-black uppercase tracking-tight">${hero.nama}</p>
-                                <p class="text-[8px] font-bold opacity-50 uppercase">${hero.kelas}</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-black text-emerald-400">${hero.total_xp} XP</p>
-                        </div>
-                    </div>
-                `;
+                    <div class="flex justify-between bg-white/5 p-3 rounded-xl border border-white/5">
+                        <span class="text-xs font-bold uppercase">${i+1}. ${h.nama} <span class="text-[9px] opacity-50">(${h.kelas})</span></span>
+                        <span class="text-emerald-400 font-black">${h.total_xp} XP</span>
+                    </div>`;
             });
+        });
 
-            // Update Statistik
-            document.getElementById('totalSiswa').innerText = countSiswa;
-            document.getElementById('totalXP').innerText = totalXP.toLocaleString();
+        // 2. MENGAMBIL DATA LAMA (Dari folder perpus_laporan atau rekap_siswa)
+        // Kita cek di 'perpus_laporan' (asumsi data lama sirkulasi di sini)
+        db.ref('perpus_laporan').limitToLast(10).on('value', snap => {
+            const container = document.getElementById('papanLama');
+            container.innerHTML = "";
+            let list = [];
+            snap.forEach(s => { list.push(s.val()); });
+            list.reverse().forEach(h => {
+                container.innerHTML += `
+                    <div class="bg-white/5 p-3 rounded-xl border border-white/5">
+                        <p class="text-[10px] font-bold text-indigo-300 uppercase">${h.namaSiswa || h.nama}</p>
+                        <p class="text-[9px] opacity-70 italic">${h.judulBuku || h.misi || 'Aktivitas Umum'}</p>
+                        <p class="text-[7px] opacity-30 mt-1">${h.tglPinjam || h.waktu || ''}</p>
+                    </div>`;
+            });
         });
     </script>
 </body>
