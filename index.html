@@ -9,18 +9,31 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-white p-4 font-sans">
-    <div class="max-w-xl mx-auto py-10">
-        <h1 class="text-center text-4xl font-black italic text-yellow-400 uppercase tracking-tighter mb-10">Ranking Pahlawan 🏆</h1>
+    <div class="max-w-xl mx-auto py-6">
+        <h1 class="text-center text-3xl font-black italic text-yellow-400 uppercase tracking-tighter mb-6">Ranking Pahlawan 🏆</h1>
         
+        <div class="mb-6">
+            <select id="filterKelas" onchange="muatPeringkat()" class="w-full bg-slate-900 border-2 border-indigo-500 p-4 rounded-2xl text-xs font-black uppercase text-center outline-none focus:border-yellow-400 transition-all cursor-pointer">
+                <option value="SEMUA">-- TAMPILKAN SEMUA KELAS --</option>
+                <option value="Kelas 1">KELAS 1</option>
+                <option value="Kelas 2">KELAS 2</option>
+                <option value="Kelas 3">KELAS 3</option>
+                <option value="Kelas 4">KELAS 4</option>
+                <option value="Kelas 5">KELAS 5</option>
+                <option value="Kelas 6">KELAS 6</option>
+            </select>
+        </div>
+
         <div class="bg-slate-900/80 rounded-[2.5rem] border border-white/10 overflow-hidden shadow-2xl">
             <div id="papanSkor" class="p-6 space-y-4">
-                <p class="text-center text-xs opacity-50 animate-pulse uppercase">Menghubungkan ke folder rekap_siswa...</p>
+                <p class="text-center text-xs opacity-50 animate-pulse uppercase italic">Membuka Gulungan Takdir...</p>
             </div>
         </div>
 
-        <div class="mt-8 grid grid-cols-2 gap-4">
-            <a href="rekap-petualangan.html" class="bg-yellow-400 text-slate-900 p-4 rounded-2xl text-center font-black uppercase text-xs italic">Hero Tracker 🦸‍♂️</a>
-            <a href="menu-perpus.html" class="bg-indigo-600 p-4 rounded-2xl text-center font-black uppercase text-xs italic">Perpustakaan 📚</a>
+        <div class="mt-8">
+            <a href="rekap-petualangan.html" class="block w-full bg-yellow-400 text-slate-900 p-5 rounded-2xl text-center font-black uppercase text-sm italic shadow-[0_6px_0_0_#ca8a04] active:translate-y-1 active:shadow-none transition-all">
+                Mulai Petualangan Misi 🚀
+            </a>
         </div>
     </div>
 
@@ -29,33 +42,64 @@
         if (!firebase.apps.length) firebase.initializeApp(config);
         const db = firebase.database();
 
+        let dataGlobal = [];
+
+        // Ambil data pertama kali
         db.ref('rekap_siswa').on('value', snap => {
-            const container = document.getElementById('papanSkor');
-            container.innerHTML = "";
-            let list = [];
-            
+            dataGlobal = [];
             snap.forEach(s => { 
                 const d = s.val();
-                list.push({ nama: d.nama, kls: d.kelas, xp: parseInt(d.xp) || 0 });
+                if(d.nama) {
+                    dataGlobal.push({ 
+                        nama: d.nama, 
+                        kls: d.kelas || "Tanpa Kelas", 
+                        xp: parseInt(d.xp) || 0 
+                    });
+                }
             });
+            muatPeringkat();
+        });
 
-            list.sort((a, b) => b.xp - a.xp);
+        function muatPeringkat() {
+            const container = document.getElementById('papanSkor');
+            const filterVal = document.getElementById('filterKelas').value;
+            container.innerHTML = "";
 
-            list.forEach((h, i) => {
-                const color = i < 3 ? 'text-yellow-400' : 'text-slate-400';
+            // 1. Filter Data
+            let listTampil = (filterVal === "SEMUA") 
+                ? dataGlobal 
+                : dataGlobal.filter(h => h.kls === filterVal);
+
+            // 2. Sort Berdasarkan XP Tertinggi
+            listTampil.sort((a, b) => b.xp - a.xp);
+
+            // 3. Render ke Layar
+            if(listTampil.length === 0) {
+                container.innerHTML = `<p class="text-center text-xs opacity-40 uppercase py-10">Belum ada pahlawan di kelas ini.</p>`;
+                return;
+            }
+
+            listTampil.forEach((h, i) => {
+                let medali = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i+1}`;
+                let warnaBordir = i === 0 ? "border-yellow-400/50" : "border-white/5";
+                let warnaTeks = i < 3 ? "text-yellow-400" : "text-white";
+
                 container.innerHTML += `
-                    <div class="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/5">
+                    <div class="flex justify-between items-center p-4 bg-white/5 rounded-2xl border ${warnaBordir} hover:bg-white/10 transition-colors">
                         <div class="flex items-center gap-4">
-                            <span class="font-black ${color}">#${i+1}</span>
+                            <span class="text-lg font-black w-8">${medali}</span>
                             <div>
-                                <p class="text-xs font-black uppercase tracking-tight">${h.nama}</p>
-                                <p class="text-[8px] font-bold opacity-40 uppercase">${h.kls}</p>
+                                <p class="text-[11px] font-black uppercase tracking-tight ${warnaTeks}">${h.nama}</p>
+                                <p class="text-[8px] font-bold opacity-40 uppercase tracking-widest">${h.kls}</p>
                             </div>
                         </div>
-                        <span class="text-sm font-black text-emerald-400">${h.xp} XP</span>
+                        <div class="text-right">
+                            <p class="text-xs font-black text-emerald-400">${h.xp.toLocaleString()}</p>
+                            <p class="text-[7px] font-bold opacity-30 uppercase">XP POIN</p>
+                        </div>
                     </div>`;
             });
-        });
+        }
     </script>
 </body>
 </html>
