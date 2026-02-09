@@ -6,7 +6,6 @@
     <title>CCTV Pahlawan & Perpus - Admin Kiswanto</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 min-h-screen p-4 font-sans text-slate-200">
@@ -16,8 +15,11 @@
             <span class="text-5xl">👨‍✈️</span>
             <h2 class="text-xl font-black uppercase italic mt-4 text-slate-800">Admin Login</h2>
             <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-6">Khusus Pak Kiswanto</p>
-            <input type="email" id="adminEmail" value="sdn169.cintadamai@gmail.com" class="hidden">
+            
+            <input type="email" id="adminEmail" placeholder="EMAIL ADMIN" class="w-full text-center text-sm font-bold p-4 bg-slate-100 rounded-2xl mb-2 outline-none border-2 border-transparent focus:border-orange-500 text-slate-800">
+            
             <input type="password" id="adminPass" placeholder="MASUKKAN PASSWORD" class="w-full text-center text-xl font-black p-4 bg-slate-100 rounded-2xl mb-4 outline-none border-2 border-transparent focus:border-orange-500 text-slate-800">
+            
             <button onclick="loginAdmin()" class="w-full bg-orange-600 text-white font-black py-4 rounded-2xl shadow-lg hover:bg-orange-700 transition-all uppercase italic text-xs">Masuk Sistem 🔓</button>
         </div>
     </div>
@@ -28,11 +30,11 @@
             <div>
                 <p class="text-[9px] font-black uppercase tracking-widest opacity-80 italic">OTP Katalog Perpus Aktif:</p>
                 <h2 id="monitorOTP" class="text-5xl font-black tracking-[0.2em] my-2">----</h2>
-                <p id="waktuOTP" class="text-[9px] opacity-70 font-bold uppercase tracking-widest italic tracking-tighter">Belum ada permintaan</p>
+                <p id="waktuOTP" class="text-[9px] opacity-70 font-bold uppercase tracking-widest italic tracking-tighter">Memantau Data...</p>
             </div>
             <div class="text-right">
-                <span id="statusOTP" class="bg-white/20 px-4 py-2 rounded-full text-[10px] font-black uppercase italic tracking-widest">OFFLINE</span>
-                <button onclick="logout()" class="block mt-4 text-[8px] font-black underline opacity-50 hover:opacity-100 uppercase">Keluar Sesi</button>
+                <span id="statusOTP" class="bg-white/20 px-4 py-2 rounded-full text-[10px] font-black uppercase italic tracking-widest">AKTIF</span>
+                <button onclick="location.reload()" class="block mt-4 text-[8px] font-black underline opacity-50 hover:opacity-100 uppercase italic">Keluar Sesi</button>
             </div>
         </div>
 
@@ -56,69 +58,41 @@
                 </table>
             </div>
         </div>
-
-        <div class="mt-6 flex justify-between items-center px-4">
-            <button onclick="hapusLog()" class="bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all">
-                🗑️ Bersihkan Riwayat
-            </button>
-            <p class="text-[9px] text-slate-500 uppercase font-bold italic">Admin SDN 165 TJB - v2.0</p>
-        </div>
     </div>
 
     <script>
+        // CONFIG DATABASE TETAP SAMA
         const config = { 
-            apiKey: "AIzaSyBXt0gEgczYD1jQ9OhNk5FGN8CePIFaSYw", // Pastikan API Key diisi jika menggunakan Auth
             databaseURL: "https://e-perpus-a652c-default-rtdb.asia-southeast1.firebasedatabase.app" 
         };
         if (!firebase.apps.length) firebase.initializeApp(config);
         const db = firebase.database();
-        const auth = firebase.auth();
 
-        // --- FUNGSI LOGIN ---
+        // KREDENSIAL TETAP SESUAI PERMINTAAN BAPAK
+        const emailBenar = "sdn169.cintadamai@gmail.com";
+        const passBenar = "Cintadama1";
+
         function loginAdmin() {
-            const email = document.getElementById('adminEmail').value;
-            const pass = document.getElementById('adminPass').value;
+            const inputEmail = document.getElementById('adminEmail').value;
+            const inputPass = document.getElementById('adminPass').value;
 
-            auth.signInWithEmailAndPassword(email, pass)
-                .then(() => {
-                    alert("Akses Diterima, Pak!");
-                })
-                .catch((error) => {
-                    alert("Password Salah atau Akun Belum Terdaftar!");
-                });
-        }
-
-        function logout() {
-            auth.signOut().then(() => location.reload());
-        }
-
-        // --- CEK STATUS LOGIN ---
-        auth.onAuthStateChanged(user => {
-            if (user && user.email === "sdn169.cintadamai@gmail.com") {
+            if (inputEmail === emailBenar && inputPass === passBenar) {
+                alert("Akses Diterima, Pak Kiswanto!");
                 document.getElementById('loginOverlay').classList.add('hidden');
                 document.getElementById('adminContent').classList.remove('hidden');
                 jalankanMonitor();
             } else {
-                document.getElementById('loginOverlay').classList.remove('hidden');
-                document.getElementById('adminContent').classList.add('hidden');
+                alert("Email atau Password Salah! Perhatikan huruf besar-kecilnya, Pak.");
             }
-        });
+        }
 
-        // --- MONITORING DATA ---
         function jalankanMonitor() {
-            // Pantau OTP
+            // Pantau Kode OTP di Database
             db.ref('sistem_keamanan/otp_katalog').on('value', snap => {
                 if(snap.exists()) {
                     const data = snap.val();
                     document.getElementById('monitorOTP').innerText = data.kode;
-                    document.getElementById('waktuOTP').innerText = "Update: " + data.waktu;
-                    document.getElementById('statusOTP').innerText = data.status;
-                    
-                    if(data.status.includes("TERBUKA")) {
-                        document.getElementById('statusOTP').className = "bg-emerald-500 px-4 py-2 rounded-full text-[10px] font-black uppercase italic tracking-widest text-white shadow-lg";
-                    } else {
-                        document.getElementById('statusOTP').className = "bg-red-600 px-4 py-2 rounded-full text-[10px] font-black uppercase italic tracking-widest text-white animate-pulse";
-                    }
+                    document.getElementById('waktuOTP').innerText = "Update Terakhir: " + data.waktu;
                 }
             });
 
@@ -127,30 +101,24 @@
                 const body = document.getElementById('logTableBody');
                 body.innerHTML = "";
                 if(!snap.exists()){
-                    body.innerHTML = `<tr><td colspan="4" class="p-10 text-center text-slate-400 italic font-bold uppercase">Belum ada aktivitas...</td></tr>`;
+                    body.innerHTML = `<tr><td colspan="4" class="p-10 text-center text-slate-400 italic font-bold uppercase text-[10px]">Belum ada aktivitas baru...</td></tr>`;
                     return;
                 }
                 snap.forEach(item => {
                     const log = item.val();
                     body.innerHTML = `
                         <tr class="border-b border-slate-50 hover:bg-yellow-50 transition-colors italic">
-                            <td class="p-4 text-[10px] text-slate-400 font-mono">${log.waktu}</td>
-                            <td class="p-4 font-black text-indigo-700 uppercase">${log.nama_pengubah}</td>
-                            <td class="p-4 font-bold text-red-600">SET XP: ${log.xp_baru}</td>
+                            <td class="p-4 text-[10px] text-slate-400 font-mono">${log.waktu || '-'}</td>
+                            <td class="p-4 font-black text-indigo-700 uppercase">${log.nama_pengubah || '-'}</td>
+                            <td class="p-4 font-bold text-red-600">SET XP: ${log.xp_baru || '-'}</td>
                             <td class="p-4">
-                                <span class="bg-red-100 text-red-700 text-[8px] px-2 py-1 rounded-full font-black uppercase leading-none">
+                                <span class="bg-red-100 text-red-700 text-[8px] px-2 py-1 rounded-full font-black uppercase">
                                     ${log.status || 'MODIFIKASI'}
                                 </span>
                             </td>
                         </tr>` + body.innerHTML;
                 });
             });
-        }
-
-        function hapusLog() {
-            if(confirm("Hapus semua riwayat audit?")) {
-                db.ref('audit_log').remove();
-            }
         }
     </script>
 </body>
