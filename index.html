@@ -12,7 +12,7 @@
 </head>
 <body class="bg-slate-950 min-h-screen flex items-center justify-center p-4 font-sans text-slate-800">
 
-    <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border-b-[12px] border-indigo-600">
+    <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border-b-[12px] border-indigo-600 relative">
         
         <div class="bg-indigo-700 p-6 text-center text-white cursor-pointer" onclick="cekModeGuru()">
             <p id="gelarHero" class="text-[10px] font-black tracking-[0.3em] text-yellow-400 mb-1 uppercase italic">Memuat Gelar...</p>
@@ -30,9 +30,14 @@
             </div>
         </div>
 
-        <div id="tabNav" class="hidden flex px-6 gap-2 mt-6">
-            <button id="btnHero" onclick="pindahMenu('hero')" class="flex-1 py-3 rounded-2xl font-black text-[10px] uppercase transition-all bg-indigo-600 text-white shadow-lg">🛡️ Hero Tracker</button>
-            <button id="btnSatset" onclick="pindahMenu('satset')" class="flex-1 py-3 rounded-2xl font-black text-[10px] uppercase transition-all bg-slate-100 text-slate-400">🌙 Satset Ramadhan</button>
+        <div id="tabNav" class="hidden space-y-3 px-6 mt-6">
+            <button onclick="bukaLeaderboard()" class="w-full py-3 bg-yellow-400 text-indigo-900 rounded-2xl font-black text-[10px] uppercase shadow-lg flex items-center justify-center gap-2 animate-pulse">
+                🏆 Lihat Peringkat Hero
+            </button>
+            <div class="flex gap-2">
+                <button id="btnHero" onclick="pindahMenu('hero')" class="flex-1 py-3 rounded-2xl font-black text-[10px] uppercase transition-all bg-indigo-600 text-white shadow-md">🛡️ Hero Tracker</button>
+                <button id="btnSatset" onclick="pindahMenu('satset')" class="flex-1 py-3 rounded-2xl font-black text-[10px] uppercase transition-all bg-slate-100 text-slate-400">🌙 Satset Ramadhan</button>
+            </div>
         </div>
 
         <div id="formNama" class="hidden p-8 space-y-4">
@@ -46,59 +51,65 @@
             <button onclick="simpanProfil()" class="w-full bg-indigo-600 text-white font-black p-5 rounded-2xl shadow-xl uppercase italic hover:bg-indigo-700 transition-all">Mulai Petualangan 🚀</button>
         </div>
 
-        <div id="formMisi" class="hidden p-6 pt-4 space-y-3">
-            
+        <div id="formMisi" class="hidden p-6 pt-4">
             <div id="divHero" class="space-y-3">
                 <div id="listMisi" class="space-y-3"></div>
-                <div id="boxSertifikat" class="hidden mt-6 p-5 bg-yellow-400 rounded-[2rem] text-center shadow-xl animate-bounce border-4 border-white">
+                <div id="boxSertifikat" class="hidden mt-6 p-5 bg-yellow-400 rounded-[2rem] text-center shadow-xl border-4 border-white">
                     <button onclick="cetakSertifikat()" class="w-full bg-indigo-700 text-white font-black py-4 rounded-2xl uppercase italic text-[11px]">📜 Ambil Piagam Level</button>
                 </div>
             </div>
 
             <div id="divSatset" class="hidden space-y-3">
-                <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-100 mb-2">
-                    <p class="text-[9px] font-black text-emerald-700 uppercase italic text-center leading-tight">Satu Hari Satu Etika Baik (SATSET)<br>Tantangan 30 Hari Kebaikan</p>
+                <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-100 mb-2 text-center">
+                    <p class="text-[10px] font-black text-emerald-700 uppercase italic">🌙 SATSET RAMADHAN</p>
+                    <p class="text-[7px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Satu Hari Satu Etika Baik</p>
                 </div>
-                <div id="listSatset" class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                    </div>
+                <div id="listSatset" class="space-y-3 max-h-[350px] overflow-y-auto pr-2"></div>
             </div>
 
-            <button onclick="logout()" class="w-full mt-6 text-[9px] font-black text-slate-300 hover:text-red-400 uppercase italic underline text-center">Ganti Identitas Hero</button>
+            <button onclick="logout()" class="w-full mt-10 text-[9px] font-black text-slate-300 uppercase italic underline text-center block">Ganti Identitas Hero</button>
+        </div>
+
+        <div id="modalLeaderboard" class="fixed inset-0 z-[500] bg-indigo-950/fb hidden overflow-y-auto p-6 backdrop-blur-md">
+            <div class="max-w-sm mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-white font-black italic uppercase text-xl text-yellow-400">🏆 Top 10 Hero</h2>
+                    <button onclick="tutupLeaderboard()" class="text-white text-2xl font-bold">✕</button>
+                </div>
+                <div id="isiLeaderboard" class="space-y-3"></div>
+            </div>
         </div>
 
         <div id="panelGuru" class="hidden bg-red-50 p-6 border-y-2 border-red-200 space-y-3">
-            <p class="text-[10px] font-black text-red-600 uppercase text-center">🔐 ADMIN KISWANTO</p>
-            <input type="number" id="newXP" class="w-full p-3 rounded-xl border-2 border-red-300 font-black text-center" placeholder="SET XP BARU">
-            <button onclick="updateXPManual()" class="w-full bg-red-600 text-white py-3 rounded-xl font-black uppercase text-xs">Simpan XP</button>
+            <p class="text-[10px] font-black text-red-600 uppercase text-center font-mono">ADMIN PANEL ACCESS</p>
+            <input type="number" id="newXP" class="w-full p-4 rounded-2xl border-2 border-red-200 font-black text-center text-red-700" placeholder="SET XP MANUAL">
+            <button onclick="updateXPManual()" class="w-full bg-red-600 text-white py-4 rounded-2xl font-black uppercase text-xs">Simpan XP</button>
         </div>
     </div>
 
     <script>
-        // CONFIG FIREBASE
         const config = { databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.asia-southeast1.firebasedatabase.app" };
         if (!firebase.apps.length) firebase.initializeApp(config);
         const db = firebase.database();
 
-        // DATA MISI HARIAN (HERO)
         const daftarMisi = [
-            { label: "🌞 Bangun & Ibadah", limit: "05:30", poin: 50 },
-            { label: "🧹 Bantu Orang Tua", limit: "06:30", poin: 40 },
-            { label: "🎒 Siap Sekolah", limit: "07:00", poin: 30 },
-            { label: "📖 Belajar Malam", limit: "20:00", poin: 40 },
-            { label: "💤 Tidur Cepat", limit: "21:30", poin: 50 }
+            { label: "🌞 Bangun & Ibadah Subuh", limit: "05:30", poin: 50 },
+            { label: "🧹 Bantu Orang Tua / Beres Rumah", limit: "06:30", poin: 40 },
+            { label: "🎒 Siap Sekolah (Mandiri)", limit: "07:00", poin: 30 },
+            { label: "📖 Belajar / Mengaji Malam", limit: "20:00", poin: 40 },
+            { label: "💤 Tidur Cepat (Maks 21:30)", limit: "21:30", poin: 50 }
         ];
 
-        // DATA MISI SATSET (RAMADHAN)
         const dataSatset = [
             { h: 1, m: "Menyiapkan sajadah Papa dan Mama" }, { h: 2, m: "Menghafal doa buka puasa" }, { h: 3, m: "Menaruh piring kotor ke dapur" },
             { h: 4, m: "Merapikan tempat tidur sendiri" }, { h: 5, m: "Memijat bahu Mama/Papa" }, { h: 6, m: "Memberi senyum dan salam" },
-            { h: 7, m: "Sabar dan tidak marah-marah" }, { h: 8, m: "Sholat Subuh tepat waktu" }, { h: 9, m: "Membaca 5 ayat Al-Quran atau Iqra" },
-            { h: 10, m: "Sedekah uang jajan ke masjid" }, { h: 11, m: "Ikut Sholat Tarawih Berjamaah" }, { h: 12, m: "Menghafal 1 surat pendek baru" },
-            { h: 13, m: "Mendoakan Bapak dan Ibu Guru" }, { h: 14, m: "Mendengar cerita Nabi" }, { h: 15, m: "Berbagi takjil ke tetangga" },
-            { h: 16, m: "Membuang sampah di jalan/masjid" }, { h: 17, m: "Sopan bertemu orang di jalan" }, { h: 18, m: "Meminjamkan mainan ke teman" },
+            { h: 7, m: "Sabar dan tidak marah-marah" }, { h: 8, m: "Sholat Subuh tepat waktu" }, { h: 9, m: "Membaca 5 ayat Al-Quran/Iqra" },
+            { h: 10, m: "Sedekah uang jajan ke masjid" }, { h: 11, m: "Ikut Sholat Tarawih berjamaah" }, { h: 12, m: "Menghafal 1 surat pendek baru" },
+            { h: 13, m: "Mendoakan Bapak dan Ibu Guru" }, { h: 14, m: "Mendengar cerita Nabi" }, { h: 15, m: "Berbagi makanan buka puasa" },
+            { h: 16, m: "Membuang sampah di jalan/masjid" }, { h: 17, m: "Sopan bertemu orang tua" }, { h: 18, m: "Meminjamkan mainan ke teman" },
             { h: 19, m: "Mematikan keran air mengalir" }, { h: 20, m: "Menulis surat cinta buat Ortu" }, { h: 21, m: "Berkata jujur seharian" },
             { h: 22, m: "Menyiapkan baju sholat sendiri" }, { h: 23, m: "Menyiram tanaman rumah" }, { h: 24, m: "Membaca buku (kurangi HP)" },
-            { h: 25, m: "Memberi sedekah/takjil" }, { h: 26, m: "Membantu siapkan hidangan buka" }, { h: 27, m: "Mengajak teman berbuat baik" },
+            { h: 25, m: "Memberi takjil ke tetangga" }, { h: 26, m: "Membantu siapkan hidangan buka" }, { h: 27, m: "Mengajak teman berbuat baik" },
             { h: 28, m: "Belajar 1 Asmaul Husna" }, { h: 29, m: "Merapikan rak sepatu" }, { h: 30, m: "Meminta maaf & memeluk Ortu" }
         ];
 
@@ -116,23 +127,23 @@
             }
         };
 
+        function renderMisiHero() {
+            document.getElementById('listMisi').innerHTML = daftarMisi.map(m => `
+                <div class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex justify-between items-center">
+                    <div><p class="font-black text-slate-700 text-[11px] uppercase italic leading-none">${m.label}</p>
+                    <p class="text-[8px] font-bold text-red-500 opacity-60 italic mt-1 uppercase">Batas: ${m.limit}</p></div>
+                    <input type="checkbox" onchange="prosesMisi(this, ${m.poin}, '${m.limit}')" class="w-8 h-8 accent-indigo-600 cursor-pointer">
+                </div>
+            `).join('');
+        }
+
         function pindahMenu(menu) {
             const isHero = menu === 'hero';
             document.getElementById('divHero').classList.toggle('hidden', !isHero);
             document.getElementById('divSatset').classList.toggle('hidden', isHero);
-            document.getElementById('btnHero').className = isHero ? "flex-1 py-3 rounded-2xl font-black text-[10px] uppercase bg-indigo-600 text-white shadow-lg" : "flex-1 py-3 rounded-2xl font-black text-[10px] uppercase bg-slate-100 text-slate-400";
-            document.getElementById('btnSatset').className = !isHero ? "flex-1 py-3 rounded-2xl font-black text-[10px] uppercase bg-emerald-600 text-white shadow-lg" : "flex-1 py-3 rounded-2xl font-black text-[10px] uppercase bg-slate-100 text-slate-400";
+            document.getElementById('btnHero').className = isHero ? "flex-1 py-3 rounded-2xl font-black text-[10px] uppercase bg-indigo-600 text-white shadow-md" : "flex-1 py-3 rounded-2xl font-black text-[10px] uppercase bg-slate-100 text-slate-400";
+            document.getElementById('btnSatset').className = !isHero ? "flex-1 py-3 rounded-2xl font-black text-[10px] uppercase bg-emerald-600 text-white shadow-md" : "flex-1 py-3 rounded-2xl font-black text-[10px] uppercase bg-slate-100 text-slate-400";
             if(!isHero) muatSatset();
-        }
-
-        function renderMisiHero() {
-            document.getElementById('listMisi').innerHTML = daftarMisi.map(m => `
-                <div class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex justify-between items-center">
-                    <div><p class="font-black text-slate-700 text-[11px] uppercase">${m.label}</p>
-                    <p class="text-[8px] font-bold text-red-500 opacity-70 italic uppercase">Batas: ${m.limit}</p></div>
-                    <input type="checkbox" onchange="prosesMisi(this, ${m.poin}, '${m.limit}')" class="w-7 h-7 accent-indigo-600">
-                </div>
-            `).join('');
         }
 
         function muatSatset() {
@@ -141,12 +152,12 @@
             db.ref('rekap_siswa/' + path + '/ramadhan').once('value', snap => {
                 const data = snap.val() || {};
                 list.innerHTML = dataSatset.map(item => `
-                    <div class="bg-white border-2 border-slate-50 p-4 rounded-2xl flex justify-between items-center shadow-sm">
+                    <div class="bg-white border-2 border-slate-50 p-4 rounded-2xl flex justify-between items-center">
                         <div class="flex items-center gap-3">
-                            <span class="text-[9px] font-black text-emerald-500 bg-emerald-50 w-7 h-7 flex items-center justify-center rounded-full border border-emerald-100">H${item.h}</span>
+                            <span class="text-[9px] font-black text-emerald-500 bg-emerald-50 w-8 h-8 flex items-center justify-center rounded-full border border-emerald-100">H${item.h}</span>
                             <p class="text-[10px] font-bold text-slate-700 uppercase leading-tight">${item.m}</p>
                         </div>
-                        <input type="checkbox" ${data['h'+item.h] ? 'checked disabled' : ''} onchange="simpanSatset(${item.h}, this)" class="w-6 h-6 accent-emerald-600">
+                        <input type="checkbox" ${data['h'+item.h] ? 'checked disabled' : ''} onchange="simpanSatset(${item.h}, this)" class="w-7 h-7 accent-emerald-600">
                     </div>
                 `).join('');
             });
@@ -155,19 +166,15 @@
         function simpanSatset(hari, el) {
             if(!el.checked) return;
             const path = hNama.replace(/\s+/g, '_');
-            db.ref('rekap_siswa/' + path + '/ramadhan').update({
-                ['h'+hari]: true,
-                tgl: new Date().toLocaleString('id-ID')
-            });
+            db.ref('rekap_siswa/' + path + '/ramadhan').update({ ['h'+hari]: true, tgl: new Date().toLocaleString('id-ID') });
             el.disabled = true;
-            confetti({particleCount: 40, spread: 70, colors: ['#10b981', '#fbbf24']});
+            confetti({particleCount: 50, spread: 70, colors: ['#10b981', '#fbbf24']});
         }
 
         function sinkronData() {
             const path = hNama.replace(/\s+/g, '_');
             db.ref('rekap_siswa/' + path).on('value', snap => {
-                let xpVal = 0;
-                if(snap.exists()) xpVal = parseInt(snap.val().xp) || 0;
+                let xpVal = (snap.exists()) ? (parseInt(snap.val().xp) || 0) : 0;
                 updateTampilan(xpVal);
             });
         }
@@ -176,7 +183,6 @@
             document.getElementById('formNama').classList.add('hidden');
             document.getElementById('formMisi').classList.remove('hidden');
             document.getElementById('progressPanel').classList.remove('hidden');
-            document.getElementById('tabNav').classList.remove('hidden');
             window.currentXP = xp;
             const level = Math.floor(xp / 2000) + 1;
             const xpSisa = xp % 2000;
@@ -187,7 +193,6 @@
             document.getElementById('valPoin').innerText = xpSisa + " / 2000 XP";
             document.getElementById('barPoin').style.width = (xpSisa / 2000 * 100) + "%";
             if (xp >= 2000) document.getElementById('boxSertifikat').classList.remove('hidden');
-            else document.getElementById('boxSertifikat').classList.add('hidden');
         }
 
         function prosesMisi(el, poin, limitStr) {
@@ -195,39 +200,49 @@
             const [h, m] = limitStr.split(':').map(Number);
             const now = new Date(); const limit = new Date(); limit.setHours(h, m, 0);
             let pDapat = (now <= limit) ? poin : -poin;
-            if(now > limit) alert("Kamu terlambat! Poin dikurangi.");
-            else { confetti({particleCount: 50, spread: 60}); el.disabled = true; }
-            let baru = (window.currentXP || 0) + pDapat;
-            if(baru < 0) baru = 0;
-            const path = hNama.replace(/\s+/g, '_');
-            db.ref('rekap_siswa/' + path).update({ nama: hNama, kelas: hKelas, xp: baru, waktu: now.toLocaleString('id-ID') });
+            if(now > limit) alert("Terlambat! Poin dikurangi.");
+            else { confetti({particleCount: 40}); el.disabled = true; }
+            let baru = Math.max(0, (window.currentXP || 0) + pDapat);
+            db.ref('rekap_siswa/' + hNama.replace(/\s+/g, '_')).update({ nama: hNama, kelas: hKelas, xp: baru, waktu: now.toLocaleString('id-ID') });
+        }
+
+        function bukaLeaderboard() {
+            const list = document.getElementById('isiLeaderboard');
+            list.innerHTML = "<p class='text-center text-white/50 animate-bounce text-xs font-bold'>MENGHUBUNGKAN KE SERVER...</p>";
+            document.getElementById('modalLeaderboard').classList.remove('hidden');
+            db.ref('rekap_siswa').orderByChild('xp').limitToLast(10).once('value', snap => {
+                let data = []; snap.forEach(c => { data.push(c.val()); }); data.reverse();
+                list.innerHTML = data.map((s, i) => `
+                    <div class="flex items-center gap-4 bg-white/10 p-4 rounded-3xl border border-white/5 shadow-xl">
+                        <div class="text-2xl font-black ${i<3 ? 'text-yellow-400' : 'text-slate-500'}">#${i+1}</div>
+                        <div class="flex-1"><p class="text-white font-black uppercase text-[10px] leading-tight">${s.nama}</p><p class="text-white/30 text-[7px] font-bold uppercase">${s.kelas}</p></div>
+                        <div class="text-right"><p class="text-yellow-400 font-black text-xs">${s.xp.toLocaleString()}</p><p class="text-[7px] text-white/20 font-bold uppercase">LVL ${Math.floor(s.xp/2000)+1}</p></div>
+                    </div>
+                `).join('');
+            });
         }
 
         function simpanProfil() {
             const n = document.getElementById('inputNama').value.trim().toUpperCase();
             const k = document.getElementById('inputKelas').value;
-            if(n.length < 3 || !k) return alert("Pilih Nama & Kelas!");
+            if(n.length < 3 || !k) return alert("Isi Nama & Kelas!");
             localStorage.setItem('heroNama', n); localStorage.setItem('heroKelas', k);
             location.reload();
         }
 
         function cekModeGuru() { clickHeader++; if(clickHeader >= 5) { document.getElementById('panelGuru').classList.toggle('hidden'); clickHeader = 0; } }
-        
+        function logout() { if(confirm("Ganti Hero?")) { localStorage.clear(); location.reload(); } }
+        function tutupLeaderboard() { document.getElementById('modalLeaderboard').classList.add('hidden'); }
         function updateXPManual() { 
             const v = document.getElementById('newXP').value; 
-            if(v!=="") { db.ref('rekap_siswa/' + hNama.replace(/\s+/g, '_')).update({ xp: parseInt(v) }); alert("XP Berhasil Diperbarui!"); }
+            if(v!=="") { db.ref('rekap_siswa/' + hNama.replace(/\s+/g, '_')).update({ xp: parseInt(v) }); alert("OK!"); }
         }
 
-        function logout() { if(confirm("Ganti Akun?")) { localStorage.clear(); location.reload(); } }
-
         function cetakSertifikat() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape');
-            const xp = window.currentXP;
-            const lvl = Math.floor(xp / 2000);
-            doc.setFontSize(30); doc.text("PIAGAM HERO", 148, 80, {align:"center"});
+            const { jsPDF } = window.jspdf; const doc = new jsPDF('l');
+            doc.setFontSize(40); doc.text("PIAGAM HERO", 148, 80, {align:"center"});
             doc.setFontSize(20); doc.text(hNama, 148, 110, {align:"center"});
-            doc.save(`Piagam_${hNama}.pdf`);
+            doc.save(`Sertifikat_${hNama}.pdf`);
         }
     </script>
 </body>
