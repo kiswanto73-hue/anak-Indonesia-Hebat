@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-slate-900 min-h-screen p-4 font-sans text-slate-200 pb-20">
+<body class="bg-slate-900 min-h-screen p-2 font-sans text-slate-200 pb-20">
 
     <div id="loginOverlay" class="fixed inset-0 z-[200] bg-slate-950 flex items-center justify-center p-6">
         <div class="bg-white p-8 rounded-[3rem] shadow-2xl max-w-sm w-full text-center border-b-8 border-orange-600">
@@ -32,35 +32,25 @@
         </div>
 
         <div class="bg-indigo-900 p-6 rounded-[2rem] shadow-2xl mb-6 border-2 border-indigo-400">
-            <h2 class="text-yellow-400 font-black italic uppercase text-sm mb-4 flex items-center gap-2">🚀 Operasi XP Masal</h2>
-            <div class="flex flex-col sm:flex-row gap-3">
-                <input type="number" id="massXPValue" placeholder="Jumlah XP (Contoh: 100)" class="flex-1 bg-white/10 p-4 rounded-2xl text-white font-black outline-none border border-white/10 focus:border-yellow-400">
-                <div class="flex gap-2">
-                    <button onclick="prosesXPSelection('tambah')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black px-4 py-4 rounded-2xl text-[9px] uppercase italic leading-none">➕ Tambah Ke Semua</button>
-                    <button onclick="prosesXPSelection('set')" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-black px-4 py-4 rounded-2xl text-[9px] uppercase italic leading-none">🎯 Setel Semua</button>
-                </div>
+            <h2 class="text-yellow-400 font-black italic uppercase text-sm mb-4">🚀 Bonus XP Masal (Semua Siswa)</h2>
+            <div class="flex gap-2">
+                <input type="number" id="massXPValue" placeholder="Jumlah" class="w-24 bg-white/10 p-4 rounded-2xl text-white font-black outline-none border border-white/10">
+                <button onclick="prosesXPSelection('tambah')" class="flex-1 bg-emerald-600 text-white font-black rounded-2xl text-[9px] uppercase italic">➕ Tambah Ke Semua</button>
             </div>
-            <p class="text-[8px] text-indigo-300 mt-3 font-bold uppercase italic">*Tambah: XP saat ini + Bonus. Setel: Semua XP jadi sama (Mereset).</p>
-        </div>
-
-        <div class="bg-white p-6 rounded-[2rem] shadow-2xl mb-6 border-b-8 border-indigo-500">
-            <h2 class="text-indigo-900 font-black italic uppercase text-sm mb-4">🕵️ Radar Kejujuran (Aktivitas Jam)</h2>
-            <div class="h-64"><canvas id="chartAktivitas"></canvas></div>
-            <p class="text-[9px] text-slate-400 mt-4 italic font-bold uppercase text-center">*Lonjakan tajam menunjukkan potensi curang.</p>
         </div>
 
         <div class="bg-indigo-600 p-4 rounded-t-[2rem]">
-            <h1 class="text-sm font-black italic uppercase text-white px-2">📊 Peringkat & Edit Manual</h1>
+            <h1 class="text-sm font-black italic uppercase text-white px-2">📊 Kontrol Poin & Peringkat</h1>
         </div>
         <div class="bg-white mb-8 rounded-b-[2rem] overflow-hidden shadow-xl border-x-2 border-b-2 border-slate-200">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-slate-800 text-xs">
+                <table class="w-full text-left border-collapse text-slate-800 text-[11px]">
                     <thead>
                         <tr class="bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest">
-                            <th class="p-4 border-b">Hero / Siswa</th>
-                            <th class="p-4 border-b text-center">XP</th>
-                            <th class="p-4 border-b text-center">Update</th>
-                            <th class="p-4 border-b">Aksi</th>
+                            <th class="p-4 border-b">Nama Siswa</th>
+                            <th class="p-4 border-b text-center">XP Saat Ini</th>
+                            <th class="p-4 border-b text-center">Input Baru</th>
+                            <th class="p-4 border-b text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="tabelHeroBody"></tbody>
@@ -71,20 +61,10 @@
         <div class="bg-emerald-600 p-4 rounded-t-[2rem]">
             <h1 class="text-sm font-black italic uppercase text-white px-2">🌙 Monitor Satset Ramadhan</h1>
         </div>
-        <div class="bg-white mb-8 rounded-b-[2rem] overflow-hidden shadow-xl border-x-2 border-b-2 border-slate-200">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-slate-800 text-xs">
-                    <thead>
-                        <tr class="bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest">
-                            <th class="p-4 border-b">Nama Siswa</th>
-                            <th class="p-4 border-b text-center">Misi</th>
-                            <th class="p-4 border-b">Progress</th>
-                            <th class="p-4 border-b">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelRamadhanBody"></tbody>
-                </table>
-            </div>
+        <div id="tabelRamadhanContainer" class="bg-white mb-8 rounded-b-[2rem] overflow-hidden shadow-xl border-x-2 border-b-2 border-slate-200">
+            <table class="w-full text-left border-collapse text-slate-800 text-[11px]">
+                <tbody id="tabelRamadhanBody"></tbody>
+            </table>
         </div>
     </div>
 
@@ -97,8 +77,6 @@
         const db = firebase.database();
         const dbHero = appHero.database();
 
-        let myChart;
-
         function loginAdmin() {
             if (document.getElementById('adminEmail').value === "sdn169.cintadamai@gmail.com" && 
                 document.getElementById('adminPass').value === "Cintadama1") {
@@ -107,34 +85,23 @@
                 jalankanMonitor();
                 muatRekapHero();
                 muatMonitorRamadhan();
-                inisialisasiGrafik();
-            } else { alert("Email atau Password Salah Pak!"); }
+            } else { alert("Akses Ditolak!"); }
         }
 
-        // FUNGSI BARU: PROSES XP MASAL
-        function prosesXPSelection(tipe) {
-            const nominal = parseInt(document.getElementById('massXPValue').value);
-            if (isNaN(nominal)) return alert("Isi jumlah XP-nya dulu, Pak!");
+        // FUNGSI EDIT XP PER SISWA
+        function simpanXPSiswa(path, nama) {
+            const inputField = document.getElementById('inputXP_' + path);
+            const nilaiBaru = parseInt(inputField.value);
+            
+            if (isNaN(nilaiBaru)) return alert("Masukkan angka XP dulu!");
 
-            const pesan = tipe === 'tambah' 
-                ? `Beri tambahan ${nominal} XP ke SEMUA siswa?` 
-                : `RESET semua XP siswa menjadi ${nominal}?`;
-
-            if (confirm(pesan)) {
-                dbHero.ref('rekap_siswa').once('value', snap => {
-                    let updates = {};
-                    snap.forEach(child => {
-                        const path = child.key;
-                        const currentXP = child.val().xp || 0;
-                        const finalXP = (tipe === 'tambah') ? currentXP + nominal : nominal;
-                        
-                        updates[`rekap_siswa/${path}/xp`] = finalXP;
-                        updates[`rekap_siswa/${path}/waktu`] = "Bonus Admin: " + new Date().toLocaleString('id-ID');
-                    });
-                    dbHero.ref().update(updates).then(() => {
-                        alert("✅ Berhasil Diperbarui untuk Semua Siswa!");
-                        document.getElementById('massXPValue').value = "";
-                    });
+            if (confirm("Ubah XP " + nama + " menjadi " + nilaiBaru + "?")) {
+                dbHero.ref('rekap_siswa/' + path).update({
+                    xp: nilaiBaru,
+                    waktu: "Diupdate Guru: " + new Date().toLocaleString('id-ID')
+                }).then(() => {
+                    alert("✅ XP " + nama + " Berhasil Diperbarui!");
+                    inputField.value = "";
                 });
             }
         }
@@ -143,34 +110,23 @@
             dbHero.ref('rekap_siswa').on('value', snap => {
                 const body = document.getElementById('tabelHeroBody');
                 body.innerHTML = "";
-                let jamAktivitas = new Array(8).fill(0);
-
                 snap.forEach(child => {
                     const s = child.val();
                     const path = child.key;
-                    if(s.waktu && s.waktu.includes(' ')) {
-                        const jam = parseInt(s.waktu.split(' ')[1]); 
-                        if(jam < 4) jamAktivitas[0]++;
-                        else if(jam < 6) jamAktivitas[1]++;
-                        else if(jam < 8) jamAktivitas[2]++;
-                        else if(jam < 12) jamAktivitas[3]++;
-                        else if(jam < 16) jamAktivitas[4]++;
-                        else if(jam < 20) jamAktivitas[5]++;
-                        else jamAktivitas[6]++;
-                    }
 
                     body.innerHTML += `
                         <tr class="border-b border-slate-50 hover:bg-slate-50">
-                            <td class="p-4 font-black uppercase text-indigo-900">${s.nama}<br><span class="text-[8px] text-slate-400 font-bold">${s.kelas}</span></td>
+                            <td class="p-4 font-black uppercase text-indigo-900">${s.nama}<br><span class="text-[8px] text-slate-400">${s.kelas}</span></td>
                             <td class="p-4 text-center font-black text-indigo-600">${(s.xp || 0).toLocaleString()}</td>
-                            <td class="p-4 text-center text-[9px] font-bold text-slate-400">${s.waktu || '-'}</td>
-                            <td class="p-4 text-center"><button onclick="hapusHero('${path}')" class="opacity-30 hover:opacity-100">🗑️</button></td>
+                            <td class="p-4 text-center">
+                                <input type="number" id="inputXP_${path}" placeholder="XP Baru" class="w-20 p-2 border-2 border-slate-200 rounded-lg text-center font-bold outline-none focus:border-indigo-500">
+                            </td>
+                            <td class="p-4 text-center flex justify-center gap-2">
+                                <button onclick="simpanXPSiswa('${path}', '${s.nama}')" class="bg-indigo-600 text-white px-3 py-2 rounded-lg font-black uppercase text-[9px]">Simpan</button>
+                                <button onclick="hapusHero('${path}')" class="text-red-300 hover:text-red-600 text-lg">🗑️</button>
+                            </td>
                         </tr>`;
                 });
-                if(myChart) {
-                    myChart.data.datasets[0].data = jamAktivitas;
-                    myChart.update();
-                }
             });
         }
 
@@ -189,7 +145,7 @@
                         <tr class="border-b border-slate-50">
                             <td class="p-4 uppercase font-black text-emerald-900">${s.nama}</td>
                             <td class="p-4 text-center font-black text-emerald-600">${done}/30</td>
-                            <td class="p-4">
+                            <td class="p-4 w-1/3">
                                 <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                                     <div class="bg-emerald-500 h-full" style="width: ${persen}%"></div>
                                 </div>
@@ -202,40 +158,36 @@
             });
         }
 
-        function inisialisasiGrafik() {
-            const ctx = document.getElementById('chartAktivitas').getContext('2d');
-            myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['00:00','04:00','06:00','08:00','12:00','16:00','20:00','23:59'],
-                    datasets: [{
-                        label: 'Siswa Ceklis',
-                        data: [0, 0, 0, 0, 0, 0, 0, 0],
-                        borderColor: '#4f46e5',
-                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
+        function prosesXPSelection(tipe) {
+            const nominal = parseInt(document.getElementById('massXPValue').value);
+            if (isNaN(nominal)) return alert("Isi angka!");
+            if (confirm("Tambah " + nominal + " XP ke SEMUA siswa?")) {
+                dbHero.ref('rekap_siswa').once('value', snap => {
+                    let updates = {};
+                    snap.forEach(child => {
+                        const path = child.key;
+                        const cur = child.val().xp || 0;
+                        updates[`rekap_siswa/${path}/xp`] = cur + nominal;
+                    });
+                    dbHero.ref().update(updates).then(() => {
+                        alert("✅ Bonus Masal Berhasil!");
+                        document.getElementById('massXPValue').value = "";
+                    });
+                });
+            }
         }
 
         function cekDetailSatset(nama) {
             const path = nama.replace(/\s+/g, '_');
             dbHero.ref('rekap_siswa/' + path + '/ramadhan').once('value', snap => {
                 const d = snap.val() || {};
-                let res = `LAPORAN RAMADHAN: ${nama}\n\n`;
-                for(let i=1; i<=30; i++) {
-                    res += `H${i}:${d['h'+i] ? '✅' : '❌'}  `;
-                    if(i % 5 === 0) res += "\n";
-                }
+                let res = `JURNAL: ${nama}\n\n`;
+                for(let i=1; i<=30; i++) { res += `H${i}:${d['h'+i] ? '✅' : '❌'} `; if(i%5==0) res+="\n"; }
                 alert(res);
             });
         }
 
-        function hapusHero(path) { if(confirm("Hapus permanen data siswa ini?")) dbHero.ref('rekap_siswa/' + path).remove(); }
-
+        function hapusHero(path) { if(confirm("Hapus data siswa ini?")) dbHero.ref('rekap_siswa/' + path).remove(); }
         function jalankanMonitor() {
             db.ref('sistem_keamanan/otp_katalog').on('value', snap => {
                 if(snap.exists()) document.getElementById('monitorOTP').innerText = snap.val().kode;
