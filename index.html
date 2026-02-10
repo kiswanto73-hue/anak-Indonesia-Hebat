@@ -15,7 +15,7 @@
     <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border-b-[12px] border-indigo-600 relative">
         
         <div class="bg-indigo-700 p-6 text-center text-white cursor-pointer select-none" onclick="cekModeGuru()">
-            <p id="gelarHero" class="text-[10px] font-black tracking-[0.3em] text-yellow-400 mb-1 uppercase italic">Memulai Sistem...</p>
+            <p id="gelarHero" class="text-[10px] font-black tracking-[0.3em] text-yellow-400 mb-1 uppercase italic">Memuat Gelar...</p>
             <h1 id="displayNama" class="text-2xl font-black italic tracking-tighter uppercase leading-none">Petualangan Hero</h1>
             <div id="lvlBadge" class="mt-2 bg-white/20 rounded-full py-1 px-4 inline-block border border-white/30 text-[10px] font-bold uppercase">Leveling...</div>
         </div>
@@ -67,15 +67,10 @@
                 <div id="listSatset" class="space-y-3 max-h-[350px] overflow-y-auto pr-2"></div>
             </div>
 
-            <div id="panelGuru" class="hidden mt-8 p-6 bg-red-50 rounded-[2.5rem] border-2 border-red-200 space-y-4">
-                <p class="text-[10px] font-black text-red-600 uppercase text-center tracking-widest">🔐 Panel Kontrol Guru</p>
-                <div class="space-y-1">
-                    <label class="text-[9px] font-black text-red-400 uppercase ml-2">Set XP Manual:</label>
-                    <input type="number" id="newXP" class="w-full p-4 rounded-2xl border-2 border-red-200 font-black text-center text-red-700 outline-none" placeholder="Contoh: 5000">
-                </div>
-                <button onclick="updateXPManual()" class="w-full bg-red-600 text-white py-4 rounded-2xl font-black uppercase text-xs shadow-lg hover:bg-red-700">Simpan XP Baru</button>
-                <a href="admin.html" class="block w-full bg-slate-800 text-white py-4 rounded-2xl font-black uppercase text-xs text-center shadow-lg hover:bg-black">
-                    📊 Buka Dashboard Monitor
+            <div id="panelGuru" class="hidden mt-8 p-6 bg-slate-800 rounded-[2.5rem] border-2 border-indigo-400 space-y-4">
+                <p class="text-[10px] font-black text-indigo-400 uppercase text-center tracking-widest">🔐 Panel Monitoring Guru</p>
+                <a href="admin.html" class="block w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs text-center shadow-lg hover:bg-indigo-700">
+                    📊 Buka Dashboard Kontrol
                 </a>
             </div>
 
@@ -98,7 +93,6 @@
         if (!firebase.apps.length) firebase.initializeApp(config);
         const db = firebase.database();
 
-        // DAFTAR MISI DENGAN BATAS 20:30 UNTUK MENGAJI
         const daftarMisi = [
             { label: "🌞 Bangun & Ibadah Subuh", limit: "05:30", poin: 50 },
             { label: "🧹 Bantu Orang Tua / Beres Rumah", limit: "06:30", poin: 40 },
@@ -130,7 +124,6 @@
                 sinkronData();
             } else {
                 document.getElementById('formNama').classList.remove('hidden');
-                document.getElementById('gelarHero').innerText = "Hero Baru!";
             }
         };
 
@@ -161,17 +154,50 @@
             document.getElementById('valPoin').innerText = xpSisa + " / 2000 XP";
             document.getElementById('barPoin').style.width = (xpSisa / 2000 * 100) + "%";
             if (xp >= 2000) document.getElementById('boxSertifikat').classList.remove('hidden');
-            else document.getElementById('boxSertifikat').classList.add('hidden');
         }
 
+        // SISTEM ANTI-CURANG: LOAD STATUS LOCK DARI DATABASE
         function renderMisiHero() {
-            document.getElementById('listMisi').innerHTML = daftarMisi.map(m => `
-                <div class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex justify-between items-center shadow-sm">
-                    <div><p class="font-black text-slate-700 text-[11px] uppercase italic leading-none">${m.label}</p>
-                    <p class="text-[8px] font-bold text-red-500 opacity-60 italic mt-1 uppercase">Batas: ${m.limit}</p></div>
-                    <input type="checkbox" onchange="prosesMisi(this, ${m.poin}, '${m.limit}')" class="w-8 h-8 accent-indigo-600 cursor-pointer">
-                </div>
-            `).join('');
+            const path = hNama.replace(/\s+/g, '_');
+            const tglHariIni = new Date().toLocaleDateString('id-ID');
+
+            db.ref('rekap_siswa/' + path + '/misi_harian').once('value', snap => {
+                const dataTercentang = snap.val() || {};
+
+                document.getElementById('listMisi').innerHTML = daftarMisi.map((m, index) => {
+                    const isDone = dataTercentang['misi_' + index] === tglHariIni;
+                    return `
+                        <div class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex justify-between items-center shadow-sm">
+                            <div><p class="font-black text-slate-700 text-[11px] uppercase italic leading-none">${m.label}</p>
+                            <p class="text-[8px] font-bold text-red-500 opacity-60 italic mt-1 uppercase">Batas: ${m.limit}</p></div>
+                            <input type="checkbox" ${isDone ? 'checked disabled' : ''} onchange="prosesMisi(this, ${m.poin}, '${m.limit}', ${index})" class="w-8 h-8 accent-indigo-600 cursor-pointer disabled:opacity-50">
+                        </div>
+                    `;
+                }).join('');
+            });
+        }
+
+        function prosesMisi(el, poin, limitStr, indexMisi) {
+            if(!el.checked) return;
+            const path = hNama.replace(/\s+/g, '_');
+            const tglHariIni = new Date().toLocaleDateString('id-ID');
+            const [h, m] = limitStr.split(':').map(Number);
+            const now = new Date(); const limit = new Date(); limit.setHours(h, m, 0);
+
+            let pDapat = (now <= limit) ? poin : -poin;
+            if(now > limit) alert("Terlambat! Poin dikurangi.");
+            else { confetti({particleCount: 40}); }
+
+            let baru = Math.max(0, (window.currentXP || 0) + pDapat);
+            
+            const updateData = {};
+            updateData['xp'] = baru;
+            updateData['waktu'] = now.toLocaleString('id-ID');
+            updateData['misi_harian/misi_' + indexMisi] = tglHariIni;
+
+            db.ref('rekap_siswa/' + path).update(updateData).then(() => {
+                el.disabled = true;
+            });
         }
 
         function pindahMenu(menu) {
@@ -208,17 +234,6 @@
             confetti({particleCount: 50, spread: 70, colors: ['#10b981', '#fbbf24']});
         }
 
-        function prosesMisi(el, poin, limitStr) {
-            if(!el.checked) return;
-            const [h, m] = limitStr.split(':').map(Number);
-            const now = new Date(); const limit = new Date(); limit.setHours(h, m, 0);
-            let pDapat = (now <= limit) ? poin : -poin;
-            if(now > limit) alert("Terlambat! Poin dikurangi.");
-            else { confetti({particleCount: 40}); el.disabled = true; }
-            let baru = Math.max(0, (window.currentXP || 0) + pDapat);
-            db.ref('rekap_siswa/' + hNama.replace(/\s+/g, '_')).update({ xp: baru, waktu: now.toLocaleString('id-ID') });
-        }
-
         function bukaLeaderboard() {
             const list = document.getElementById('isiLeaderboard');
             list.innerHTML = "<p class='text-center text-white/50 animate-bounce text-xs font-bold'>MEMANGGIL DATA...</p>";
@@ -250,14 +265,6 @@
                 clickHeader = 0; 
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             } 
-        }
-
-        function updateXPManual() { 
-            const v = document.getElementById('newXP').value; 
-            if(v!=="") { 
-                db.ref('rekap_siswa/' + hNama.replace(/\s+/g, '_')).update({ xp: parseInt(v) }); 
-                alert("XP Berhasil Diperbarui!"); 
-            }
         }
 
         function logout() { if(confirm("Ganti Hero?")) { localStorage.clear(); location.reload(); } }
