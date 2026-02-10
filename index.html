@@ -71,9 +71,9 @@
                 <p class="text-[10px] font-black text-red-600 uppercase text-center tracking-widest">🔐 Panel Kontrol Guru</p>
                 <div class="space-y-1">
                     <label class="text-[9px] font-black text-red-400 uppercase ml-2">Set XP Manual:</label>
-                    <input type="number" id="newXP" class="w-full p-4 rounded-2xl border-2 border-red-200 font-black text-center text-red-700 outline-none" placeholder="Masukkan XP">
+                    <input type="number" id="newXP" class="w-full p-4 rounded-2xl border-2 border-red-200 font-black text-center text-red-700 outline-none" placeholder="Contoh: 5000">
                 </div>
-                <button onclick="updateXPManual()" class="w-full bg-red-600 text-white py-4 rounded-2xl font-black uppercase text-xs shadow-lg hover:bg-red-700">Simpan XP</button>
+                <button onclick="updateXPManual()" class="w-full bg-red-600 text-white py-4 rounded-2xl font-black uppercase text-xs shadow-lg hover:bg-red-700">Simpan XP Baru</button>
                 <a href="admin.html" class="block w-full bg-slate-800 text-white py-4 rounded-2xl font-black uppercase text-xs text-center shadow-lg hover:bg-black">
                     📊 Buka Dashboard Monitor
                 </a>
@@ -98,11 +98,12 @@
         if (!firebase.apps.length) firebase.initializeApp(config);
         const db = firebase.database();
 
+        // DAFTAR MISI DENGAN BATAS 20:30 UNTUK MENGAJI
         const daftarMisi = [
             { label: "🌞 Bangun & Ibadah Subuh", limit: "05:30", poin: 50 },
             { label: "🧹 Bantu Orang Tua / Beres Rumah", limit: "06:30", poin: 40 },
             { label: "🎒 Siap Sekolah (Mandiri)", limit: "07:00", poin: 30 },
-            { label: "📖 Belajar / Mengaji Malam", limit: "20:00", poin: 40 },
+            { label: "📖 Belajar / Mengaji Malam", limit: "20:30", poin: 40 },
             { label: "💤 Tidur Cepat (Maks 21:30)", limit: "21:30", poin: 50 }
         ];
 
@@ -160,11 +161,12 @@
             document.getElementById('valPoin').innerText = xpSisa + " / 2000 XP";
             document.getElementById('barPoin').style.width = (xpSisa / 2000 * 100) + "%";
             if (xp >= 2000) document.getElementById('boxSertifikat').classList.remove('hidden');
+            else document.getElementById('boxSertifikat').classList.add('hidden');
         }
 
         function renderMisiHero() {
             document.getElementById('listMisi').innerHTML = daftarMisi.map(m => `
-                <div class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex justify-between items-center">
+                <div class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex justify-between items-center shadow-sm">
                     <div><p class="font-black text-slate-700 text-[11px] uppercase italic leading-none">${m.label}</p>
                     <p class="text-[8px] font-bold text-red-500 opacity-60 italic mt-1 uppercase">Batas: ${m.limit}</p></div>
                     <input type="checkbox" onchange="prosesMisi(this, ${m.poin}, '${m.limit}')" class="w-8 h-8 accent-indigo-600 cursor-pointer">
@@ -254,7 +256,7 @@
             const v = document.getElementById('newXP').value; 
             if(v!=="") { 
                 db.ref('rekap_siswa/' + hNama.replace(/\s+/g, '_')).update({ xp: parseInt(v) }); 
-                alert("XP Diperbarui!"); 
+                alert("XP Berhasil Diperbarui!"); 
             }
         }
 
