@@ -15,11 +15,8 @@
             <span class="text-5xl">👨‍✈️</span>
             <h2 class="text-xl font-black uppercase italic mt-4 text-slate-800">Admin Login</h2>
             <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-6">Khusus Pak Kiswanto</p>
-            
             <input type="email" id="adminEmail" placeholder="EMAIL ADMIN" class="w-full text-center text-sm font-bold p-4 bg-slate-100 rounded-2xl mb-2 outline-none border-2 border-transparent focus:border-orange-500 text-slate-800">
-            
             <input type="password" id="adminPass" placeholder="MASUKKAN PASSWORD" class="w-full text-center text-xl font-black p-4 bg-slate-100 rounded-2xl mb-4 outline-none border-2 border-transparent focus:border-orange-500 text-slate-800">
-            
             <button onclick="loginAdmin()" class="w-full bg-orange-600 text-white font-black py-4 rounded-2xl shadow-lg hover:bg-orange-700 transition-all uppercase italic text-xs">Masuk Sistem 🔓</button>
         </div>
     </div>
@@ -38,18 +35,39 @@
             </div>
         </div>
 
-        <div class="bg-indigo-900 p-6 rounded-t-[2rem] shadow-2xl border-b-4 border-yellow-500">
-            <h1 class="text-2xl font-black italic tracking-tighter uppercase text-yellow-400">🕵️ CCTV & LOG AUDIT</h1>
-            <p class="text-[10px] font-bold text-indigo-300 uppercase tracking-[0.2em]">Memantau Kejujuran & Perubahan Sistem</p>
+        <div class="bg-indigo-600 p-6 rounded-t-[2rem] shadow-2xl border-b-4 border-yellow-400">
+            <h1 class="text-xl font-black italic tracking-tighter uppercase text-white">📊 REKAP LEVEL PAHLAWAN</h1>
+            <p class="text-[9px] font-bold text-indigo-200 uppercase tracking-[0.2em]">Monitoring XP & Kedisiplinan Siswa</p>
+        </div>
+        <div class="bg-white mb-8 rounded-b-[2rem] overflow-hidden shadow-xl border-x-2 border-b-2 border-slate-200">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest">
+                            <th class="p-4 border-b">Hero / Siswa</th>
+                            <th class="p-4 border-b text-center">Level</th>
+                            <th class="p-4 border-b text-center">Total XP</th>
+                            <th class="p-4 border-b">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelHeroBody" class="text-slate-800 text-xs font-medium">
+                        <tr><td colspan="4" class="p-10 text-center animate-pulse uppercase font-black text-slate-300">Menarik Data Pahlawan...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
+        <div class="bg-slate-800 p-6 rounded-t-[2rem] shadow-2xl border-b-4 border-red-500">
+            <h1 class="text-xl font-black italic tracking-tighter uppercase text-red-500">🕵️ CCTV & LOG AUDIT</h1>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Log Perubahan Manual oleh Admin/Guru</p>
+        </div>
         <div class="bg-white rounded-b-[2rem] overflow-hidden shadow-xl border-x-2 border-b-2 border-slate-200">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
+                        <tr class="bg-slate-100 text-slate-600 text-[9px] font-black uppercase tracking-widest">
                             <th class="p-4 border-b">Waktu</th>
-                            <th class="p-4 border-b">Pelaku/Siswa</th>
+                            <th class="p-4 border-b">Pelaku/Guru</th>
                             <th class="p-4 border-b">Aksi / XP Baru</th>
                             <th class="p-4 border-b">Status</th>
                         </tr>
@@ -61,61 +79,89 @@
     </div>
 
     <script>
-        // CONFIG DATABASE TETAP SAMA
-        const config = { 
-            databaseURL: "https://e-perpus-a652c-default-rtdb.asia-southeast1.firebasedatabase.app" 
-        };
+        // CONFIG MENGGUNAKAN DATABASE PERPUS (Sesuai file Bapak)
+        const config = { databaseURL: "https://e-perpus-a652c-default-rtdb.asia-southeast1.firebasedatabase.app" };
         if (!firebase.apps.length) firebase.initializeApp(config);
         const db = firebase.database();
 
-        // KREDENSIAL TETAP SESUAI PERMINTAAN BAPAK
+        // Database Hero Tracker (Untuk ambil data rekap)
+        const dbHero = firebase.initializeApp({
+            databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.asia-southeast1.firebasedatabase.app"
+        }, "heroApp").database();
+
         const emailBenar = "sdn169.cintadamai@gmail.com";
         const passBenar = "Cintadama1";
 
         function loginAdmin() {
             const inputEmail = document.getElementById('adminEmail').value;
             const inputPass = document.getElementById('adminPass').value;
-
             if (inputEmail === emailBenar && inputPass === passBenar) {
-                alert("Akses Diterima, Pak Kiswanto!");
                 document.getElementById('loginOverlay').classList.add('hidden');
                 document.getElementById('adminContent').classList.remove('hidden');
                 jalankanMonitor();
+                muatRekapHero();
             } else {
-                alert("Email atau Password Salah! Perhatikan huruf besar-kecilnya, Pak.");
+                alert("Akses Ditolak!");
             }
         }
 
+        // --- FUNGSI BARU: MONITOR REKAP HERO ---
+        function muatRekapHero() {
+            dbHero.ref('rekap_siswa').on('value', snap => {
+                const body = document.getElementById('tabelHeroBody');
+                body.innerHTML = "";
+                if(!snap.exists()) {
+                    body.innerHTML = "<tr><td colspan='4' class='p-10 text-center uppercase font-bold text-slate-400'>Belum ada siswa yang mulai petualangan</td></tr>";
+                    return;
+                }
+
+                let siswaArr = [];
+                snap.forEach(child => { siswaArr.push(child.val()); });
+
+                // Urutkan XP Terbanyak
+                siswaArr.sort((a, b) => b.xp - a.xp);
+
+                siswaArr.forEach(s => {
+                    const level = Math.floor((s.xp || 0) / 2000) + 1;
+                    const path = s.nama.replace(/\s+/g, '_');
+                    body.innerHTML += `
+                        <tr class="border-b border-slate-50 hover:bg-indigo-50 transition-colors">
+                            <td class="p-4 uppercase font-black text-indigo-900">${s.nama}<br><span class="text-[8px] text-slate-400 font-bold">${s.kelas}</span></td>
+                            <td class="p-4 text-center"><span class="bg-yellow-400 text-indigo-900 px-2 py-1 rounded-md font-black text-[10px]">LVL ${level}</span></td>
+                            <td class="p-4 text-center font-black text-indigo-600">${s.xp.toLocaleString()} XP</td>
+                            <td class="p-4">
+                                <button onclick="hapusHero('${path}')" class="text-slate-300 hover:text-red-500">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+        }
+
+        function hapusHero(path) {
+            if(confirm("Hapus data pahlawan ini?")) dbHero.ref('rekap_siswa/' + path).remove();
+        }
+
+        // --- MONITOR OTP & LOG (DATABASE PERPUS) ---
         function jalankanMonitor() {
-            // Pantau Kode OTP di Database
             db.ref('sistem_keamanan/otp_katalog').on('value', snap => {
                 if(snap.exists()) {
-                    const data = snap.val();
-                    document.getElementById('monitorOTP').innerText = data.kode;
-                    document.getElementById('waktuOTP').innerText = "Update Terakhir: " + data.waktu;
+                    document.getElementById('monitorOTP').innerText = snap.val().kode;
+                    document.getElementById('waktuOTP').innerText = "Update: " + snap.val().waktu;
                 }
             });
 
-            // Pantau Audit Log
-            db.ref('audit_log').limitToLast(50).on('value', snap => {
+            db.ref('audit_log').limitToLast(20).on('value', snap => {
                 const body = document.getElementById('logTableBody');
                 body.innerHTML = "";
-                if(!snap.exists()){
-                    body.innerHTML = `<tr><td colspan="4" class="p-10 text-center text-slate-400 italic font-bold uppercase text-[10px]">Belum ada aktivitas baru...</td></tr>`;
-                    return;
-                }
                 snap.forEach(item => {
                     const log = item.val();
                     body.innerHTML = `
-                        <tr class="border-b border-slate-50 hover:bg-yellow-50 transition-colors italic">
-                            <td class="p-4 text-[10px] text-slate-400 font-mono">${log.waktu || '-'}</td>
+                        <tr class="border-b border-slate-50 hover:bg-red-50 italic">
+                            <td class="p-4 text-[9px] text-slate-400 font-mono">${log.waktu || '-'}</td>
                             <td class="p-4 font-black text-indigo-700 uppercase">${log.nama_pengubah || '-'}</td>
-                            <td class="p-4 font-bold text-red-600">SET XP: ${log.xp_baru || '-'}</td>
-                            <td class="p-4">
-                                <span class="bg-red-100 text-red-700 text-[8px] px-2 py-1 rounded-full font-black uppercase">
-                                    ${log.status || 'MODIFIKASI'}
-                                </span>
-                            </td>
+                            <td class="p-4 font-bold text-red-600 uppercase">Edit XP: ${log.xp_baru || '-'}</td>
+                            <td class="p-4"><span class="bg-red-100 text-red-700 text-[8px] px-2 py-1 rounded-full font-black uppercase">MODIFIKASI</span></td>
                         </tr>` + body.innerHTML;
                 });
             });
