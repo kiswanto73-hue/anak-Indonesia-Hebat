@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCTV Pahlawan & Perpus - Admin Kiswanto</title>
+    <title>CCTV Admin - Kiswanto</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-slate-900 min-h-screen p-4 font-sans text-slate-200">
+<body class="bg-slate-900 min-h-screen p-4 font-sans text-slate-200 pb-20">
 
     <div id="loginOverlay" class="fixed inset-0 z-[200] bg-slate-950 flex items-center justify-center p-6">
         <div class="bg-white p-8 rounded-[3rem] shadow-2xl max-w-sm w-full text-center border-b-8 border-orange-600">
@@ -31,20 +31,30 @@
             <button onclick="location.reload()" class="bg-white/20 px-4 py-2 rounded-full text-[10px] font-black uppercase italic">Keluar</button>
         </div>
 
+        <div class="bg-indigo-900 p-6 rounded-[2rem] shadow-2xl mb-6 border-2 border-indigo-400">
+            <h2 class="text-yellow-400 font-black italic uppercase text-sm mb-4 flex items-center gap-2">🚀 Operasi XP Masal</h2>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input type="number" id="massXPValue" placeholder="Jumlah XP (Contoh: 100)" class="flex-1 bg-white/10 p-4 rounded-2xl text-white font-black outline-none border border-white/10 focus:border-yellow-400">
+                <div class="flex gap-2">
+                    <button onclick="prosesXPSelection('tambah')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black px-4 py-4 rounded-2xl text-[9px] uppercase italic leading-none">➕ Tambah Ke Semua</button>
+                    <button onclick="prosesXPSelection('set')" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-black px-4 py-4 rounded-2xl text-[9px] uppercase italic leading-none">🎯 Setel Semua</button>
+                </div>
+            </div>
+            <p class="text-[8px] text-indigo-300 mt-3 font-bold uppercase italic">*Tambah: XP saat ini + Bonus. Setel: Semua XP jadi sama (Mereset).</p>
+        </div>
+
         <div class="bg-white p-6 rounded-[2rem] shadow-2xl mb-6 border-b-8 border-indigo-500">
             <h2 class="text-indigo-900 font-black italic uppercase text-sm mb-4">🕵️ Radar Kejujuran (Aktivitas Jam)</h2>
-            <div class="h-64">
-                <canvas id="chartAktivitas"></canvas>
-            </div>
-            <p class="text-[9px] text-slate-400 mt-4 italic font-bold uppercase text-center">*Lonjakan tajam di satu jam menunjukkan potensi pengisian sekaligus (curang).</p>
+            <div class="h-64"><canvas id="chartAktivitas"></canvas></div>
+            <p class="text-[9px] text-slate-400 mt-4 italic font-bold uppercase text-center">*Lonjakan tajam menunjukkan potensi curang.</p>
         </div>
 
         <div class="bg-indigo-600 p-4 rounded-t-[2rem]">
-            <h1 class="text-sm font-black italic uppercase text-white px-2">📊 Daftar Peringkat Hero</h1>
+            <h1 class="text-sm font-black italic uppercase text-white px-2">📊 Peringkat & Edit Manual</h1>
         </div>
         <div class="bg-white mb-8 rounded-b-[2rem] overflow-hidden shadow-xl border-x-2 border-b-2 border-slate-200">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-slate-800">
+                <table class="w-full text-left border-collapse text-slate-800 text-xs">
                     <thead>
                         <tr class="bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest">
                             <th class="p-4 border-b">Hero / Siswa</th>
@@ -53,7 +63,7 @@
                             <th class="p-4 border-b">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelHeroBody" class="text-xs"></tbody>
+                    <tbody id="tabelHeroBody"></tbody>
                 </table>
             </div>
         </div>
@@ -63,18 +73,16 @@
         </div>
         <div class="bg-white mb-8 rounded-b-[2rem] overflow-hidden shadow-xl border-x-2 border-b-2 border-slate-200">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-slate-800">
+                <table class="w-full text-left border-collapse text-slate-800 text-xs">
                     <thead>
                         <tr class="bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest">
                             <th class="p-4 border-b">Nama Siswa</th>
-                            <th class="p-4 border-b text-center">Misi Selesai</th>
+                            <th class="p-4 border-b text-center">Misi</th>
                             <th class="p-4 border-b">Progress</th>
-                            <th class="p-4 border-b">Jurnal</th>
+                            <th class="p-4 border-b">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelRamadhanBody" class="text-xs">
-                        <tr><td colspan="4" class="p-10 text-center text-slate-300 font-bold italic uppercase animate-pulse">Memuat Jurnal Ramadhan...</td></tr>
-                    </tbody>
+                    <tbody id="tabelRamadhanBody"></tbody>
                 </table>
             </div>
         </div>
@@ -103,23 +111,32 @@
             } else { alert("Email atau Password Salah Pak!"); }
         }
 
-        function inisialisasiGrafik() {
-            const ctx = document.getElementById('chartAktivitas').getContext('2d');
-            myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['00:00','04:00','06:00','08:00','12:00','16:00','20:00','23:59'],
-                    datasets: [{
-                        label: 'Aktivitas Ceklis',
-                        data: [0, 0, 0, 0, 0, 0, 0, 0],
-                        borderColor: '#4f46e5',
-                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
+        // FUNGSI BARU: PROSES XP MASAL
+        function prosesXPSelection(tipe) {
+            const nominal = parseInt(document.getElementById('massXPValue').value);
+            if (isNaN(nominal)) return alert("Isi jumlah XP-nya dulu, Pak!");
+
+            const pesan = tipe === 'tambah' 
+                ? `Beri tambahan ${nominal} XP ke SEMUA siswa?` 
+                : `RESET semua XP siswa menjadi ${nominal}?`;
+
+            if (confirm(pesan)) {
+                dbHero.ref('rekap_siswa').once('value', snap => {
+                    let updates = {};
+                    snap.forEach(child => {
+                        const path = child.key;
+                        const currentXP = child.val().xp || 0;
+                        const finalXP = (tipe === 'tambah') ? currentXP + nominal : nominal;
+                        
+                        updates[`rekap_siswa/${path}/xp`] = finalXP;
+                        updates[`rekap_siswa/${path}/waktu`] = "Bonus Admin: " + new Date().toLocaleString('id-ID');
+                    });
+                    dbHero.ref().update(updates).then(() => {
+                        alert("✅ Berhasil Diperbarui untuk Semua Siswa!");
+                        document.getElementById('massXPValue').value = "";
+                    });
+                });
+            }
         }
 
         function muatRekapHero() {
@@ -131,7 +148,7 @@
                 snap.forEach(child => {
                     const s = child.val();
                     const path = child.key;
-                    if(s.waktu) {
+                    if(s.waktu && s.waktu.includes(' ')) {
                         const jam = parseInt(s.waktu.split(' ')[1]); 
                         if(jam < 4) jamAktivitas[0]++;
                         else if(jam < 6) jamAktivitas[1]++;
@@ -145,13 +162,15 @@
                     body.innerHTML += `
                         <tr class="border-b border-slate-50 hover:bg-slate-50">
                             <td class="p-4 font-black uppercase text-indigo-900">${s.nama}<br><span class="text-[8px] text-slate-400 font-bold">${s.kelas}</span></td>
-                            <td class="p-4 text-center font-black text-indigo-600">${s.xp.toLocaleString()}</td>
+                            <td class="p-4 text-center font-black text-indigo-600">${(s.xp || 0).toLocaleString()}</td>
                             <td class="p-4 text-center text-[9px] font-bold text-slate-400">${s.waktu || '-'}</td>
                             <td class="p-4 text-center"><button onclick="hapusHero('${path}')" class="opacity-30 hover:opacity-100">🗑️</button></td>
                         </tr>`;
                 });
-                myChart.data.datasets[0].data = jamAktivitas;
-                myChart.update();
+                if(myChart) {
+                    myChart.data.datasets[0].data = jamAktivitas;
+                    myChart.update();
+                }
             });
         }
 
@@ -159,8 +178,6 @@
             dbHero.ref('rekap_siswa').on('value', snap => {
                 const body = document.getElementById('tabelRamadhanBody');
                 body.innerHTML = "";
-                if(!snap.exists()) return;
-
                 snap.forEach(child => {
                     const s = child.val();
                     const rData = s.ramadhan || {};
@@ -169,20 +186,38 @@
                     const persen = Math.round((done/30)*100);
 
                     body.innerHTML += `
-                        <tr class="border-b border-slate-50 hover:bg-emerald-50 transition-colors">
+                        <tr class="border-b border-slate-50">
                             <td class="p-4 uppercase font-black text-emerald-900">${s.nama}</td>
-                            <td class="p-4 text-center font-black text-emerald-600">${done} / 30</td>
+                            <td class="p-4 text-center font-black text-emerald-600">${done}/30</td>
                             <td class="p-4">
                                 <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                                     <div class="bg-emerald-500 h-full" style="width: ${persen}%"></div>
                                 </div>
-                                <p class="text-[7px] mt-1 font-bold text-slate-400 uppercase italic">Update: ${rData.tgl || '-'}</p>
                             </td>
                             <td class="p-4">
-                                <button onclick="cekDetailSatset('${s.nama}')" class="bg-emerald-700 text-white text-[8px] font-black px-3 py-1 rounded-lg shadow-sm uppercase italic">Cek Jurnal</button>
+                                <button onclick="cekDetailSatset('${s.nama}')" class="bg-emerald-700 text-white text-[8px] font-black px-3 py-1 rounded-lg uppercase italic">Detail</button>
                             </td>
                         </tr>`;
                 });
+            });
+        }
+
+        function inisialisasiGrafik() {
+            const ctx = document.getElementById('chartAktivitas').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['00:00','04:00','06:00','08:00','12:00','16:00','20:00','23:59'],
+                    datasets: [{
+                        label: 'Siswa Ceklis',
+                        data: [0, 0, 0, 0, 0, 0, 0, 0],
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
             });
         }
 
@@ -199,7 +234,7 @@
             });
         }
 
-        function hapusHero(path) { if(confirm("Hapus data siswa ini?")) dbHero.ref('rekap_siswa/' + path).remove(); }
+        function hapusHero(path) { if(confirm("Hapus permanen data siswa ini?")) dbHero.ref('rekap_siswa/' + path).remove(); }
 
         function jalankanMonitor() {
             db.ref('sistem_keamanan/otp_katalog').on('value', snap => {
