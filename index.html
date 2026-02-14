@@ -10,7 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 </head>
-<body class="bg-slate-950 min-h-screen flex items-center justify-center p-4 font-sans text-slate-800">
+<body class="bg-slate-950 min-h-screen flex items-center justify-center p-2 md:p-4 font-sans text-slate-800">
 
     <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border-b-[12px] border-indigo-600 relative">
         
@@ -31,7 +31,7 @@
         </div>
 
         <div id="tabNav" class="hidden space-y-3 px-6 mt-6">
-            <button onclick="bukaLeaderboard()" class="w-full py-3 bg-yellow-400 text-indigo-900 rounded-2xl font-black text-[10px] uppercase shadow-lg flex items-center justify-center gap-2 animate-pulse">
+            <button onclick="bukaLeaderboard()" class="w-full py-3 bg-yellow-400 text-indigo-900 rounded-2xl font-black text-[10px] uppercase shadow-lg flex items-center justify-center gap-2">
                 🏆 Lihat Peringkat Hero
             </button>
             <div class="flex gap-2">
@@ -52,6 +52,7 @@
         </div>
 
         <div id="formMisi" class="hidden p-6 pt-4">
+            
             <div id="divHero" class="space-y-3">
                 <div id="listMisi" class="space-y-3"></div>
                 <div id="boxSertifikat" class="hidden mt-6 p-5 bg-yellow-400 rounded-[2rem] text-center shadow-xl border-4 border-white">
@@ -62,16 +63,14 @@
             <div id="divSatset" class="hidden space-y-3">
                 <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-100 mb-2 text-center">
                     <p class="text-[10px] font-black text-emerald-700 uppercase italic leading-none">🌙 SATSET RAMADHAN</p>
-                    <p class="text-[7px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Satu Hari Satu Etika Baik</p>
+                    <p class="text-[7px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Hanya Bisa Ceklis di Tanggal yang Sama</p>
                 </div>
-                <div id="listSatset" class="space-y-3 max-h-[350px] overflow-y-auto pr-2"></div>
+                <div id="listSatset" class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scroll"></div>
             </div>
 
             <div id="panelGuru" class="hidden mt-8 p-6 bg-slate-800 rounded-[2.5rem] border-2 border-indigo-400 space-y-4">
                 <p class="text-[10px] font-black text-indigo-400 uppercase text-center tracking-widest">🔐 Panel Monitoring Guru</p>
-                <a href="admin.html" class="block w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs text-center shadow-lg hover:bg-indigo-700">
-                    📊 Buka Dashboard Kontrol
-                </a>
+                <a href="admin.html" class="block w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs text-center">📊 Buka Dashboard Kontrol</a>
             </div>
 
             <button onclick="logout()" class="w-full mt-10 text-[9px] font-black text-slate-300 uppercase italic underline text-center block">Ganti Identitas Hero</button>
@@ -89,10 +88,12 @@
     </div>
 
     <script>
+        // CONFIG FIREBASE
         const config = { databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.asia-southeast1.firebasedatabase.app" };
         if (!firebase.apps.length) firebase.initializeApp(config);
         const db = firebase.database();
 
+        // DATA MASTER
         const daftarMisi = [
             { label: "🌞 Bangun & Ibadah Subuh", limit: "05:30", poin: 50 },
             { label: "🧹 Bantu Orang Tua / Beres Rumah", limit: "06:30", poin: 40 },
@@ -102,16 +103,16 @@
         ];
 
         const dataSatset = [
-            { h: 1, m: "Menyiapkan sajadah Papa dan Mama" }, { h: 2, m: "Menghafal doa buka puasa" }, { h: 3, m: "Menaruh piring kotor ke dapur" },
-            { h: 4, m: "Merapikan tempat tidur sendiri" }, { h: 5, m: "Memijat bahu Mama/Papa" }, { h: 6, m: "Memberi senyum dan salam" },
-            { h: 7, m: "Sabar dan tidak marah-marah" }, { h: 8, m: "Sholat Subuh tepat waktu" }, { h: 9, m: "Membaca 5 ayat Al-Quran/Iqra" },
-            { h: 10, m: "Sedekah uang jajan ke masjid" }, { h: 11, m: "Ikut Sholat Tarawih berjamaah" }, { h: 12, m: "Menghafal 1 surat pendek baru" },
-            { h: 13, m: "Mendoakan Bapak dan Ibu Guru" }, { h: 14, m: "Mendengar cerita Nabi" }, { h: 15, m: "Berbagi makanan buka puasa" },
-            { h: 16, m: "Membuang sampah di jalan/masjid" }, { h: 17, m: "Sopan bertemu orang tua" }, { h: 18, m: "Meminjamkan mainan ke teman" },
-            { h: 19, m: "Mematikan keran air mengalir" }, { h: 20, m: "Menulis surat cinta buat Ortu" }, { h: 21, m: "Berkata jujur seharian" },
-            { h: 22, m: "Menyiapkan baju sholat sendiri" }, { h: 23, m: "Menyiram tanaman rumah" }, { h: 24, m: "Membaca buku (kurangi HP)" },
-            { h: 25, m: "Memberi takjil ke tetangga" }, { h: 26, m: "Membantu siapkan hidangan buka" }, { h: 27, m: "Mengajak teman berbuat baik" },
-            { h: 28, m: "Belajar 1 Asmaul Husna" }, { h: 29, m: "Merapikan rak sepatu" }, { h: 30, m: "Meminta maaf & memeluk Ortu" }
+            { h: 1, m: "Menyiapkan sajadah Ortu" }, { h: 2, m: "Menghafal doa buka puasa" }, { h: 3, m: "Menaruh piring kotor ke dapur" },
+            { h: 4, m: "Merapikan tempat tidur" }, { h: 5, m: "Memijat bahu Mama/Papa" }, { h: 6, m: "Memberi senyum dan salam" },
+            { h: 7, m: "Sabar dan tidak marah" }, { h: 8, m: "Subuh tepat waktu" }, { h: 9, m: "Baca 5 ayat Al-Quran" },
+            { h: 10, m: "Sedekah uang jajan" }, { h: 11, m: "Ikut Sholat Tarawih" }, { h: 12, m: "Hafal 1 surat pendek" },
+            { h: 13, m: "Doakan Bapak Ibu Guru" }, { h: 14, m: "Mendengar cerita Nabi" }, { h: 15, m: "Berbagi takjil" },
+            { h: 16, m: "Buang sampah orang lain" }, { h: 17, m: "Sopan bertemu tetangga" }, { h: 18, m: "Meminjamkan mainan" },
+            { h: 19, m: "Hemat air dan listrik" }, { h: 20, m: "Surat cinta buat Ortu" }, { h: 21, m: "Berkata jujur seharian" },
+            { h: 22, m: "Siapkan baju koko/mukena" }, { h: 23, m: "Menyiram tanaman" }, { h: 24, m: "Baca buku 15 menit" },
+            { h: 25, m: "Membantu masak buka" }, { h: 26, m: "Menyusun alas kaki" }, { h: 27, m: "Mengajak teman sholat" },
+            { h: 28, m: "Belajar 1 Asmaul Husna" }, { h: 29, m: "Bersihkan debu meja" }, { h: 30, m: "Meminta maaf & peluk Ortu" }
         ];
 
         let hNama = localStorage.getItem('heroNama');
@@ -144,14 +145,12 @@
             window.currentXP = xp;
             const level = Math.floor(xp / 2000) + 1;
             const xpSisa = xp % 2000;
-            const gelarArr = ["Calon Pahlawan", "Pahlawan Muda", "Pahlawan Sejati", "Pahlawan Agung", "Legenda Hebat"];
             document.getElementById('displayNama').innerText = hNama;
-            document.getElementById('gelarHero').innerText = gelarArr[Math.min(level-1, 4)] + " (" + hKelas + ")";
+            document.getElementById('gelarHero').innerText = "Hero " + hKelas;
             document.getElementById('lvlBadge').innerText = "Level " + level;
             document.getElementById('valPoin').innerText = xpSisa + " / 2000 XP";
             document.getElementById('barPoin').style.width = (xpSisa / 2000 * 100) + "%";
             if (xp >= 2000) document.getElementById('boxSertifikat').classList.remove('hidden');
-            else document.getElementById('boxSertifikat').classList.add('hidden');
         }
 
         function renderMisiHero(dataTercentang) {
@@ -159,10 +158,10 @@
             document.getElementById('listMisi').innerHTML = daftarMisi.map((m, idx) => {
                 const isDone = dataTercentang['misi_' + idx] === tglHariIni;
                 return `
-                    <div class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex justify-between items-center shadow-sm">
-                        <div><p class="font-black text-slate-700 text-[11px] uppercase italic leading-none">${m.label}</p>
-                        <p class="text-[8px] font-bold text-red-500 opacity-60 italic mt-1 uppercase">Batas: ${m.limit}</p></div>
-                        <input type="checkbox" ${isDone ? 'checked disabled' : ''} onchange="prosesMisi(this, ${m.poin}, '${m.limit}', ${idx})" class="w-8 h-8 accent-indigo-600 cursor-pointer disabled:opacity-50">
+                    <div class="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex justify-between items-center">
+                        <div><p class="font-black text-slate-700 text-[11px] uppercase italic">${m.label}</p>
+                        <p class="text-[8px] font-bold text-red-500 italic mt-1 uppercase">Batas: ${m.limit}</p></div>
+                        <input type="checkbox" ${isDone ? 'checked disabled' : ''} onchange="prosesMisi(this, ${m.poin}, '${m.limit}', ${idx})" class="w-8 h-8 accent-indigo-600 cursor-pointer">
                     </div>`;
             }).join('');
         }
@@ -170,92 +169,107 @@
         function prosesMisi(el, poin, limitStr, idxMisi) {
             if(!el.checked) return;
             const path = hNama.replace(/\s+/g, '_');
-            const tglHariIni = new Date().toLocaleDateString('id-ID');
-            const [h, m] = limitStr.split(':').map(Number);
-            const now = new Date(); const limit = new Date(); limit.setHours(h, m, 0);
+            const now = new Date(); const [h, m] = limitStr.split(':').map(Number);
+            const limit = new Date(); limit.setHours(h, m, 0);
             let pDapat = (now <= limit) ? poin : -poin;
             if(now > limit) alert("Terlambat! Poin dikurangi.");
             else confetti({particleCount: 40});
             let baru = Math.max(0, (window.currentXP || 0) + pDapat);
-            const up = {};
-            up['xp'] = baru;
-            up['waktu'] = now.toLocaleString('id-ID');
-            up['misi_harian/misi_' + idxMisi] = tglHariIni;
-            db.ref('rekap_siswa/' + path).update(up).then(() => { el.disabled = true; });
+            db.ref('rekap_siswa/' + path).update({ xp: baru, ['misi_harian/misi_' + idxMisi]: now.toLocaleDateString('id-ID') });
         }
 
-        function pindahMenu(menu) {
-            const isHero = menu === 'hero';
-            document.getElementById('divHero').classList.toggle('hidden', !isHero);
-            document.getElementById('divSatset').classList.toggle('hidden', isHero);
-            document.getElementById('btnHero').className = isHero ? "flex-1 py-3 rounded-2xl font-black text-[10px] uppercase bg-indigo-600 text-white shadow-md" : "flex-1 py-3 rounded-2xl font-black text-[10px] uppercase bg-slate-100 text-slate-400";
-            document.getElementById('btnSatset').className = !isHero ? "flex-1 py-3 rounded-2xl font-black text-[10px] uppercase bg-emerald-600 text-white shadow-md" : "flex-1 py-3 rounded-2xl font-black text-[10px] uppercase bg-slate-100 text-slate-400";
-            if(!isHero) muatSatset();
-        }
-
+        // LOGIKA SATSET SATU HARI SATU CEKLIST + FOTO
         function muatSatset() {
             const path = hNama.replace(/\s+/g, '_');
+            
+            // LOGIKA TANGGAL (Ganti ke tanggal puasa sesungguhnya)
+            const tglMulai = new Date("2026-02-18"); 
+            const tglSekarang = new Date();
+            const hariKe = Math.floor((tglSekarang - tglMulai) / (1000 * 60 * 60 * 24)) + 1;
+
             db.ref('rekap_siswa/' + path + '/ramadhan').once('value', snap => {
                 const data = snap.val() || {};
-                document.getElementById('listSatset').innerHTML = dataSatset.map(item => `
-                    <div class="bg-white border-2 border-slate-50 p-4 rounded-2xl flex justify-between items-center shadow-sm">
-                        <div class="flex items-center gap-3">
-                            <span class="text-[9px] font-black text-emerald-500 bg-emerald-50 w-8 h-8 flex items-center justify-center rounded-full border border-emerald-100">H${item.h}</span>
-                            <p class="text-[10px] font-bold text-slate-700 uppercase leading-tight">${item.m}</p>
-                        </div>
-                        <input type="checkbox" ${data['h'+item.h] ? 'checked disabled' : ''} onchange="simpanSatset(${item.h}, this)" class="w-7 h-7 accent-emerald-600">
-                    </div>`).join('');
+                document.getElementById('listSatset').innerHTML = dataSatset.map(item => {
+                    const isDone = data['h' + item.h] ? true : false;
+                    const isToday = item.h === hariKe;
+                    const isLocked = item.h > hariKe;
+
+                    return `
+                        <div class="p-4 rounded-3xl border-2 transition-all ${isToday ? 'bg-emerald-50 border-emerald-400' : 'bg-white border-slate-50'}">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[9px] font-black ${isToday ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-400'} w-8 h-8 flex items-center justify-center rounded-full">H${item.h}</span>
+                                <p class="flex-1 ml-3 text-[10px] font-black text-slate-700 uppercase">${item.m}</p>
+                                ${isDone ? '✅' : (isToday ? '⭐' : '🔒')}
+                            </div>
+                            
+                            ${isToday && !isDone ? `
+                                <div class="mt-3 space-y-2">
+                                    <label class="block w-full py-2 bg-white border-2 border-dashed border-emerald-300 rounded-xl text-center text-[8px] font-bold text-emerald-600 cursor-pointer">
+                                        📸 PILIH FOTO BUKTI
+                                        <input type="file" accept="image/*" class="hidden" onchange="prosesSatset(${item.h}, this)">
+                                    </label>
+                                </div>
+                            ` : ''}
+                            
+                            ${isDone ? `<p class="text-[7px] text-emerald-500 font-bold uppercase italic text-center">Sudah Terkirim ke Spreadsheet</p>` : ''}
+                        </div>`;
+                }).join('');
             });
         }
 
-        function simpanSatset(hari, el) {
-            if(!el.checked) return;
-            const path = hNama.replace(/\s+/g, '_');
-            db.ref('rekap_siswa/' + path + '/ramadhan').update({ ['h'+hari]: true, tgl: new Date().toLocaleString('id-ID') });
-            el.disabled = true;
-            confetti({particleCount: 50, spread: 70, colors: ['#10b981', '#fbbf24']});
+        function prosesSatset(hari, el) {
+            const file = el.files[0];
+            if(!file) return;
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const base64Photo = reader.result; // Ini link fotonya
+                const path = hNama.replace(/\s+/g, '_');
+                
+                db.ref('rekap_siswa/' + path + '/ramadhan').update({ 
+                    ['h' + hari]: true, 
+                    ['foto_h' + hari]: base64Photo,
+                    tgl: new Date().toLocaleString('id-ID') 
+                }).then(() => {
+                    db.ref('rekap_siswa/' + path).update({ xp: (window.currentXP || 0) + 100 });
+                    confetti({particleCount: 100});
+                    muatSatset();
+                });
+            };
         }
 
-        function bukaLeaderboard() {
-            const list = document.getElementById('isiLeaderboard');
-            list.innerHTML = "<p class='text-center text-white/50 animate-bounce text-xs font-bold'>MEMANGGIL DATA...</p>";
-            document.getElementById('modalLeaderboard').classList.remove('hidden');
-            db.ref('rekap_siswa').orderByChild('xp').limitToLast(10).once('value', snap => {
-                let data = []; snap.forEach(c => { data.push(c.val()); }); data.reverse();
-                list.innerHTML = data.map((s, i) => `
-                    <div class="flex items-center gap-4 bg-white/10 p-4 rounded-3xl border border-white/5">
-                        <div class="text-2xl font-black ${i<3 ? 'text-yellow-400' : 'text-slate-500'}">#${i+1}</div>
-                        <div class="flex-1"><p class="text-white font-black uppercase text-[10px] leading-tight">${s.nama}</p><p class="text-white/30 text-[7px] font-bold uppercase">${s.kelas}</p></div>
-                        <div class="text-right"><p class="text-yellow-400 font-black text-xs">${(s.xp || 0).toLocaleString()}</p></div>
-                    </div>`).join('');
-            });
+        // MENU NAVIGASI & UTILITY
+        function pindahMenu(menu) {
+            document.getElementById('divHero').classList.toggle('hidden', menu !== 'hero');
+            document.getElementById('divSatset').classList.toggle('hidden', menu === 'hero');
+            if(menu === 'satset') muatSatset();
         }
 
         function simpanProfil() {
             const n = document.getElementById('inputNama').value.trim().toUpperCase();
             const k = document.getElementById('inputKelas').value;
-            if(n.length < 3 || !k) return alert("Isi Nama & Kelas!");
+            if(n.length < 3 || !k) return alert("Lengkapi data!");
             localStorage.setItem('heroNama', n); localStorage.setItem('heroKelas', k);
             location.reload();
         }
 
-        function cekModeGuru() { 
-            clickHeader++; 
-            if(clickHeader >= 5) { 
-                document.getElementById('panelGuru').classList.toggle('hidden'); 
-                clickHeader = 0; 
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            } 
+        function bukaLeaderboard() {
+            document.getElementById('modalLeaderboard').classList.remove('hidden');
+            db.ref('rekap_siswa').orderByChild('xp').limitToLast(10).once('value', snap => {
+                let d = []; snap.forEach(c => d.push(c.val())); d.reverse();
+                document.getElementById('isiLeaderboard').innerHTML = d.map((s,i) => `
+                    <div class="flex justify-between bg-white/10 p-4 rounded-2xl">
+                        <span class="text-white font-black text-xs">#${i+1} ${s.nama}</span>
+                        <span class="text-yellow-400 font-black">${s.xp} XP</span>
+                    </div>`).join('');
+            });
         }
 
+        function cekModeGuru() { clickHeader++; if(clickHeader >= 5) { document.getElementById('panelGuru').classList.toggle('hidden'); clickHeader=0; } }
         function logout() { if(confirm("Ganti Hero?")) { localStorage.clear(); location.reload(); } }
         function tutupLeaderboard() { document.getElementById('modalLeaderboard').classList.add('hidden'); }
-        function cetakSertifikat() {
-            const { jsPDF } = window.jspdf; const doc = new jsPDF('l');
-            doc.setFontSize(40); doc.text("PIAGAM HERO", 148, 80, {align:"center"});
-            doc.setFontSize(20); doc.text(hNama, 148, 110, {align:"center"});
-            doc.save(`Sertifikat_${hNama}.pdf`);
-        }
+        function cetakSertifikat() { alert("Fitur piagam siap ditarik dari Spreadsheet!"); }
     </script>
 </body>
 </html>
