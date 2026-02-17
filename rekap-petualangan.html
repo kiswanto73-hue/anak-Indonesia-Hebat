@@ -12,8 +12,8 @@
     <style>
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 10px; }
-        .misi-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .misi-card:active { transform: scale(0.95); }
+        .misi-card { transition: all 0.3s ease; }
+        .misi-card:active { transform: scale(0.97); }
     </style>
 </head>
 <body class="bg-slate-950 min-h-screen flex items-center justify-center p-2 md:p-4 font-sans text-slate-800">
@@ -21,7 +21,7 @@
     <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border-b-[12px] border-indigo-600 relative">
         
         <div class="bg-indigo-700 p-6 text-center text-white cursor-pointer select-none" onclick="cekModeGuru()">
-            <p id="gelarHero" class="text-[10px] font-black tracking-[0.3em] text-yellow-400 mb-1 uppercase italic">Memuat Petualangan...</p>
+            <p id="gelarHero" class="text-[10px] font-black tracking-[0.3em] text-yellow-400 mb-1 uppercase italic">Memuat Hero...</p>
             <h1 id="displayNama" class="text-2xl font-black italic tracking-tighter uppercase leading-none">Petualangan Hero</h1>
             <div id="lvlBadge" class="mt-2 bg-white/20 rounded-full py-1 px-4 inline-block border border-white/30 text-[10px] font-bold uppercase">Leveling...</div>
         </div>
@@ -37,7 +37,7 @@
         </div>
 
         <div id="tabNav" class="hidden space-y-3 px-6 mt-6">
-            <button onclick="bukaLeaderboard()" class="w-full py-3 bg-yellow-400 text-indigo-900 rounded-2xl font-black text-[10px] uppercase shadow-lg flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform">
+            <button onclick="bukaLeaderboard()" class="w-full py-3 bg-yellow-400 text-indigo-900 rounded-2xl font-black text-[10px] uppercase shadow-lg border-b-4 border-yellow-600 active:border-b-0 transition-all">
                 🏆 Lihat Peringkat Hero Dunia
             </button>
             <div class="flex gap-2">
@@ -47,16 +47,16 @@
         </div>
 
         <div id="formNama" class="hidden p-8 space-y-4">
-            <input type="text" id="inputNama" placeholder="NAMA LENGKAP..." class="w-full bg-slate-100 p-5 rounded-2xl text-center font-black text-indigo-700 border-2 border-transparent focus:border-indigo-500 outline-none uppercase">
-            <select id="inputKelas" class="w-full bg-slate-100 p-5 rounded-2xl font-black text-indigo-700 text-center uppercase appearance-none">
+            <input type="text" id="inputNama" placeholder="NAMA LENGKAP..." class="w-full bg-slate-100 p-5 rounded-2xl text-center font-black text-indigo-700 border-2 border-transparent focus:border-indigo-500 outline-none uppercase shadow-inner">
+            <select id="inputKelas" class="w-full bg-slate-100 p-5 rounded-2xl font-black text-indigo-700 text-center uppercase appearance-none cursor-pointer">
                 <option value="">-- PILIH KELAS --</option>
                 <option>Kelas 1</option><option>Kelas 2</option><option>Kelas 3</option>
                 <option>Kelas 4</option><option>Kelas 5</option><option>Kelas 6</option>
             </select>
-            <button onclick="simpanProfil()" class="w-full bg-indigo-600 text-white font-black p-5 rounded-2xl shadow-xl uppercase italic">Mulai Petualangan 🚀</button>
+            <button onclick="simpanProfil()" class="w-full bg-indigo-600 text-white font-black p-5 rounded-2xl shadow-xl uppercase italic hover:bg-indigo-700">Mulai Petualangan 🚀</button>
         </div>
 
-        <div id="formMisi" class="hidden p-6 pt-4">
+        <div id="formMisi" class="hidden p-6 pt-2">
             <div id="divHero" class="space-y-3">
                 <div id="listMisi" class="space-y-3"></div>
                 <div id="boxSertifikat" class="hidden mt-6 p-5 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-[2rem] text-center shadow-xl border-4 border-white animate-bounce">
@@ -67,16 +67,16 @@
             <div id="divSatset" class="hidden space-y-3">
                 <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-100 mb-2 text-center">
                     <p class="text-[10px] font-black text-emerald-700 uppercase italic leading-none">🌙 SATSET RAMADHAN</p>
-                    <p class="text-[7px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Ceklis otomatis dengan bukti foto</p>
+                    <p class="text-[7px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Gembok terbuka otomatis setiap hari</p>
                 </div>
                 <div id="listSatset" class="space-y-3 max-h-[380px] overflow-y-auto pr-2 custom-scroll"></div>
             </div>
 
-            <div id="panelGuru" class="hidden mt-8 p-6 bg-slate-800 rounded-[2.5rem] border-2 border-indigo-400 space-y-4 text-center">
-                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">🔐 Monitoring Guru</p>
+            <div id="panelGuru" class="hidden mt-8 p-6 bg-slate-900 rounded-[2.5rem] border-2 border-red-500 space-y-4">
+                <p class="text-[10px] font-black text-red-500 uppercase text-center tracking-widest">🔐 Monitoring Admin</p>
                 <div class="flex gap-2">
-                    <input type="number" id="newXP" class="flex-1 p-3 rounded-xl border-2 border-indigo-500 bg-slate-700 text-white font-black text-center text-sm" placeholder="SET XP">
-                    <button onclick="updateXPManual()" class="bg-indigo-500 text-white px-4 rounded-xl font-black text-[10px] uppercase">Simpan</button>
+                    <input type="number" id="newXP" class="flex-1 p-3 rounded-xl bg-slate-800 text-white font-black text-center text-sm" placeholder="XP BARU">
+                    <button onclick="updateXPManual()" class="bg-red-600 text-white px-4 rounded-xl font-black text-[10px] uppercase">SET</button>
                 </div>
             </div>
 
@@ -86,7 +86,7 @@
         <div id="modalLeaderboard" class="fixed inset-0 z-[500] bg-indigo-950/95 hidden overflow-y-auto p-6 backdrop-blur-md">
             <div class="max-w-sm mx-auto">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-white font-black italic uppercase text-xl text-yellow-400">🏆 Top 10 Hero</h2>
+                    <h2 class="text-white font-black italic uppercase text-xl text-yellow-400">🏆 Top 10 Hero Dunia</h2>
                     <button onclick="tutupLeaderboard()" class="text-white text-4xl">&times;</button>
                 </div>
                 <div id="isiLeaderboard" class="space-y-3"></div>
@@ -164,7 +164,7 @@
             document.getElementById('listMisi').innerHTML = daftarMisi.map((m, idx) => {
                 const isDone = dataTercentang['misi_' + idx] === tglHariIni;
                 return `
-                    <div class="misi-card bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex justify-between items-center">
+                    <div class="misi-card bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 flex justify-between items-center shadow-sm">
                         <div><p class="font-black text-slate-700 text-[11px] uppercase italic">${m.label}</p>
                         <p class="text-[8px] font-bold text-red-500 italic mt-1 uppercase">Batas: ${m.limit}</p></div>
                         <input type="checkbox" ${isDone ? 'checked disabled' : ''} onchange="prosesMisi(this, ${m.poin}, '${m.limit}', ${idx})" class="w-8 h-8 accent-indigo-600 cursor-pointer">
@@ -186,8 +186,12 @@
 
         function muatSatset() {
             const path = hNama.replace(/\s+/g, '_');
-            const tglMulai = new Date("2026-02-18"); tglMulai.setHours(0,0,0,0);
-            const tglSekarang = new Date(); tglSekarang.setHours(0,0,0,0);
+            // FIX LOGIKA GEMBOK: Menggunakan (Tahun, Bulan-1, Tanggal) untuk Waktu Lokal
+            const tglMulai = new Date(2026, 1, 18); 
+            tglMulai.setHours(0,0,0,0);
+            const tglSekarang = new Date(); 
+            tglSekarang.setHours(0,0,0,0);
+            
             const hariKe = Math.floor((tglSekarang - tglMulai) / (1000 * 60 * 60 * 24)) + 1;
 
             db.ref('rekap_siswa/' + path + '/ramadhan').once('value', snap => {
@@ -197,7 +201,7 @@
                     const isToday = item.h === hariKe;
                     const isLocked = item.h > hariKe;
                     return `
-                        <div class="p-4 rounded-3xl border-2 transition-all ${isToday ? 'bg-emerald-50 border-emerald-400' : 'bg-white border-slate-50'} ${isLocked ? 'opacity-50' : ''}">
+                        <div class="p-4 rounded-3xl border-2 transition-all ${isToday ? 'bg-emerald-50 border-emerald-400 shadow-md' : 'bg-white border-slate-50'} ${isLocked ? 'opacity-50' : ''}">
                             <div class="flex justify-between items-center">
                                 <span class="text-[9px] font-black ${isToday ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-400'} w-8 h-8 flex items-center justify-center rounded-full">H${item.h}</span>
                                 <p class="flex-1 ml-3 text-[10px] font-black text-slate-700 uppercase">${item.m}</p>
@@ -205,8 +209,8 @@
                             </div>
                             ${isToday && !isDone ? `
                                 <div class="mt-3">
-                                    <label class="block w-full py-3 bg-white border-2 border-dashed border-emerald-300 rounded-xl text-center text-[9px] font-bold text-emerald-600 cursor-pointer hover:bg-emerald-100">
-                                        📸 UNGGAH FOTO BUKTI
+                                    <label class="block w-full py-3 bg-white border-2 border-dashed border-emerald-300 rounded-xl text-center text-[9px] font-bold text-emerald-600 cursor-pointer hover:bg-emerald-100 transition-all">
+                                        📸 UNGGAH BUKTI HARI INI
                                         <input type="file" accept="image/*" class="hidden" onchange="prosesSatset(${item.h}, this)">
                                     </label>
                                 </div>` : ''}
@@ -256,7 +260,7 @@
         function bukaLeaderboard() {
             document.getElementById('modalLeaderboard').classList.remove('hidden');
             const list = document.getElementById('isiLeaderboard');
-            list.innerHTML = `<p class="text-white text-center italic animate-pulse">Mengambil Data Pahlawan...</p>`;
+            list.innerHTML = `<p class="text-white text-center italic animate-pulse py-10">Mengambil Data Pahlawan...</p>`;
             db.ref('rekap_siswa').orderByChild('xp').limitToLast(10).once('value', snap => {
                 let d = []; snap.forEach(c => { d.push(c.val()); });
                 d.reverse();
@@ -284,7 +288,7 @@
         function logout() { if(confirm("Ganti Akun?")) { localStorage.clear(); location.reload(); } }
         function updateXPManual() { 
             const v = document.getElementById('newXP').value; 
-            if(v!=="") { db.ref('rekap_siswa/' + hNama.replace(/\s+/g, '_')).update({ xp: parseInt(v) }); alert("XP Diperbarui!"); }
+            if(v!=="") { db.ref('rekap_siswa/' + hNama.replace(/\s+/g, '_')).update({ xp: parseInt(v) }); alert("XP Berhasil Diubah!"); }
         }
     </script>
 </body>
