@@ -68,7 +68,7 @@
             <div id="divSatset" class="hidden space-y-3">
                 <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-100 mb-2 text-center">
                     <p class="text-[10px] font-black text-emerald-700 uppercase italic leading-none">🌙 SATSET RAMADHAN</p>
-                    <p class="text-[7px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Gembok otomatis terbuka jam 00:00</p>
+                    <p class="text-[7px] font-bold text-emerald-600 uppercase tracking-widest mt-1 italic">Dimulai 19 Februari 2026</p>
                 </div>
                 <div id="listSatset" class="space-y-3 max-h-[380px] overflow-y-auto pr-2 custom-scroll"></div>
             </div>
@@ -185,17 +185,22 @@
             db.ref('rekap_siswa/' + path).update({ xp: baru, ['misi_harian/misi_' + idxMisi]: now.toLocaleDateString('id-ID') });
         }
 
-        // --- FIX LOGIKA GEMBOK JALUR PAKSA ---
+        // --- FIX LOGIKA GEMBOK JALUR PAKSA (START 19 FEB) ---
         function muatSatset() {
             const path = hNama.replace(/\s+/g, '_');
             const sekarang = new Date();
             const tglS = sekarang.getDate();
             const blnS = sekarang.getMonth(); // Feb = 1
             const thnS = sekarang.getFullYear();
-            const tglM = 18; const blnM = 1; const thnM = 2026;
+            
+            // TANGGAL MULAI DIUBAH KE 19 FEBRUARI 2026
+            const tglM = 19; 
+            const blnM = 1; 
+            const thnM = 2026;
 
             let hariKe = 0;
             if (thnS >= thnM && blnS >= blnM) {
+                // Hari Ke-1 baru akan terhitung jika tglS sudah 19
                 hariKe = (tglS - tglM) + 1;
             }
 
@@ -203,8 +208,11 @@
                 const data = snap.val() || {};
                 document.getElementById('listSatset').innerHTML = dataSatset.map(item => {
                     const isDone = data['h' + item.h] ? true : false;
+                    
+                    // Logic: Item terbuka jika item.h <= hariKe saat ini
                     const isToday = item.h === hariKe;
                     const isLocked = item.h > hariKe || hariKe <= 0;
+
                     return `
                         <div class="p-4 rounded-3xl border-2 transition-all ${isToday ? 'bg-emerald-50 border-emerald-400 shadow-md' : 'bg-white border-slate-50'} ${isLocked ? 'opacity-50' : ''}">
                             <div class="flex justify-between items-center">
