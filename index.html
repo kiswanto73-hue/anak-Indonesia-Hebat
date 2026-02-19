@@ -62,7 +62,7 @@
             <div id="divSatset" class="hidden space-y-3">
                 <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-100 mb-2 text-center">
                     <p class="text-[10px] font-black text-emerald-700 uppercase italic leading-none">🌙 SATSET RAMADHAN</p>
-                    <p class="text-[7px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Hanya Bisa Ceklis di Tanggal yang Sama</p>
+                    <p id="infoHari" class="text-[7px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Memuat hari...</p>
                 </div>
                 <div id="listSatset" class="space-y-3 max-h-[400px] overflow-y-auto pr-2"></div>
             </div>
@@ -175,28 +175,34 @@
             db.ref('rekap_siswa/' + path).update({ xp: baru, ['misi_harian/misi_' + idxMisi]: now.toLocaleDateString('id-ID') });
         }
 
+        // PERBAIKAN TOTAL FUNGSI SATSET
         function muatSatset() {
             const path = hNama.replace(/\s+/g, '_');
-            const tglMulai = new Date("2026-02-18"); 
+            const tglMulai = new Date("2026-02-19"); 
             const tglSekarang = new Date();
             const hariKe = Math.floor((tglSekarang - tglMulai) / (1000 * 60 * 60 * 24)) + 1;
+            const hariAktif = Math.max(1, hariKe);
 
-            db.ref('rekap_siswa/' + path + '/ramadhan').once('value', snap => {
+            document.getElementById('infoHari').innerText = "HARI INI: HARI KE-" + hariAktif;
+
+            db.ref('rekap_siswa/' + path + '/ramadhan').on('value', snap => {
                 const data = snap.val() || {};
                 document.getElementById('listSatset').innerHTML = dataSatset.map(item => {
                     const isDone = data['h' + item.h] ? true : false;
-                    const isToday = item.h === hariKe;
+                    const isToday = item.h === hariAktif;
+                    const isLocked = item.h > hariAktif;
+
                     return `
                         <div class="p-4 rounded-3xl border-2 transition-all ${isToday ? 'bg-emerald-50 border-emerald-400' : 'bg-white border-slate-50'}">
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-[9px] font-black ${isToday ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-400'} w-8 h-8 flex items-center justify-center rounded-full">H${item.h}</span>
                                 <p class="flex-1 ml-3 text-[10px] font-black text-slate-700 uppercase">${item.m}</p>
-                                ${isDone ? '✅' : (isToday ? '⭐' : '🔒')}
+                                ${isDone ? '✅' : (isLocked ? '🔒' : (isToday ? '⭐' : '❌'))}
                             </div>
                             ${isToday && !isDone ? `
                                 <div class="mt-3">
                                     <label class="block w-full py-2 bg-white border-2 border-dashed border-emerald-300 rounded-xl text-center text-[8px] font-bold text-emerald-600 cursor-pointer">
-                                        📸 PILIH FOTO BUKTI
+                                        📸 UPLOAD FOTO BUKTI
                                         <input type="file" accept="image/*" class="hidden" onchange="prosesSatset(${item.h}, this)">
                                     </label>
                                 </div>` : ''}
@@ -217,7 +223,6 @@
                 }).then(() => {
                     db.ref('rekap_siswa/' + path).update({ xp: (window.currentXP || 0) + 100 });
                     confetti({particleCount: 100});
-                    muatSatset();
                 });
             };
         }
@@ -230,7 +235,6 @@
             if(menu === 'satset') muatSatset();
         }
 
-        // --- FUNGSI LEADERBOARD FINAL ---
         function bukaLeaderboard() {
             document.getElementById('modalLeaderboard').classList.remove('hidden');
             const list = document.getElementById('isiLeaderboard');
@@ -242,11 +246,8 @@
                     const s = child.val();
                     if(s.nama) dataArray.push(s);
                 });
-
-                // Urutkan XP terbesar
                 dataArray.sort((a, b) => (b.xp || 0) - (a.xp || 0));
                 const top10 = dataArray.slice(0, 10);
-
                 list.innerHTML = top10.map((s, i) => `
                     <div class="flex justify-between items-center bg-white/10 p-4 rounded-2xl border border-white/5">
                         <div class="flex items-center gap-3">
