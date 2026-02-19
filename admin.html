@@ -7,6 +7,16 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            body { background: white; color: black; padding: 0; }
+            #loginOverlay, #modalFoto, .no-print, button, select { display: none !important; }
+            #adminContent { display: block !important; max-width: 100%; }
+            .bg-emerald-600 { background: #059669 !important; -webkit-print-color-adjust: exact; }
+            .rounded-b-\[2rem\] { border-radius: 0 !important; }
+            table { border: 1px solid #ddd; }
+        }
+    </style>
 </head>
 <body class="bg-slate-900 min-h-screen p-2 font-sans text-slate-200 pb-20">
 
@@ -22,7 +32,7 @@
 
     <div id="adminContent" class="max-w-4xl mx-auto hidden pb-20">
         
-        <div class="bg-orange-600 p-6 rounded-[2.5rem] shadow-xl mb-6 flex justify-between items-center text-white">
+        <div class="bg-orange-600 p-6 rounded-[2.5rem] shadow-xl mb-6 flex justify-between items-center text-white no-print">
             <div>
                 <p class="text-[9px] font-black uppercase opacity-80 italic">OTP Katalog Perpus:</p>
                 <h2 id="monitorOTP" class="text-5xl font-black tracking-[0.2em] my-2">----</h2>
@@ -30,7 +40,7 @@
             <button onclick="location.reload()" class="bg-white/20 px-4 py-2 rounded-full text-[10px] font-black uppercase italic">Keluar</button>
         </div>
 
-        <div class="bg-indigo-900 p-6 rounded-[2rem] shadow-2xl mb-6 border-2 border-indigo-400">
+        <div class="bg-indigo-900 p-6 rounded-[2rem] shadow-2xl mb-6 border-2 border-indigo-400 no-print">
             <h2 class="text-yellow-400 font-black italic uppercase text-sm mb-4">🚀 Bonus XP Masal (Semua Siswa)</h2>
             <div class="flex gap-2">
                 <input type="number" id="massXPValue" placeholder="Jumlah" class="w-24 bg-white/10 p-4 rounded-2xl text-white font-black outline-none border border-white/10">
@@ -38,10 +48,10 @@
             </div>
         </div>
 
-        <div class="bg-indigo-600 p-4 rounded-t-[2rem]">
+        <div class="bg-indigo-600 p-4 rounded-t-[2rem] no-print">
             <h1 class="text-sm font-black italic uppercase text-white px-2">📊 Kontrol Poin & Peringkat</h1>
         </div>
-        <div class="bg-white mb-8 rounded-b-[2rem] overflow-hidden shadow-xl border-x-2 border-b-2 border-slate-200">
+        <div class="bg-white mb-8 rounded-b-[2rem] overflow-hidden shadow-xl border-x-2 border-b-2 border-slate-200 no-print">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-slate-800 text-[11px]">
                     <thead>
@@ -57,8 +67,13 @@
             </div>
         </div>
 
-        <div class="bg-emerald-600 p-4 rounded-t-[2rem]">
+        <div class="bg-emerald-600 p-4 rounded-t-[2rem] flex flex-wrap justify-between items-center gap-2">
             <h1 class="text-sm font-black italic uppercase text-white px-2">🌙 Monitor Satset Ramadhan</h1>
+            <div class="flex items-center gap-2">
+                <button onclick="window.print()" class="bg-white/20 hover:bg-white/40 text-white text-[10px] font-black px-3 py-1.5 rounded-lg uppercase italic flex items-center gap-1">🖨️ Cetak</button>
+                <select id="pilihHariAdmin" onchange="muatMonitorRamadhan()" class="bg-white text-emerald-700 text-[10px] font-black rounded-lg px-2 py-1 outline-none">
+                    </select>
+            </div>
         </div>
         <div id="tabelRamadhanContainer" class="bg-white mb-8 rounded-b-[2rem] overflow-hidden shadow-xl border-x-2 border-b-2 border-slate-200">
             <table class="w-full text-left border-collapse text-slate-800 text-[11px]">
@@ -66,8 +81,8 @@
                     <tr class="bg-slate-50 text-slate-400 text-[8px] font-black uppercase">
                         <th class="p-4 border-b">Nama Siswa</th>
                         <th class="p-4 border-b text-center">Progres</th>
-                        <th class="p-4 border-b text-center text-orange-600">Bukti Hari Ini</th>
-                        <th class="p-4 border-b text-center">Detail</th>
+                        <th class="p-4 border-b text-center text-orange-600">Bukti Foto</th>
+                        <th class="p-4 border-b text-center no-print">Detail</th>
                     </tr>
                 </thead>
                 <tbody id="tabelRamadhanBody"></tbody>
@@ -81,7 +96,6 @@
     </div>
 
     <script>
-        // CONFIGURATION
         const configPerpus = { databaseURL: "https://e-perpus-a652c-default-rtdb.asia-southeast1.firebasedatabase.app" };
         const configHero = { databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.asia-southeast1.firebasedatabase.app" };
         
@@ -89,6 +103,20 @@
         const appHero = firebase.initializeApp(configHero, "heroApp");
         const dbHero = appHero.database();
         const dbPerpus = firebase.database();
+
+        // Inisialisasi Pilihan Hari
+        const selectHari = document.getElementById('pilihHariAdmin');
+        for(let i=1; i<=30; i++) {
+            let opt = document.createElement('option');
+            opt.value = i; opt.innerHTML = 'Hari ' + i;
+            selectHari.appendChild(opt);
+        }
+
+        const tglMulai = new Date("2026-02-19"); 
+        const tglSekarang = new Date();
+        const diff = Math.floor((tglSekarang - tglMulai) / (1000 * 60 * 60 * 24));
+        const hariOtomatis = Math.max(1, Math.min(30, diff + 1));
+        selectHari.value = hariOtomatis;
 
         function loginAdmin() {
             if (document.getElementById('adminEmail').value === "sdn169.cintadamai@gmail.com" && 
@@ -101,7 +129,6 @@
             } else { alert("Akses Ditolak!"); }
         }
 
-        // FUNGSI HERO TRACKER
         function muatRekapHero() {
             dbHero.ref('rekap_siswa').on('value', snap => {
                 const body = document.getElementById('tabelHeroBody');
@@ -126,19 +153,13 @@
         function simpanXPSiswa(path, nama) {
             const inputField = document.getElementById('inputXP_' + path);
             const nilaiBaru = parseInt(inputField.value);
-            if (isNaN(nilaiBaru)) return alert("Masukkan angka!");
-            dbHero.ref('rekap_siswa/' + path).update({ xp: nilaiBaru, waktu: "Update Admin: " + new Date().toLocaleString() })
-            .then(() => { alert("✅ XP " + nama + " Diperbarui!"); inputField.value = ""; });
+            if (isNaN(nilaiBaru)) return alert("Isi angka!");
+            dbHero.ref('rekap_siswa/' + path).update({ xp: nilaiBaru, waktu: "Admin: " + new Date().toLocaleString() })
+            .then(() => { alert("✅ Berhasil!"); inputField.value = ""; });
         }
 
-        // FUNGSI MONITOR RAMADHAN (LOGIKA PERBAIKAN)
         function muatMonitorRamadhan() {
-            // Sinkronkan dengan tanggal mulai 19 Feb 2026
-            const tglMulai = new Date("2026-02-19"); 
-            const tglSekarang = new Date();
-            const diff = Math.floor((tglSekarang - tglMulai) / (1000 * 60 * 60 * 24));
-            const hariKe = Math.max(1, diff + 1);
-
+            const hariDipilih = document.getElementById('pilihHariAdmin').value;
             dbHero.ref('rekap_siswa').on('value', snap => {
                 const body = document.getElementById('tabelRamadhanBody');
                 body.innerHTML = "";
@@ -146,30 +167,26 @@
                     const s = child.val();
                     const rData = s.ramadhan || {};
                     let done = 0;
-                    
-                    // Hitung progres total
                     for(let i=1; i<=30; i++) { if(rData['h'+i]) done++; }
                     const persen = Math.round((done/30)*100);
-                    
-                    // Ambil foto berdasarkan hari berjalan
-                    const fotoHariIni = rData['foto_h' + hariKe];
+                    const fotoPilihan = rData['foto_h' + hariDipilih];
 
                     body.innerHTML += `
                         <tr class="border-b border-slate-50">
                             <td class="p-4 uppercase font-black text-emerald-900">${s.nama}</td>
                             <td class="p-4 text-center">
-                                <span class="font-black text-emerald-600">${done}/30</span>
-                                <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden mt-1">
+                                <span class="font-black text-emerald-600 text-[10px]">${done}/30</span>
+                                <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden mt-1 no-print">
                                     <div class="bg-emerald-500 h-full" style="width: ${persen}%"></div>
                                 </div>
                             </td>
                             <td class="p-4 text-center">
-                                ${fotoHariIni ? 
-                                    `<button onclick="previewFoto('${fotoHariIni}')" class="bg-orange-500 text-white text-[8px] font-black px-2 py-1 rounded shadow animate-pulse">📸 LIHAT H${hariKe}</button>` : 
-                                    `<span class="text-[8px] text-slate-300 font-bold italic">H${hariKe}: Belum Ada</span>`
+                                ${fotoPilihan ? 
+                                    `<button onclick="previewFoto('${fotoPilihan}')" class="bg-orange-500 text-white text-[8px] font-black px-2 py-1 rounded shadow-md no-print">📸 LIHAT H${hariDipilih}</button><span class="hidden print:block text-[8px]">Tersedia ✅</span>` : 
+                                    `<span class="text-[8px] text-slate-300 font-bold italic">H${hariDipilih}: Kosong</span>`
                                 }
                             </td>
-                            <td class="p-4 text-center">
+                            <td class="p-4 text-center no-print">
                                 <button onclick="cekDetailSatset('${s.nama}')" class="bg-emerald-700 text-white text-[8px] font-black px-3 py-1 rounded-lg">JURNAL</button>
                             </td>
                         </tr>`;
@@ -192,20 +209,16 @@
             });
         }
 
-        // FUNGSI UTILITY
         function prosesXPSelection() {
             const nominal = parseInt(document.getElementById('massXPValue').value);
-            if (isNaN(nominal)) return alert("Isi angka nominal!");
+            if (isNaN(nominal)) return alert("Isi angka!");
             dbHero.ref('rekap_siswa').once('value', snap => {
                 let updates = {};
                 snap.forEach(child => {
                     const cur = child.val().xp || 0;
                     updates[`rekap_siswa/${child.key}/xp`] = cur + nominal;
                 });
-                dbHero.ref().update(updates).then(() => { 
-                    alert("🚀 Berhasil Tambah " + nominal + " XP ke Semua Siswa!"); 
-                    document.getElementById('massXPValue').value = ""; 
-                });
+                dbHero.ref().update(updates).then(() => { alert("🚀 Sukses!"); document.getElementById('massXPValue').value = ""; });
             });
         }
 
@@ -215,9 +228,7 @@
             });
         }
 
-        function hapusHero(path) { 
-            if(confirm("Hapus permanen data siswa ini?")) dbHero.ref('rekap_siswa/' + path).remove(); 
-        }
+        function hapusHero(path) { if(confirm("Hapus data siswa ini?")) dbHero.ref('rekap_siswa/' + path).remove(); }
     </script>
 </body>
 </html>
