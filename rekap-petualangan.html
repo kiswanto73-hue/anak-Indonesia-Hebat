@@ -68,7 +68,7 @@
             <div id="divSatset" class="hidden space-y-3">
                 <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-100 mb-2 text-center">
                     <p class="text-[10px] font-black text-emerald-700 uppercase italic leading-none">🌙 SATSET RAMADHAN</p>
-                    <p class="text-[7px] font-bold text-emerald-600 uppercase tracking-widest mt-1 italic">Dimulai 19 Februari 2026</p>
+                    <p id="infoHari" class="text-[7px] font-bold text-emerald-600 uppercase tracking-widest mt-1 italic">Memuat...</p>
                 </div>
                 <div id="listSatset" class="space-y-3 max-h-[380px] overflow-y-auto pr-2 custom-scroll"></div>
             </div>
@@ -138,7 +138,7 @@
                     updateTampilan(parseInt(data.xp) || 0);
                     renderMisiHero(data.misi_harian || {});
                 } else {
-                    db.ref('rekap_siswa/' + path).set({ nama: hNama, kelas: hKelas, xp: 0, waktu: new Date().toLocaleString() });
+                    db.ref('rekap_siswa/' + path).set({ nama: hNama, kelas: hKelas, xp: 0, waktu: new Date().toLocaleString('id-ID') });
                 }
             });
         }
@@ -185,40 +185,31 @@
             db.ref('rekap_siswa/' + path).update({ xp: baru, ['misi_harian/misi_' + idxMisi]: now.toLocaleDateString('id-ID') });
         }
 
-        // --- FIX LOGIKA GEMBOK JALUR PAKSA (START 19 FEB) ---
         function muatSatset() {
             const path = hNama.replace(/\s+/g, '_');
-            const sekarang = new Date();
-            const tglS = sekarang.getDate();
-            const blnS = sekarang.getMonth(); // Feb = 1
-            const thnS = sekarang.getFullYear();
             
-            // TANGGAL MULAI DIUBAH KE 19 FEBRUARI 2026
-            const tglM = 19; 
-            const blnM = 1; 
-            const thnM = 2026;
+            // LOGIKA HITUNG HARI YANG BENAR (FIXED)
+            const tglMulai = new Date("2026-02-19");
+            const tglSekarang = new Date();
+            const diffTime = tglSekarang - tglMulai;
+            const hariKe = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            const hariAktif = Math.max(0, hariKe);
 
-            let hariKe = 0;
-            if (thnS >= thnM && blnS >= blnM) {
-                // Hari Ke-1 baru akan terhitung jika tglS sudah 19
-                hariKe = (tglS - tglM) + 1;
-            }
+            document.getElementById('infoHari').innerText = hariAktif > 0 ? `HARI KE-${hariAktif}` : "BELUM DIMULAI";
 
-            db.ref('rekap_siswa/' + path + '/ramadhan').once('value', snap => {
+            db.ref('rekap_siswa/' + path + '/ramadhan').on('value', snap => {
                 const data = snap.val() || {};
                 document.getElementById('listSatset').innerHTML = dataSatset.map(item => {
                     const isDone = data['h' + item.h] ? true : false;
-                    
-                    // Logic: Item terbuka jika item.h <= hariKe saat ini
-                    const isToday = item.h === hariKe;
-                    const isLocked = item.h > hariKe || hariKe <= 0;
+                    const isToday = item.h === hariAktif;
+                    const isLocked = item.h > hariAktif;
 
                     return `
                         <div class="p-4 rounded-3xl border-2 transition-all ${isToday ? 'bg-emerald-50 border-emerald-400 shadow-md' : 'bg-white border-slate-50'} ${isLocked ? 'opacity-50' : ''}">
                             <div class="flex justify-between items-center">
                                 <span class="text-[9px] font-black ${isToday ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-400'} w-8 h-8 flex items-center justify-center rounded-full">H${item.h}</span>
                                 <p class="flex-1 ml-3 text-[10px] font-black text-slate-700 uppercase">${item.m}</p>
-                                ${isDone ? '✅' : (isLocked ? '🔒' : (isToday ? '⭐' : '🔓'))}
+                                ${isDone ? '✅' : (isLocked ? '🔒' : (isToday ? '⭐' : '❌'))}
                             </div>
                             ${isToday && !isDone ? `
                                 <div class="mt-3">
@@ -240,54 +231,36 @@
             reader.onload = (e) => {
                 const path = hNama.replace(/\s+/g, '_');
                 db.ref('rekap_siswa/' + path + '/ramadhan').update({ 
-                    ['h' + hari]: true, ['foto_h' + hari]: e.target.result, tgl: new Date().toLocaleString() 
+                    ['h' + hari]: true, ['foto_h' + hari]: e.target.result, tgl: new Date().toLocaleString('id-ID') 
                 }).then(() => {
                     db.ref('rekap_siswa/' + path).update({ xp: (window.currentXP || 0) + 100 });
                     confetti({particleCount: 150});
-                    muatSatset();
                 });
             };
         }
 
-        // --- PIAGAM DENGAN TROPHY SESUAI LEVEL ---
         function generatePiagam() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape' });
             const level = Math.floor(window.currentXP / 2000) + 1;
-
-            let warnaPiala = "#cd7f32"; // Bronze
-            let labelPiala = "🏆 BRONZE HERO";
+            let warnaPiala = "#cd7f32"; let labelPiala = "🏆 BRONZE HERO";
             if (level >= 3 && level < 5) { warnaPiala = "#c0c0c0"; labelPiala = "🏆 SILVER HERO"; }
             else if (level >= 5) { warnaPiala = "#ffd700"; labelPiala = "🏆 GOLDEN HERO"; }
 
             doc.setFillColor(30, 27, 75); doc.rect(0, 0, 297, 210, 'F');
             doc.setDrawColor(warnaPiala); doc.setLineWidth(2);
             doc.setFillColor(255, 255, 255); doc.roundedRect(10, 10, 277, 190, 5, 5, 'FD');
-
             doc.setTextColor(30, 27, 75); doc.setFont("helvetica", "bold"); doc.setFontSize(35);
             doc.text("PIAGAM PENGHARGAAN", 148, 50, { align: "center" });
-
-            doc.setDrawColor(warnaPiala); doc.line(80, 55, 215, 55);
-
             doc.setFontSize(18); doc.setFont("helvetica", "normal");
             doc.text("Diberikan kepada Hero terbaik kami:", 148, 75, { align: "center" });
-
             doc.setFontSize(45); doc.setTextColor(63, 81, 181);
             doc.text(hNama, 148, 105, { align: "center" });
-
             doc.setFontSize(20); doc.setTextColor(30, 27, 75);
             doc.text(`ATAS KEBERHASILAN MENCAPAI LEVEL ${level}`, 148, 130, { align: "center" });
-            
             doc.setFillColor(warnaPiala); doc.circle(148, 165, 15, 'F'); 
-            doc.setTextColor(255, 255, 255); doc.setFontSize(10); doc.text("LVL", 148, 163, { align: "center" });
-            doc.setFontSize(16); doc.text(`${level}`, 148, 172, { align: "center" });
-            
-            doc.setTextColor(warnaPiala); doc.setFontSize(12); doc.setFont("helvetica", "bold");
-            doc.text(labelPiala, 148, 188, { align: "center" });
-
-            doc.setTextColor(150, 150, 150); doc.setFontSize(10);
-            doc.text(`Dicetak: ${new Date().toLocaleDateString('id-ID')}`, 280, 195, { align: "right" });
-
+            doc.setTextColor(255, 255, 255); doc.setFontSize(16); doc.text(`${level}`, 148, 172, { align: "center" });
+            doc.setTextColor(warnaPiala); doc.setFontSize(12); doc.text(labelPiala, 148, 188, { align: "center" });
             doc.save(`Piagam_Hero_${hNama}.pdf`);
         }
 
@@ -305,7 +278,7 @@
             list.innerHTML = `<p class="text-white text-center italic animate-pulse py-10">Mencari Hero Terbaik...</p>`;
             db.ref('rekap_siswa').orderByChild('xp').limitToLast(10).once('value', snap => {
                 let d = []; snap.forEach(c => { d.push(c.val()); });
-                d.reverse();
+                d.sort((a,b) => b.xp - a.xp);
                 list.innerHTML = d.map((s, i) => `
                     <div class="flex items-center justify-between bg-white/10 p-4 rounded-2xl border border-white/5">
                         <div class="flex items-center gap-4">
