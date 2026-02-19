@@ -3,85 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCTV Admin - Kiswanto</title>
+    <title>CCTV Admin - SDN 165 TJB</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
         @media print {
             .no-print { display: none !important; }
             body { background: white; color: black; padding: 0; }
             #adminContent { display: block !important; }
         }
+        .glass-effect { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); }
     </style>
 </head>
-<body class="bg-slate-900 min-h-screen p-2 font-sans text-slate-200 pb-20">
+<body class="bg-slate-950 min-h-screen p-2 text-slate-200 pb-20">
 
-    <div id="loginOverlay" class="fixed inset-0 z-[200] bg-slate-950 flex items-center justify-center p-6">
+    <div id="loginOverlay" class="fixed inset-0 z-[200] bg-slate-950 flex items-center justify-center p-6 text-slate-800">
         <div class="bg-white p-8 rounded-[3rem] shadow-2xl max-w-sm w-full text-center border-b-8 border-orange-600">
             <span class="text-5xl">👨‍✈️</span>
-            <h2 class="text-xl font-black uppercase italic mt-4 text-slate-800">Admin Login</h2>
-            <input type="email" id="adminEmail" placeholder="EMAIL ADMIN" class="w-full text-center text-sm font-bold p-4 bg-slate-100 rounded-2xl my-4 text-slate-800 outline-none">
-            <input type="password" id="adminPass" placeholder="PASSWORD" class="w-full text-center text-xl font-black p-4 bg-slate-100 rounded-2xl mb-4 text-slate-800 outline-none">
-            <button onclick="loginAdmin()" class="w-full bg-orange-600 text-white font-black py-4 rounded-2xl uppercase italic text-xs">Masuk Sistem 🔓</button>
+            <h2 class="text-xl font-black uppercase italic mt-4">Admin SDN 165</h2>
+            <p class="text-[10px] font-bold text-slate-400 mb-6 uppercase tracking-widest">Sistem Monitoring Terpadu</p>
+            <input type="email" id="adminEmail" placeholder="EMAIL ADMIN" class="w-full text-center text-sm font-bold p-4 bg-slate-100 rounded-2xl my-2 outline-none border-2 border-transparent focus:border-orange-500 transition-all">
+            <input type="password" id="adminPass" placeholder="PASSWORD" class="w-full text-center text-xl font-black p-4 bg-slate-100 rounded-2xl mb-6 outline-none border-2 border-transparent focus:border-orange-500 transition-all">
+            <button onclick="loginAdmin()" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-4 rounded-2xl uppercase italic text-xs shadow-lg transform active:scale-95 transition-all">Masuk Sistem 🔓</button>
         </div>
     </div>
 
-    <div id="adminContent" class="max-w-4xl mx-auto hidden pb-20">
+    <div id="adminContent" class="max-w-4xl mx-auto hidden pb-20 animate-in fade-in duration-700">
         
-        <div class="bg-orange-600 p-6 rounded-[2.5rem] shadow-xl mb-6 flex justify-between items-center text-white no-print">
+        <div class="bg-gradient-to-br from-orange-600 to-red-700 p-6 rounded-[2.5rem] shadow-xl mb-6 flex justify-between items-center text-white no-print">
             <div>
-                <p class="text-[9px] font-black uppercase opacity-80 italic">OTP Katalog Perpus:</p>
-                <h2 id="monitorOTP" class="text-5xl font-black tracking-[0.2em] my-2">----</h2>
+                <p class="text-[9px] font-black uppercase opacity-80 italic tracking-widest">OTP Katalog Perpus:</p>
+                <h2 id="monitorOTP" class="text-5xl font-extrabold tracking-[0.2em] my-1 drop-shadow-lg">----</h2>
             </div>
-            <button onclick="location.reload()" class="bg-white/20 px-4 py-2 rounded-full text-[10px] font-black uppercase italic">Keluar</button>
+            <button onclick="location.reload()" class="bg-white/20 hover:bg-white/40 px-5 py-2 rounded-full text-[10px] font-black uppercase italic transition-all">Keluar</button>
         </div>
 
-        <div class="bg-indigo-900 p-6 rounded-[2rem] shadow-2xl mb-6 border-2 border-indigo-400 no-print">
-            <h2 class="text-yellow-400 font-black italic uppercase text-sm mb-4">🚀 Bonus XP Masal</h2>
-            <div class="flex gap-2">
-                <input type="number" id="massXPValue" placeholder="Jumlah" class="w-24 bg-white/10 p-4 rounded-2xl text-white font-black outline-none border border-white/10">
-                <button onclick="prosesXPSelection()" class="flex-1 bg-emerald-600 text-white font-black rounded-2xl text-[9px] uppercase italic">➕ Tambah Ke Semua</button>
+        <div class="bg-indigo-900/50 border-2 border-indigo-500/30 p-6 rounded-[2.5rem] shadow-2xl mb-6 no-print backdrop-blur-sm">
+            <h2 class="text-yellow-400 font-black italic uppercase text-xs mb-4 flex items-center gap-2">
+                <span class="bg-yellow-400 text-indigo-900 px-2 py-0.5 rounded text-[10px]">NEW</span> 🚀 Bonus XP Masal Untuk Semua Siswa
+            </h2>
+            <div class="flex gap-3">
+                <input type="number" id="massXPValue" placeholder="Contoh: 500" class="flex-1 bg-white/10 p-4 rounded-2xl text-white font-black outline-none border border-white/20 focus:border-yellow-400">
+                <button onclick="prosesXPSelection()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-6 rounded-2xl text-[10px] uppercase italic shadow-lg transition-all">➕ Tambah Sekarang</button>
             </div>
         </div>
 
-        <div class="bg-indigo-600 p-4 rounded-t-[2rem] no-print">
-            <h1 class="text-sm font-black italic uppercase text-white px-2">📊 Kontrol & Peringkat XP</h1>
+        <div class="bg-indigo-600 p-4 rounded-t-[2.5rem] no-print mt-10">
+            <h1 class="text-sm font-black italic uppercase text-white px-2 flex items-center gap-2">📊 Leaderboard & Edit XP</h1>
         </div>
-        <div class="bg-white mb-8 rounded-b-[2rem] overflow-hidden shadow-xl border-x-2 border-b-2 border-slate-200 no-print text-slate-800">
-            <table class="w-full text-left text-[11px]">
-                <tbody id="tabelHeroBody"></tbody>
-            </table>
-        </div>
-
-        <div class="bg-emerald-600 p-4 rounded-t-[2rem] flex flex-wrap justify-between items-center gap-2">
-            <h1 class="text-sm font-black italic uppercase text-white px-2">🌙 Monitor Satset Ramadhan</h1>
-            <div class="flex items-center gap-2 no-print">
-                <button onclick="window.print()" class="bg-white/20 text-white text-[10px] font-black px-3 py-1.5 rounded-lg">🖨️ Cetak</button>
-                <select id="pilihHariAdmin" onchange="jalankanRealtime()" class="bg-white text-emerald-700 text-[10px] font-black rounded-lg px-2 py-1 outline-none">
-                    </select>
+        <div class="bg-white mb-10 rounded-b-[2.5rem] overflow-hidden shadow-2xl border-x-2 border-b-2 border-slate-200 no-print text-slate-800">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-[11px]">
+                    <thead class="bg-slate-50 border-b">
+                        <tr class="text-slate-400 text-[9px] font-black uppercase">
+                            <th class="p-4">Nama Pahlawan</th>
+                            <th class="p-4 text-center">XP Saat Ini</th>
+                            <th class="p-4 text-center">Input XP</th>
+                            <th class="p-4 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelHeroBody"></tbody>
+                </table>
             </div>
         </div>
-        <div class="bg-white mb-8 rounded-b-[2rem] overflow-hidden shadow-xl border-x-2 border-b-2 border-slate-200 text-slate-800">
-            <table class="w-full text-left text-[11px]">
-                <thead>
-                    <tr class="bg-slate-50 text-slate-400 text-[8px] font-black uppercase">
-                        <th class="p-4 border-b">Nama</th>
-                        <th class="p-4 border-b text-center">Progres</th>
-                        <th class="p-4 border-b text-center text-orange-600">Foto Bukti</th>
-                        <th class="p-4 border-b text-center no-print">Detail</th>
-                    </tr>
-                </thead>
-                <tbody id="tabelRamadhanBody"></tbody>
-            </table>
+
+        <div class="bg-emerald-600 p-5 rounded-t-[2.5rem] flex flex-wrap justify-between items-center gap-4">
+            <h1 class="text-sm font-black italic uppercase text-white px-2 flex items-center gap-2">🌙 Monitoring Jurnal Ramadhan</h1>
+            <div class="flex items-center gap-3 no-print">
+                <button onclick="window.print()" class="bg-white/20 hover:bg-white/40 text-white text-[10px] font-black px-4 py-2 rounded-xl transition-all">🖨️ Cetak</button>
+                <select id="pilihHariAdmin" onchange="jalankanRealtime()" class="bg-white text-emerald-700 text-[10px] font-black rounded-xl px-4 py-2 outline-none shadow-md">
+                </select>
+            </div>
+        </div>
+        <div class="bg-white mb-12 rounded-b-[2.5rem] overflow-hidden shadow-2xl border-x-2 border-b-2 border-slate-200 text-slate-800">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-[11px]">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-400 text-[9px] font-black uppercase">
+                            <th class="p-5 border-b">Nama Siswa</th>
+                            <th class="p-5 border-b text-center">Total Progres</th>
+                            <th class="p-5 border-b text-center text-orange-600">Bukti Foto</th>
+                            <th class="p-5 border-b text-center no-print">Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelRamadhanBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <div id="modalFoto" class="fixed inset-0 bg-black/95 hidden z-[500] flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
-        <img id="imgPreview" src="" class="max-w-full max-h-[85vh] rounded-2xl shadow-2xl border-4 border-white">
+    <div id="modalFoto" class="fixed inset-0 bg-slate-950/95 hidden z-[500] flex items-center justify-center p-4 backdrop-blur-md" onclick="this.classList.add('hidden')">
+        <div class="relative max-w-full max-h-[90vh]">
+            <img id="imgPreview" src="" class="rounded-3xl shadow-2xl border-4 border-white">
+            <p class="text-white text-center mt-4 font-black italic uppercase text-xs">Klik dimana saja untuk tutup</p>
+        </div>
     </div>
 
     <script>
+        // CONFIG FIREBASE
         const configPerpus = { databaseURL: "https://e-perpus-a652c-default-rtdb.asia-southeast1.firebasedatabase.app" };
         const configHero = { databaseURL: "https://ceklist-anak-indonesia-hebat-default-rtdb.asia-southeast1.firebasedatabase.app" };
         
@@ -90,36 +112,45 @@
         const dbHero = appHero.database();
         const dbPerpus = firebase.database();
 
-        // Setup Dropdown Hari
+        // LOGIKA TANGGAL (19 FEB = H1)
+        const tglMulai = new Date("2026-02-19T00:00:00");
         const selectHari = document.getElementById('pilihHariAdmin');
+        
+        // Isi Dropdown 1-30
         for(let i=1; i<=30; i++) {
             let opt = document.createElement('option');
-            opt.value = i; opt.innerHTML = 'Hari ' + i;
+            opt.value = i; opt.innerHTML = '📅 HARI KE-' + i;
             selectHari.appendChild(opt);
         }
-        
-        // Deteksi hari berjalan otomatis (19 Feb = H1)
-        const tglMulai = new Date("2026-02-19");
+
+        // Set Default ke hari yang sedang berjalan
         const tglSekarang = new Date();
-        const diff = Math.floor((tglSekarang - tglMulai) / (1000 * 60 * 60 * 24));
-        selectHari.value = Math.max(1, Math.min(30, diff + 1));
+        const diffDays = Math.floor((tglSekarang - tglMulai) / (1000 * 60 * 60 * 24)) + 1;
+        selectHari.value = Math.max(1, Math.min(30, diffDays));
 
         function loginAdmin() {
-            if (document.getElementById('adminEmail').value === "sdn169.cintadamai@gmail.com" && 
-                document.getElementById('adminPass').value === "Cintadama1") {
+            const email = document.getElementById('adminEmail').value;
+            const pass = document.getElementById('adminPass').value;
+            
+            // Sesuai data Bapak
+            if (email === "sdn169.cintadamai@gmail.com" && pass === "Cintadama1") {
                 document.getElementById('loginOverlay').classList.add('hidden');
                 document.getElementById('adminContent').classList.remove('hidden');
                 jalankanRealtime();
+                
+                // Pantau OTP Realtime
                 dbPerpus.ref('sistem_keamanan/otp_katalog').on('value', snap => {
                     if(snap.exists()) document.getElementById('monitorOTP').innerText = snap.val().kode;
                 });
-            } else { alert("Akses Ditolak!"); }
+            } else { 
+                alert("Email atau Password Salah, Pak!"); 
+            }
         }
 
-        // KEMBALI KE SISTEM REALTIME YANG LANCAR
         function jalankanRealtime() {
             const hariDipilih = document.getElementById('pilihHariAdmin').value;
 
+            // Tarik data utama
             dbHero.ref('rekap_siswa').on('value', snap => {
                 const bodyXP = document.getElementById('tabelHeroBody');
                 const bodyRamadhan = document.getElementById('tabelRamadhanBody');
@@ -127,40 +158,53 @@
                 bodyXP.innerHTML = "";
                 bodyRamadhan.innerHTML = "";
 
+                if(!snap.exists()) {
+                    bodyXP.innerHTML = "<tr><td colspan='4' class='p-10 text-center opacity-30 font-bold'>Belum ada data siswa masuk</td></tr>";
+                    return;
+                }
+
                 snap.forEach(child => {
                     const s = child.val();
                     const path = child.key;
 
-                    // Update Tabel XP
+                    // TABEL XP
                     bodyXP.innerHTML += `
-                        <tr class="border-b border-slate-50">
+                        <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                             <td class="p-4 font-black uppercase text-indigo-900">${s.nama}</td>
                             <td class="p-4 text-center font-black text-indigo-600">${(s.xp || 0).toLocaleString()}</td>
-                            <td class="p-4 text-center"><input type="number" id="inputXP_${path}" placeholder="XP Baru" class="w-20 p-2 border rounded text-center outline-none"></td>
-                            <td class="p-4 text-center flex justify-center gap-1">
-                                <button onclick="simpanXPSiswa('${path}', '${s.nama}')" class="bg-indigo-600 text-white px-3 py-2 rounded font-black text-[9px]">SAVE</button>
-                                <button onclick="hapusHero('${path}')" class="text-red-300">🗑️</button>
+                            <td class="p-4 text-center">
+                                <input type="number" id="inputXP_${path}" placeholder="+/-" class="w-24 p-2 bg-slate-100 rounded-xl text-center font-bold outline-none border-2 border-transparent focus:border-indigo-400">
+                            </td>
+                            <td class="p-4 text-center flex justify-center items-center gap-2">
+                                <button onclick="simpanXPSiswa('${path}', '${s.nama}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-black text-[9px] shadow-md transition-all">UPDATE</button>
+                                <button onclick="hapusHero('${path}')" class="w-8 h-8 flex items-center justify-center bg-red-50 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all">🗑️</button>
                             </td>
                         </tr>`;
 
-                    // Update Tabel Ramadhan
+                    // TABEL RAMADHAN
                     const rData = s.ramadhan || {};
-                    let done = 0;
-                    for(let i=1; i<=30; i++) { if(rData['h'+i]) done++; }
+                    let doneCount = 0;
+                    for(let i=1; i<=30; i++) { if(rData['h'+i]) doneCount++; }
+                    
                     const fotoPilihan = rData['foto_h' + hariDipilih];
 
                     bodyRamadhan.innerHTML += `
-                        <tr class="border-b border-slate-50">
-                            <td class="p-4 uppercase font-black text-emerald-900">${s.nama}</td>
-                            <td class="p-4 text-center font-black text-emerald-600">${done}/30</td>
-                            <td class="p-4 text-center">
+                        <tr class="border-b border-slate-50 hover:bg-emerald-50 transition-colors">
+                            <td class="p-5 uppercase font-black text-emerald-900">${s.nama}</td>
+                            <td class="p-5 text-center">
+                                <div class="bg-slate-100 rounded-full h-2 w-20 mx-auto overflow-hidden">
+                                    <div class="bg-emerald-500 h-full" style="width: ${(doneCount/30)*100}%"></div>
+                                </div>
+                                <span class="text-[9px] font-black text-emerald-600">${doneCount}/30 Hari</span>
+                            </td>
+                            <td class="p-5 text-center">
                                 ${fotoPilihan ? 
-                                    `<button onclick="previewFoto('${fotoPilihan}')" class="bg-orange-500 text-white text-[8px] font-black px-2 py-1 rounded shadow-md no-print">📸 LIHAT H${hariDipilih}</button><span class="hidden print:block text-[8px]">Tersedia ✅</span>` : 
-                                    `<span class="text-[8px] text-slate-300 font-bold italic">H${hariDipilih}: Kosong</span>`
+                                    `<button onclick="previewFoto('${fotoPilihan}')" class="bg-orange-500 hover:bg-orange-600 text-white text-[9px] font-black px-4 py-2 rounded-xl shadow-lg no-print animate-pulse">👁️ LIHAT BUKTI</button>` : 
+                                    `<span class="text-[9px] text-slate-300 font-bold italic">Belum Upload</span>`
                                 }
                             </td>
-                            <td class="p-4 text-center no-print">
-                                <button onclick="cekDetailSatset('${s.nama}')" class="bg-emerald-700 text-white text-[8px] font-black px-3 py-1 rounded-lg">JURNAL</button>
+                            <td class="p-5 text-center no-print">
+                                <button onclick="cekDetailSatset('${s.nama}')" class="bg-slate-800 hover:bg-black text-white text-[9px] font-black px-4 py-2 rounded-xl transition-all">JURNAL</button>
                             </td>
                         </tr>`;
                 });
@@ -170,9 +214,33 @@
         function simpanXPSiswa(path, nama) {
             const inputField = document.getElementById('inputXP_' + path);
             const nilaiBaru = parseInt(inputField.value);
-            if (isNaN(nilaiBaru)) return alert("Isi angka!");
-            dbHero.ref('rekap_siswa/' + path).update({ xp: nilaiBaru });
-            alert("✅ XP " + nama + " diperbarui!");
+            if (isNaN(nilaiBaru)) return alert("Isi angka nominal XP!");
+            
+            dbHero.ref('rekap_siswa/' + path).once('value', snap => {
+                const xpLama = snap.val().xp || 0;
+                dbHero.ref('rekap_siswa/' + path).update({ xp: xpLama + nilaiBaru });
+                inputField.value = "";
+                alert("✅ Berhasil! " + nama + " mendapat " + nilaiBaru + " XP tambahan.");
+            });
+        }
+
+        function prosesXPSelection() {
+            const nominal = parseInt(document.getElementById('massXPValue').value);
+            if (isNaN(nominal)) return alert("Isi nominal XP masal!");
+            
+            if(confirm("Kirim " + nominal + " XP ke SELURUH SISWA?")) {
+                dbHero.ref('rekap_siswa').once('value', snap => {
+                    let updates = {};
+                    snap.forEach(child => {
+                        const cur = child.val().xp || 0;
+                        updates[`rekap_siswa/${child.key}/xp`] = cur + nominal;
+                    });
+                    dbHero.ref().update(updates).then(() => { 
+                        alert("🚀 LUAR BIASA! Bonus " + nominal + " XP telah dibagikan masal!"); 
+                        document.getElementById('massXPValue').value = "";
+                    });
+                });
+            }
         }
 
         function previewFoto(src) {
@@ -184,29 +252,20 @@
             const path = nama.replace(/\s+/g, '_');
             dbHero.ref('rekap_siswa/' + path + '/ramadhan').once('value', snap => {
                 const d = snap.val() || {};
-                let res = `REKAP JURNAL: ${nama}\n\n`;
-                for(let i=1; i<=30; i++) { res += `H${i}:${d['h'+i] ? '✅' : '❌'} `; if(i%5==0) res+="\n"; }
+                let res = `REKAP JURNAL RAMADHAN\nSISWA: ${nama}\n------------------------\n`;
+                for(let i=1; i<=30; i++) { 
+                    res += `H${i}:${d['h'+i] ? '✅' : '❌'}  `; 
+                    if(i % 5 == 0) res += "\n"; 
+                }
                 alert(res);
             });
         }
 
-        function prosesXPSelection() {
-            const nominal = parseInt(document.getElementById('massXPValue').value);
-            if (isNaN(nominal)) return alert("Isi angka!");
-            dbHero.ref('rekap_siswa').once('value', snap => {
-                let updates = {};
-                snap.forEach(child => {
-                    const cur = child.val().xp || 0;
-                    updates[`rekap_siswa/${child.key}/xp`] = cur + nominal;
-                });
-                dbHero.ref().update(updates).then(() => { 
-                    alert("Bonus " + nominal + " XP dikirim!"); 
-                    document.getElementById('massXPValue').value = "";
-                });
-            });
+        function hapusHero(path) { 
+            if(confirm("PERINGATAN! Menghapus data ini akan menghilangkan seluruh skor XP dan progres jurnal siswa tersebut secara permanen. Lanjutkan?")) {
+                dbHero.ref('rekap_siswa/' + path).remove(); 
+            }
         }
-
-        function hapusHero(path) { if(confirm("Hapus data siswa ini?")) dbHero.ref('rekap_siswa/' + path).remove(); }
     </script>
 </body>
 </html>
