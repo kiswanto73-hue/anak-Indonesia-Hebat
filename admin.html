@@ -13,9 +13,10 @@
             #loginOverlay, #modalFoto, .no-print, button, select { display: none !important; }
             #adminContent { display: block !important; max-width: 100%; }
             .bg-emerald-600 { background: #059669 !important; -webkit-print-color-adjust: exact; }
-            .rounded-b-\[2rem\] { border-radius: 0 !important; }
             table { border: 1px solid #ddd; }
         }
+        /* Efek loading sederhana */
+        .loading-shimmer { opacity: 0.5; pointer-events: none; }
     </style>
 </head>
 <body class="bg-slate-900 min-h-screen p-2 font-sans text-slate-200 pb-20">
@@ -48,20 +49,13 @@
             </div>
         </div>
 
-        <div class="bg-indigo-600 p-4 rounded-t-[2rem] no-print">
-            <h1 class="text-sm font-black italic uppercase text-white px-2">📊 Kontrol Poin & Peringkat</h1>
+        <div class="bg-indigo-600 p-4 rounded-t-[2rem] flex justify-between items-center no-print">
+            <h1 class="text-sm font-black italic uppercase text-white px-2">📊 Kontrol Poin</h1>
+            <button onclick="muatRekapHero()" class="bg-white/20 text-white text-[9px] px-3 py-1 rounded-full font-bold">🔄 SEGARKAN</button>
         </div>
         <div class="bg-white mb-8 rounded-b-[2rem] overflow-hidden shadow-xl border-x-2 border-b-2 border-slate-200 no-print">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-slate-800 text-[11px]">
-                    <thead>
-                        <tr class="bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest">
-                            <th class="p-4 border-b">Nama Siswa</th>
-                            <th class="p-4 border-b text-center">XP Saat Ini</th>
-                            <th class="p-4 border-b text-center">Input Baru</th>
-                            <th class="p-4 border-b text-center">Aksi</th>
-                        </tr>
-                    </thead>
                     <tbody id="tabelHeroBody"></tbody>
                 </table>
             </div>
@@ -69,8 +63,9 @@
 
         <div class="bg-emerald-600 p-4 rounded-t-[2rem] flex flex-wrap justify-between items-center gap-2">
             <h1 class="text-sm font-black italic uppercase text-white px-2">🌙 Monitor Satset Ramadhan</h1>
-            <div class="flex items-center gap-2">
-                <button onclick="window.print()" class="bg-white/20 hover:bg-white/40 text-white text-[10px] font-black px-3 py-1.5 rounded-lg uppercase italic flex items-center gap-1">🖨️ Cetak</button>
+            <div class="flex items-center gap-2 no-print">
+                <button onclick="muatMonitorRamadhan()" class="bg-emerald-500 text-white text-[10px] font-black px-3 py-1.5 rounded-lg uppercase italic border border-emerald-400">🔄 Tarik Data</button>
+                <button onclick="window.print()" class="bg-white/20 text-white text-[10px] font-black px-3 py-1.5 rounded-lg">🖨️ Cetak</button>
                 <select id="pilihHariAdmin" onchange="muatMonitorRamadhan()" class="bg-white text-emerald-700 text-[10px] font-black rounded-lg px-2 py-1 outline-none">
                     </select>
             </div>
@@ -85,14 +80,15 @@
                         <th class="p-4 border-b text-center no-print">Detail</th>
                     </tr>
                 </thead>
-                <tbody id="tabelRamadhanBody"></tbody>
+                <tbody id="tabelRamadhanBody">
+                    <tr><td colspan="4" class="p-10 text-center text-slate-400 italic">Klik tombol "Tarik Data" untuk melihat laporan terbaru...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
 
     <div id="modalFoto" class="fixed inset-0 bg-black/90 hidden z-[500] flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
         <img id="imgPreview" src="" class="max-w-full max-h-[80vh] rounded-2xl shadow-2xl border-4 border-white">
-        <p class="absolute bottom-10 text-white font-bold uppercase text-[10px]">Klik di mana saja untuk tutup</p>
     </div>
 
     <script>
@@ -112,6 +108,7 @@
             selectHari.appendChild(opt);
         }
 
+        // Tentukan hari otomatis
         const tglMulai = new Date("2026-02-19"); 
         const tglSekarang = new Date();
         const diff = Math.floor((tglSekarang - tglMulai) / (1000 * 60 * 60 * 24));
@@ -129,24 +126,28 @@
             } else { alert("Akses Ditolak!"); }
         }
 
+        // MENGGUNAKAN .once UNTUK MENGURANGI LAG
         function muatRekapHero() {
-            dbHero.ref('rekap_siswa').on('value', snap => {
-                const body = document.getElementById('tabelHeroBody');
+            const body = document.getElementById('tabelHeroBody');
+            body.classList.add('loading-shimmer');
+            
+            dbHero.ref('rekap_siswa').once('value', snap => {
                 body.innerHTML = "";
                 snap.forEach(child => {
                     const s = child.val();
                     const path = child.key;
                     body.innerHTML += `
-                        <tr class="border-b border-slate-50 hover:bg-slate-50">
-                            <td class="p-4 font-black uppercase text-indigo-900">${s.nama}<br><span class="text-[8px] text-slate-400">${s.kelas}</span></td>
+                        <tr class="border-b border-slate-50">
+                            <td class="p-4 font-black uppercase text-indigo-900">${s.nama}</td>
                             <td class="p-4 text-center font-black text-indigo-600">${(s.xp || 0).toLocaleString()}</td>
-                            <td class="p-4 text-center"><input type="number" id="inputXP_${path}" placeholder="XP Baru" class="w-20 p-2 border-2 border-slate-200 rounded-lg text-center font-bold outline-none"></td>
-                            <td class="p-4 text-center flex justify-center gap-2">
-                                <button onclick="simpanXPSiswa('${path}', '${s.nama}')" class="bg-indigo-600 text-white px-3 py-2 rounded-lg font-black uppercase text-[9px]">Simpan</button>
-                                <button onclick="hapusHero('${path}')" class="text-red-300 hover:text-red-600 text-lg">🗑️</button>
+                            <td class="p-4 text-center"><input type="number" id="inputXP_${path}" placeholder="XP Baru" class="w-20 p-2 border border-slate-200 rounded text-center outline-none"></td>
+                            <td class="p-4 text-center flex justify-center gap-1">
+                                <button onclick="simpanXPSiswa('${path}', '${s.nama}')" class="bg-indigo-600 text-white px-3 py-2 rounded font-black text-[9px]">SAVE</button>
+                                <button onclick="hapusHero('${path}')" class="text-red-300">🗑️</button>
                             </td>
                         </tr>`;
                 });
+                body.classList.remove('loading-shimmer');
             });
         }
 
@@ -154,36 +155,34 @@
             const inputField = document.getElementById('inputXP_' + path);
             const nilaiBaru = parseInt(inputField.value);
             if (isNaN(nilaiBaru)) return alert("Isi angka!");
-            dbHero.ref('rekap_siswa/' + path).update({ xp: nilaiBaru, waktu: "Admin: " + new Date().toLocaleString() })
-            .then(() => { alert("✅ Berhasil!"); inputField.value = ""; });
+            dbHero.ref('rekap_siswa/' + path).update({ xp: nilaiBaru }).then(() => { 
+                alert("Berhasil!"); muatRekapHero(); // Refresh manual setelah simpan
+            });
         }
 
+        // MENGGUNAKAN .once UNTUK MONITOR RAMADHAN (RINGAN)
         function muatMonitorRamadhan() {
+            const body = document.getElementById('tabelRamadhanBody');
             const hariDipilih = document.getElementById('pilihHariAdmin').value;
-            dbHero.ref('rekap_siswa').on('value', snap => {
-                const body = document.getElementById('tabelRamadhanBody');
+            body.classList.add('loading-shimmer');
+
+            dbHero.ref('rekap_siswa').once('value', snap => {
                 body.innerHTML = "";
                 snap.forEach(child => {
                     const s = child.val();
                     const rData = s.ramadhan || {};
                     let done = 0;
                     for(let i=1; i<=30; i++) { if(rData['h'+i]) done++; }
-                    const persen = Math.round((done/30)*100);
                     const fotoPilihan = rData['foto_h' + hariDipilih];
 
                     body.innerHTML += `
                         <tr class="border-b border-slate-50">
                             <td class="p-4 uppercase font-black text-emerald-900">${s.nama}</td>
-                            <td class="p-4 text-center">
-                                <span class="font-black text-emerald-600 text-[10px]">${done}/30</span>
-                                <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden mt-1 no-print">
-                                    <div class="bg-emerald-500 h-full" style="width: ${persen}%"></div>
-                                </div>
-                            </td>
+                            <td class="p-4 text-center font-black text-emerald-600 text-[10px]">${done}/30</td>
                             <td class="p-4 text-center">
                                 ${fotoPilihan ? 
-                                    `<button onclick="previewFoto('${fotoPilihan}')" class="bg-orange-500 text-white text-[8px] font-black px-2 py-1 rounded shadow-md no-print">📸 LIHAT H${hariDipilih}</button><span class="hidden print:block text-[8px]">Tersedia ✅</span>` : 
-                                    `<span class="text-[8px] text-slate-300 font-bold italic">H${hariDipilih}: Kosong</span>`
+                                    `<button onclick="previewFoto('${fotoPilihan}')" class="bg-orange-500 text-white text-[8px] font-black px-2 py-1 rounded no-print">📸 LIHAT H${hariDipilih}</button><span class="hidden print:block text-[8px]">ADA ✅</span>` : 
+                                    `<span class="text-[8px] text-slate-300 font-bold italic">Kosong</span>`
                                 }
                             </td>
                             <td class="p-4 text-center no-print">
@@ -191,6 +190,7 @@
                             </td>
                         </tr>`;
                 });
+                body.classList.remove('loading-shimmer');
             });
         }
 
@@ -218,7 +218,11 @@
                     const cur = child.val().xp || 0;
                     updates[`rekap_siswa/${child.key}/xp`] = cur + nominal;
                 });
-                dbHero.ref().update(updates).then(() => { alert("🚀 Sukses!"); document.getElementById('massXPValue').value = ""; });
+                dbHero.ref().update(updates).then(() => { 
+                    alert("Sukses!"); 
+                    document.getElementById('massXPValue').value = "";
+                    muatRekapHero();
+                });
             });
         }
 
@@ -228,7 +232,7 @@
             });
         }
 
-        function hapusHero(path) { if(confirm("Hapus data siswa ini?")) dbHero.ref('rekap_siswa/' + path).remove(); }
+        function hapusHero(path) { if(confirm("Hapus data siswa ini?")) dbHero.ref('rekap_siswa/' + path).remove().then(() => muatRekapHero()); }
     </script>
 </body>
 </html>
