@@ -116,14 +116,12 @@
         const tglMulai = new Date("2026-02-18T00:00:00");
         const selectHari = document.getElementById('pilihHariAdmin');
         
-        // Isi Dropdown 1-30
         for(let i=1; i<=30; i++) {
             let opt = document.createElement('option');
             opt.value = i; opt.innerHTML = '📅 HARI KE-' + i;
             selectHari.appendChild(opt);
         }
 
-        // Set Default ke hari yang sedang berjalan
         const tglSekarang = new Date();
         const diffDays = Math.floor((tglSekarang - tglMulai) / (1000 * 60 * 60 * 24)) + 1;
         selectHari.value = Math.max(1, Math.min(30, diffDays));
@@ -132,13 +130,11 @@
             const email = document.getElementById('adminEmail').value;
             const pass = document.getElementById('adminPass').value;
             
-            // Sesuai data Bapak
             if (email === "sdn169.cintadamai@gmail.com" && pass === "Cintadama1") {
                 document.getElementById('loginOverlay').classList.add('hidden');
                 document.getElementById('adminContent').classList.remove('hidden');
                 jalankanRealtime();
                 
-                // Pantau OTP Realtime
                 dbPerpus.ref('sistem_keamanan/otp_katalog').on('value', snap => {
                     if(snap.exists()) document.getElementById('monitorOTP').innerText = snap.val().kode;
                 });
@@ -150,8 +146,8 @@
         function jalankanRealtime() {
             const hariDipilih = document.getElementById('pilihHariAdmin').value;
 
-            // Tarik data utama
-            dbHero.ref('rekap_siswa').on('value', snap => {
+            // GUNAKAN .ONCE AGAR IRIT KUOTA DOWNLOAD (PENTING)
+            dbHero.ref('rekap_siswa').once('value', snap => {
                 const bodyXP = document.getElementById('tabelHeroBody');
                 const bodyRamadhan = document.getElementById('tabelRamadhanBody');
                 
@@ -167,7 +163,6 @@
                     const s = child.val();
                     const path = child.key;
 
-                    // TABEL XP
                     bodyXP.innerHTML += `
                         <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                             <td class="p-4 font-black uppercase text-indigo-900">${s.nama}</td>
@@ -181,7 +176,6 @@
                             </td>
                         </tr>`;
 
-                    // TABEL RAMADHAN
                     const rData = s.ramadhan || {};
                     let doneCount = 0;
                     for(let i=1; i<=30; i++) { if(rData['h'+i]) doneCount++; }
@@ -199,7 +193,7 @@
                             </td>
                             <td class="p-5 text-center">
                                 ${fotoPilihan ? 
-                                    `<button onclick="previewFoto('${fotoPilihan}')" class="bg-orange-500 hover:bg-orange-600 text-white text-[9px] font-black px-4 py-2 rounded-xl shadow-lg no-print animate-pulse">👁️ LIHAT BUKTI</button>` : 
+                                    `<button onclick="bukaFoto('${fotoPilihan}')" class="bg-orange-500 hover:bg-orange-600 text-white text-[9px] font-black px-4 py-2 rounded-xl shadow-lg no-print animate-pulse">👁️ LIHAT BUKTI</button>` : 
                                     `<span class="text-[9px] text-slate-300 font-bold italic">Belum Upload</span>`
                                 }
                             </td>
@@ -209,6 +203,15 @@
                         </tr>`;
                 });
             });
+        }
+
+        // FUNGSI KHUSUS UNTUK MEMBEDAKAN LINK DRIVE DAN LINK FIREBASE
+        function bukaFoto(url) {
+            if (url.includes("drive.google.com") || url.includes("googleusercontent.com")) {
+                window.open(url, '_blank');
+            } else {
+                previewFoto(url);
+            }
         }
 
         function simpanXPSiswa(path, nama) {
@@ -221,6 +224,7 @@
                 dbHero.ref('rekap_siswa/' + path).update({ xp: xpLama + nilaiBaru });
                 inputField.value = "";
                 alert("✅ Berhasil! " + nama + " mendapat " + nilaiBaru + " XP tambahan.");
+                jalankanRealtime(); // Refresh tampilan
             });
         }
 
@@ -238,6 +242,7 @@
                     dbHero.ref().update(updates).then(() => { 
                         alert("🚀 LUAR BIASA! Bonus " + nominal + " XP telah dibagikan masal!"); 
                         document.getElementById('massXPValue').value = "";
+                        jalankanRealtime(); // Refresh tampilan
                     });
                 });
             }
@@ -263,7 +268,7 @@
 
         function hapusHero(path) { 
             if(confirm("PERINGATAN! Menghapus data ini akan menghilangkan seluruh skor XP dan progres jurnal siswa tersebut secara permanen. Lanjutkan?")) {
-                dbHero.ref('rekap_siswa/' + path).remove(); 
+                dbHero.ref('rekap_siswa/' + path).remove().then(() => jalankanRealtime()); 
             }
         }
     </script>
